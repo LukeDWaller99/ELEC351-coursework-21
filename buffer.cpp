@@ -2,6 +2,7 @@
 #include "buffer.h"
 #include "sd.h"
 
+
 Semaphore spaceBuffer(buffer_size);
 Semaphore samplesBuffer(0); //
 Semaphore signalSample(0); //signal to get new sample
@@ -25,33 +26,26 @@ void sampleData(){
     signalSample.release();
 }
 
-
-void acquireData(){
-    //jacks data in here
-    //buff.attach(&signalSample, T);
-    while(1){
-        signalSample.acquire();
-        
-        //add to queue
-    }
-}
-
 void writeBuffer(){
     //check for space
-    bool spaceAvailable = spaceBuffer.try_acquire_for(10);
+    bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
         if(spaceAvailable == 0){
-            //call critical error code
-        //printQueue
-        //criticalError
+            printQueue.call(bufferFull);
+            //criticalError
 
         }else{
-            bool lockBufferTry = lockBuffer.trylock_for(1000);
+            bool lockBufferTry = lockBuffer.trylock_for(1s);
             if(lockBufferTry == 0){
-                //printQueue
+                printQueue.call(bufferLockTimeout);
                 //criticalError
 
             } else{
-                Time.lock();
+                bool timeLock = Time.trylock_for(1s);
+                if(timeLock == 0){
+                    printQueue.call(timeLockTimeout);
+                    //critical error
+                }else{
+                //Time.lock();//maybe?
                 //copy time and date
                 
                 // dataRecord.day = T1.day;
@@ -60,7 +54,7 @@ void writeBuffer(){
                 //release time lock
 
                 Time.unlock();
-
+                }
                 //copy all sensor data
                 // dataRecord.LDR = 
                 // dataRecord.temp = 
@@ -69,8 +63,6 @@ void writeBuffer(){
                 //update the buffer
                 newIDX = (newIDX + 1); //increment buffer size
                 buffer[newIDX] = dataRecord;
-
-                //print to printQueue?
             }
     
         lockBuffer.unlock();
@@ -80,39 +72,46 @@ void writeBuffer(){
 
 } // writeBuffer function end
 
+
+void acquireData(){
+    //jacks data in here
+    while(1){
+        signalSample.acquire();
+        writeBuffer();
+    }
+}
+
+
 void writeSD(FILE &fp){
 
     //check for samples in the buffer
-    bool checkBuffer = samplesBuffer.try_acquire_for(10);
+    bool checkBuffer = samplesBuffer.try_acquire_for(1s);
     if(checkBuffer == 0){
-        //printQueue
-        //criticalError
+        printQueue.call(emptyFlush);
+        //criticalError- not so fatal?
+        return;
     }else{
         samplesBuffer.release();
 
-        bool lockBufferTry = lockBuffer.trylock_for(1000);
+        bool lockBufferTry = lockBuffer.trylock_for(1s);
         if(lockBufferTry == 0){
-            //printQueue
-            //criticalError
+            printQueue.call(bufferFlushTimeout);
+            //criticalError - not so fatal?
         }else{
             int run = 1;
-            while(run = 1){
+            while(run == 1){
                 if(oldIDX == newIDX){
                     run = 0; //everything is out
-
                 } else{
-
                     //greenLED =!greenLED;
-                    samplesBuffer.try_acquire_for(20);
+                    samplesBuffer.try_acquire_for(1s);
                     oldIDX = (oldIDX + 1);
-
                     liveData flushRecord = buffer[oldIDX];
-
-                    //space in buffer signal
-                    spaceBuffer.release();
-
+                    spaceBuffer.release();//space in buffer signal
                 }
             } //end while
+            printQueue.call(flushBuffer);
+            lockBuffer.unlock();
         }
    }
 } //end function writeSD
