@@ -12,11 +12,13 @@
 #include <cstring>
 #include <string.h>
 #include <LEDMatrix.h>
+#include "SevenSegmentDisplay.h"
 using namespace uop_msb;
 
-LEDMatrix matrix;
+// LEDMatrix matrix;
+SevenSegmentDisplay display;
 
-double samples[8];
+// double samples[8];
 
 // extern void azureDemo();
 // extern NetworkInterface *_defaultSystemNetwork;
@@ -59,14 +61,14 @@ double samples[8];
 int main() {
     while (true) {
 
-        samples[0] = 0xffff;
-        samples[1] = 0x0000;
-        samples[2] = 0xff00;
-        samples[3] = 0xf0f0;
-        samples[4] = 0x0f0f;
-        samples[5] = 0x000f;
-        samples[6] = 0xfff0;
-        samples[7] = 0x0ff0;
+        // samples[0] = 0xffff;
+        // samples[1] = 0x0000;
+        // samples[2] = 0xff00;
+        // samples[3] = 0xf0f0;
+        // samples[4] = 0x0f0f;
+        // samples[5] = 0x000f;
+        // samples[6] = 0xfff0;
+        // samples[7] = 0x0ff0;
 
     // if (!connect()) return -1;
 
@@ -86,7 +88,8 @@ int main() {
 
     // matrix.clear();
 
-    matrix.test();
-
+    // matrix.test();
+    display.clear(3);
+    sleep();
     }
 }
