@@ -48,12 +48,10 @@ void writeBuffer(){
                 //Time.lock();//maybe?
                 //copy time and date
                 
-                // dataRecord.day = T1.day;
-                // dataRecord.month = T1.month;
-                // dataRecord.year = T1.year;
-                //release time lock
+               
+                
 
-                Time.unlock();
+                Time.unlock(); //release time lock
                 }
                 //copy all sensor data
                 // dataRecord.LDR = 
@@ -81,7 +79,7 @@ void acquireData(){
     }
 }
 
-
+//rename this, needed in new write SD function in sd.cpp
 void writeSD(FILE &fp){
 
     //check for samples in the buffer
