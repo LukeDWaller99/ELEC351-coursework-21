@@ -26,6 +26,29 @@ void bufferFlushTimeout(){
     printf("CRITIAL ERROR - buffer flush lock timeout, cannot acquire lock. \n");
 }
 
-void flushBuffer(){
+void flushedBuffer(){
     printf("get flushed! data from buffer loaded onto sd card. \n"); 
+}
+
+//**************************
+//SD CARD PRINT QUEUES
+//**************************
+
+void mountError(){
+    printf("sd card - not mounted \n"); 
+}
+
+void mountedSD(){
+    printf("sd card is mounted \n"); 
+}
+void noSDFile(){
+    printf("sd card - cannot create new file \n"); 
+}
+
+void unmountedFlush(){
+    printf("sd card - unmounted while flushing. \n"); 
+}
+
+void unmountedSD(){
+    printf("sd card - you have unmounted the SD card \n"); 
 }

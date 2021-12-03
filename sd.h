@@ -3,6 +3,7 @@
 
 #include "mbed.h"
 #include "FATFileSystem.h"
+#include "buffer.h"
 
 /*
 CS PE3 //DigitalOut
@@ -11,12 +12,18 @@ SPI1 MOSI PB_5
 SPI1 MISO PB_4
 DETECT PF_4
 */
+//green led PC_6 for when mounted
 
+class SDCard{
+    private:
 
+    public:
+    void initSD();
+    void writeSD();
+    void unmountSD();
+    void SDThread();
 
+};
 
-extern void initSD();
-extern void writeSD();
-extern void unmountSD();
 
 #endif

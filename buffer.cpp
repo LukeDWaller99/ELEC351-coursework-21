@@ -22,11 +22,11 @@ writeSD - write all data to sd card
 */
 
 //signal the sampling function
-void sampleData(){
+void bufferClass::sampleData(){
     signalSample.release();
 }
 
-void writeBuffer(){
+void bufferClass::writeBuffer(){
     //check for space
     bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
         if(spaceAvailable == 0){
@@ -71,7 +71,7 @@ void writeBuffer(){
 } // writeBuffer function end
 
 
-void acquireData(){
+void bufferClass::acquireData(){
     //jacks data in here
     while(1){
         signalSample.acquire();
@@ -80,7 +80,7 @@ void acquireData(){
 }
 
 //rename this, needed in new write SD function in sd.cpp
-void writeSD(FILE &fp){
+void bufferClass::flushBuffer(FILE &fp){
 
     //check for samples in the buffer
     bool checkBuffer = samplesBuffer.try_acquire_for(1s);
@@ -108,7 +108,7 @@ void writeSD(FILE &fp){
                     spaceBuffer.release();//space in buffer signal
                 }
             } //end while
-            printQueue.call(flushBuffer);
+            printQueue.call(flushedBuffer);
             lockBuffer.unlock();
         }
    }

@@ -3,8 +3,27 @@
 
 #include "mbed.h"
 #include "printQueue.h"
+#include "FATFileSystem.h"
 
 #define buffer_size 800
+
+//create a class for buffer
+//pc2 for full error, red led
+
+
+class bufferClass{
+
+    private: 
+    //maybe a red led
+
+    public:
+    void flushBuffer(FILE &fp);
+    void sampleData();
+    void writeBuffer();
+    void acquireData();
+
+
+};
 
 //external semaphores
 extern Semaphore samplesBuffer;
@@ -34,9 +53,6 @@ struct liveData{
 };
 
 extern liveData dataRecord;
-
-
-
 
 
 

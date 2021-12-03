@@ -1,11 +1,10 @@
 #include "mbed.h"
 #include "sd.h"
-#include "uop_msb.h"
-#include "FATFileSystem.h"
 
 bool SDState = 0;
+FILE *fp; //file pointer
 
-void initSD(){
+void SDCard::initSD(){
     if (SDState == 0){ //the card is not mounted
         //criticalError - not fatal while initialising
         printQueue.call(mountError);
@@ -18,12 +17,12 @@ void initSD(){
     }
 } //end initSD function
 
-void writeSD(){
+void SDCard::writeSD(){
 
     FATFileSystem fs("sd, &sd"); //create filing system
-    FILE* fp = fopen("/sd/test.csv", "a"); //open, begin write
+    FILE *fp = fopen("/sd/test.csv", "a"); //open, begin write
 
-    if (fp == NULL){
+    if (fp == NULL){ //cannot open file
         //criticalError
         printQueue.call(noSDFile);
     }
@@ -33,21 +32,21 @@ void writeSD(){
         //criticalError
         printQueue.call(unmountedFlush);
     }else{
-        flush(*fp); //flush buffer data
+        bufferClass::flushBuffer(FILE *fp); //flush buffer data
 
     }
     fclose(fp); //close file
 } //end writeSD function
 
-void unmountSD(){
-    writeSD();
+void SDCard::unmountSD(){
+    SDCard::writeSD();
     SDState = 0;
     printQueue.call(unmountedSD);
     //display on LCD?
 } //end unmountSD function
 
 //thread for SD writing
-void SDThread(){
+void SDCard::SDThread(){
     initSD();
     while(1){
         if(SDState == 1){
