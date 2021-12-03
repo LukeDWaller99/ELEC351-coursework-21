@@ -14,13 +14,13 @@ class LEDMatrix{
     DigitalOut matrix_spi_cs;            //Chip Select ACTIVE LOW
     DigitalOut matrix_spi_oe;           //Output Enable ACTIVE LOW 
 
-public:
+    public:
 
     LEDMatrix();
-    
     void clear();
-
-    void write(int RHC, int LHC, int ROW);
+    void writeMatrix(int RHC, int LHC, int ROW);
+    void plot(double samples[]);
+    void test();
 
 };
 #endif

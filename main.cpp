@@ -14,9 +14,9 @@
 #include <LEDMatrix.h>
 using namespace uop_msb;
 
-
-// matrix_spi(PC_12, PC_11, PC_10), matrix_spi_cs(PB_6), matrix_spi_oe(PB_12)
 LEDMatrix matrix;
+
+double samples[8];
 
 // extern void azureDemo();
 // extern NetworkInterface *_defaultSystemNetwork;
@@ -59,6 +59,15 @@ LEDMatrix matrix;
 int main() {
     while (true) {
 
+        samples[0] = 0xffff;
+        samples[1] = 0x0000;
+        samples[2] = 0xff00;
+        samples[3] = 0xf0f0;
+        samples[4] = 0x0f0f;
+        samples[5] = 0x000f;
+        samples[6] = 0xfff0;
+        samples[7] = 0x0ff0;
+
     // if (!connect()) return -1;
 
     // if (!setTime()) return -1;
@@ -74,15 +83,10 @@ int main() {
     // LogInfo("The demo has ended");
 
     // return 0;
-    for(int i = 0; i <= 7; i++)
-    {
-        for(int j = 0; j <= 255; j++)
-        {
-            matrix.write(j, j, i);
-            wait_us(10000);
-        }
-        
-    }
-    matrix.clear();
+
+    // matrix.clear();
+
+    matrix.test();
+
     }
 }
