@@ -78,7 +78,7 @@ int main() {
     // // UOP_MSB_TEST board;  //Only uncomment for testing - DO NOT USE OTHERWISE
     // // board.test();        //Only uncomment for testing - DO NOT USE OTHERWISE
 
-    // // Write fake data to Azure IoT Center. Don't forget to edit azure_cloud_credentials.h
+    // // Write fae data to Azure IoT Center. Don't forget to edit azure_cloud_credentials.h
     // printf("You will need your own connection string in azure_cloud_credentials.h\n");
     // LogInfo("Starting the Demo");
     // azureDemo();
@@ -89,7 +89,17 @@ int main() {
     // matrix.clear();
 
     // matrix.test();
-    display.clear(3);
-    sleep();
+        // for (int j = 1; j <= 2; j++) {
+
+        //   for (int i = 0; i <= 9; i++) {
+        //     display.setDigit(j, i);
+        //     wait_us(500000);
+        //   }
+        // }
+        // display.clear();
+        for(int i = 0; i <100; i++){
+        display.setNumber(i);
+        wait_us(50000);
+        }
     }
 }

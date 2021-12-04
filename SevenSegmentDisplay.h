@@ -12,7 +12,10 @@ class SevenSegmentDisplay{
     public:
 
     SevenSegmentDisplay();
+    void clear();
     void clear(int number);
+    void setDigit(int digit, int number);
+    void setNumber(int number);
 };
 
 #endif
