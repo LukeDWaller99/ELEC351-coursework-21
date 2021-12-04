@@ -1,8 +1,18 @@
 #include "mbed.h"
 #include "sd.h"
+#include "buffer.h"
+
 
 bool SDState = 0;
 FILE *fp; //file pointer
+
+// //function to flash green LED before and after the SD card is being written to, LED alternates state during write process
+// void flashGreen() {		
+// 	//always leaves green on
+// 	greenLED = 0;
+// 	ThisThread::sleep_for(500);		//put this thread to sleep for 500ms
+// 	greenLED = 1;
+// }
 
 void SDCard::initSD(){
     if (SDState == 0){ //the card is not mounted
@@ -20,9 +30,9 @@ void SDCard::initSD(){
 void SDCard::writeSD(){
 
     FATFileSystem fs("sd, &sd"); //create filing system
-    FILE *fp = fopen("/sd/test.csv", "a"); //open, begin write
+    FILE *fp = fopen("/sd/test.csv", "a"); //open so you can write
 
-    if (fp == NULL){ //cannot open file
+    if (fp == NULL){ //cannot open file - it does not exist
         //criticalError
         printQueue.call(noSDFile);
     }
@@ -32,7 +42,8 @@ void SDCard::writeSD(){
         //criticalError
         printQueue.call(unmountedFlush);
     }else{
-        bufferClass::flushBuffer(FILE *fp); //flush buffer data
+        bufferClass::flushBuffer(*fp); //pass flushBuffer function file pointer
+        //bufferClass::flushBuffer(FILE &fp); //flush buffer data
 
     }
     fclose(fp); //close file

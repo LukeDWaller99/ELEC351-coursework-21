@@ -105,10 +105,12 @@ void bufferClass::flushBuffer(FILE &fp){
                     samplesBuffer.try_acquire_for(1s);
                     oldIDX = (oldIDX + 1);
                     liveData flushRecord = buffer[oldIDX];
+                    fprintf(&fp, "Time recorded = %d:%d:%d %d/%d/%d, \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",flushRecord.hour,flushRecord.minute,flushRecord.second,flushRecord.day,flushRecord.month,flushRecord.year,flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
                     spaceBuffer.release();//space in buffer signal
                 }
             } //end while
             printQueue.call(flushedBuffer);
+            //flash green led
             lockBuffer.unlock();
         }
    }
