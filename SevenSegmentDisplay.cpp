@@ -105,6 +105,7 @@ void SevenSegmentDisplay::test() {
     setNumber(i);
     wait_us(500000);
   }
+  clear();
 }
 
 void SevenSegmentDisplay::operator=(int number)

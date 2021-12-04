@@ -56,28 +56,13 @@ void LEDMatrix::plot(double samples[]) {
 }
 
 void LEDMatrix::test() {
-
-int LHC = 0b10101010;
-for(int ROW = 0; ROW <=7; ROW++)
-{
-    matrix_spi_cs = 0;     // chip select low to write
-    matrix_spi.write(LHC); // LHS COL
-    matrix_spi.write(0x00); // RHS COL
-    matrix_spi.write(ROW); // ROX RHS
-    matrix_spi_cs = 1;     // chip select high to stop write
-    LHC = LHC >> 1;
-    thread_sleep_for(SCAN_RATE_MS);
-}
-int RHC = 0b10000000;
-for (int ROW = 0; ROW <=7; ROW++)
-{
-    matrix_spi_cs = 0;     // chip select low to write
-    matrix_spi.write(LHC); // LHS COL
-    matrix_spi.write(0x00); // RHS COL
-    matrix_spi.write(ROW); // ROX RHS
-    matrix_spi_cs = 1;     // chip select high to stop write
-    RHC = LHC >> 1;
-    thread_sleep_for(SCAN_RATE_MS);
-}
-
+  for (int i = 7; i >= 0; i--) {
+    writeMatrix(0xff, 0xff, i);
+    thread_sleep_for(100);
+  }
+  for (int i = 0; i <= 7; i++) {
+    writeMatrix(0xff, 0xff, i);
+    thread_sleep_for(100);
+  }
+  clear();
 }

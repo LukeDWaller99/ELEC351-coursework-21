@@ -15,7 +15,7 @@
 #include "SevenSegmentDisplay.h"
 using namespace uop_msb;
 
-// LEDMatrix matrix;
+LEDMatrix matrix;
 SevenSegmentDisplay display;
 
 // double samples[8];
@@ -59,8 +59,10 @@ SevenSegmentDisplay display;
 // }
 
 int main() {
-    while (true) {
-
+    display.test();
+        matrix.test();
+    while(true)
+    {
         // samples[0] = 0xffff;
         // samples[1] = 0x0000;
         // samples[2] = 0xff00;
@@ -90,6 +92,7 @@ int main() {
 
     // matrix.test();
         // for (int j = 1; j <= 2; j++) {
+    
 
     }
 }
