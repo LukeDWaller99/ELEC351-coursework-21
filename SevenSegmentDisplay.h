@@ -16,6 +16,8 @@ class SevenSegmentDisplay{
     void clear(int number);
     void setDigit(int digit, int number);
     void setNumber(int number);
+    void test();
+    void operator=(int number);
 };
 
 #endif

@@ -91,15 +91,5 @@ int main() {
     // matrix.test();
         // for (int j = 1; j <= 2; j++) {
 
-        //   for (int i = 0; i <= 9; i++) {
-        //     display.setDigit(j, i);
-        //     wait_us(500000);
-        //   }
-        // }
-        // display.clear();
-        for(int i = 0; i <100; i++){
-        display.setNumber(i);
-        wait_us(50000);
-        }
     }
 }
