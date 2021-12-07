@@ -13,8 +13,9 @@
 #include <string.h>
 #include <LEDMatrix.h>
 #include "SevenSegmentDisplay.h"
+#include <error_handler.hpp>
 using namespace uop_msb;
-
+error_handler EH;
 LEDMatrix matrix;
 SevenSegmentDisplay display;
 

@@ -8,7 +8,7 @@ void error_handler::clear_all(){
         flagLock.unlock();
     }
     else {
-        ERROR_THREAD_NAME.flags_set(0x99);
+        //ERROR_THREAD_NAME.flags_set(0x99);
     }
 }
 
