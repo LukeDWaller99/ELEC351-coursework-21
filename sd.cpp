@@ -2,7 +2,7 @@
 #include "sd.h"
 #include "buffer.h"
 
-
+bufferClass BufferC;
 bool SDState = 0;
 FILE *fp; //file pointer
 
@@ -42,7 +42,7 @@ void SDCard::writeSD(){
         //criticalError
         printQueue.call(unmountedFlush);
     }else{
-        bufferClass::flushBuffer(*fp); //pass flushBuffer function file pointer
+        bufferC::flushBuffer(FILE *fp); //pass flushBuffer function file pointer
         //bufferClass::flushBuffer(FILE &fp); //flush buffer data
 
     }

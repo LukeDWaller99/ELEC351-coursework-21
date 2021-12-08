@@ -16,7 +16,7 @@ Mutex lockBuffer;
 Ticker buff;
 /*
 sampleData - output signal that buffer is ready for data
-acquireData - 
+acquireData - get the data
 writeBuffer - check for space, if available, write data
 writeSD - write all data to sd card
 */
