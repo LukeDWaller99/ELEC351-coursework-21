@@ -1,7 +1,7 @@
 #include "mbed.h"
 #include "networking.h"
 //using namespace std;
-#include "NTPClient.h"
+//#include "NTPClient.h"
 
 //#include "NTPClientTEST.h"
 /*

@@ -2,7 +2,7 @@
 #include "sd.h"
 #include "buffer.h"
 
-bufferClass BufferC;
+bufferClass obj;
 bool SDState = 0;
 FILE *fp; //file pointer
 
@@ -34,6 +34,7 @@ void SDCard::writeSD(){
 
     if (fp == NULL){ //cannot open file - it does not exist
         //criticalError
+        //errorSeverity(CRITICAL);
         printQueue.call(noSDFile);
     }
 
@@ -42,7 +43,8 @@ void SDCard::writeSD(){
         //criticalError
         printQueue.call(unmountedFlush);
     }else{
-        BufferC::flushBuffer(FILE *fp); //pass flushBuffer function file pointer
+        //obj::flushBuffer(FILE *fp); //pass flushBuffer function file pointer
+        flushBuffer(*fp);
         //bufferClass::flushBuffer(FILE &fp); //flush buffer data
 
     }

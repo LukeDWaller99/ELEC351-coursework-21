@@ -1,7 +1,6 @@
 #include "mbed.h"
 #include "buffer.h"
-#include "sd.h"
-
+//#include "sd.h"
 
 Semaphore spaceBuffer(buffer_size);
 Semaphore samplesBuffer(0); //
@@ -80,7 +79,7 @@ void bufferClass::acquireData(){
 }
 
 //rename this, needed in new write SD function in sd.cpp
-void bufferClass::flushBuffer(FILE &fp){
+bufferClass::flushBuffer(FILE &fp){
 
     //check for samples in the buffer
     bool checkBuffer = samplesBuffer.try_acquire_for(1s);
