@@ -1,5 +1,8 @@
+//AUTHOR - JACK PENDLEBURY
+
 #include <error_handler.hpp>
 #include <uop_msb.h>
+//#define ERROR_THREAD_NAME "eHandler"
 
 void error_handler::clear_all(){
     if (flagLock.trylock_for(10ms) == true){
@@ -8,7 +11,9 @@ void error_handler::clear_all(){
         flagLock.unlock();
     }
     else {
+        //soz dunno m8
         //ERROR_THREAD_NAME.flags_set(0x99);
+        
     }
 }
 
@@ -25,3 +30,32 @@ error_handler::error_handler(){
     ERROR_THREAD_NAME.set_priority(osPriorityRealtime);
     ERROR_THREAD_NAME.start(error_thread);
 }
+
+
+void error_handler::severityHandler(){
+
+    switch(errorSeverity){
+        case 0:
+        //WARNING:
+        yellowLED = 1;
+        ThisThread::sleep_for(200); //test thist time
+        yellowLED = 0;
+        break;
+
+
+        case 1:
+        //CRITICAL:
+        //alarm to sound for 30 seconds
+        redLED = 1;
+        ThisThread::sleep_for(30000);
+        redLED = 0;
+        ThisThread::sleep_for(30000);
+        break;
+
+        //does it need a
+        //default:
+
+    }        
+}
+
+

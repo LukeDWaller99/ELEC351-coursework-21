@@ -4,6 +4,7 @@
 #include "Mutex.h"
 
 #define ERROR_THREAD_NAME eHandler
+
 //error codes
 #define BUFFER_FULL = 10               //CRITICAL
 #define BUFFER_LOCK_TIMEOUT = 11       //CRITICAL
@@ -19,8 +20,6 @@
 //error handler errors
 #define FLAG_CLEAR_ERROR 99
 
-
-
 class error_handler {
     private:
     Mutex flagLock;
@@ -31,9 +30,18 @@ class error_handler {
     error_handler();
     ~error_handler();
     static void error_thread();
+    void severityHandler();
 
 
 };
 
+enum errorSeverity{
+    CRITICAL, WARNING
+};
+
+
+
+
 
 #endif
+
