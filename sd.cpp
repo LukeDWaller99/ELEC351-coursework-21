@@ -42,7 +42,7 @@ void SDCard::writeSD(){
         //criticalError
         printQueue.call(unmountedFlush);
     }else{
-        bufferC::flushBuffer(FILE *fp); //pass flushBuffer function file pointer
+        BufferC::flushBuffer(FILE *fp); //pass flushBuffer function file pointer
         //bufferClass::flushBuffer(FILE &fp); //flush buffer data
 
     }

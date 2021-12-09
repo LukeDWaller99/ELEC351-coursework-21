@@ -1,7 +1,7 @@
 #include "mbed.h"
 #include "sampling.h"
 //jacks hardware header?
-
+/*
 void test_sampling(){
     //output adc values
     float ldr = adcIn.read();
@@ -15,7 +15,5 @@ void test_sampling(){
     float pressure = sensor.getPressure();
      printf("Pressure: %5.1f\n\r");
 
-
-
-
 }
+*/

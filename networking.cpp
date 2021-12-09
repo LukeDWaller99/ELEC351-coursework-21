@@ -1,6 +1,26 @@
 #include "mbed.h"
 #include "networking.h"
-using namespace std;
+//using namespace std;
+#include "NTPClient.cpp"
+
+NetworkInterface *_defaultSystemNetwork;
+_defaultSystemNetwork = NetworkInterface::get_default_instance();
+
+int ret = _defaultSystemNetwork -> connect();
+
+NTPClient ntp(_defaultSystemNetwork);
+ntp.set_server("time.google.com", 123);
+time_t timestamp = ntp.get_timestamp();
+
+if(timestamp < 0){
+    LogError("Failed to get the current time, error: %ld", timestamp);
+    return -1;
+}
+
+cout << "Time: " << ctime(&timestamp) << endl;
+set_time(timestamp);
+
+/*
 
 void test_connection(){
     EthernetInterface ethernet;
@@ -44,3 +64,5 @@ void test_connection(){
     }
 
 }
+
+*/

@@ -3,12 +3,7 @@
 
 #include "mbed.h"
 #include "EthernetInterface.h"
-#include "TCPServer.h"
-#include "TCPSocket.h"
-#include <iostream>
-#include <string> 
-
-
+#include "NTPClient.h"
 #include "buffer.h"
 
 #define IP        "10.0.0.10"
