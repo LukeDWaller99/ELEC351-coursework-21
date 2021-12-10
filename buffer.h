@@ -6,7 +6,6 @@
 #include "mbed.h"
 #include "printQueue.h"
 #include "FATFileSystem.h"
-#include "sd.h"
 
 #define buffer_size 800
 using namespace std;
@@ -27,7 +26,7 @@ class bufferClass{
     
     //constructor and destructor
     bufferClass();
-    ~bufferClass():
+    ~bufferClass();
 
 
 };

@@ -3,17 +3,19 @@
 #include <mbed.h>
 #include <Mutex.h>
 #include <uop_msb.h>
+#include <buffer.h>
 
 class sampler {
     private:
+    typedef void(*funcPointer_t)(void);
     Mutex sampleLock;
     Ticker sampleTick;
     Thread sampleThread;
+    bufferClass sampleBuffer;
     
     AnalogIn LDR;
 
-    void sample();
-    void sample_thread_starter();
+     void sample();
 
     public:
     sampler();

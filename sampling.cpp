@@ -1,12 +1,12 @@
 #include <sampling.h>
 
 sampler::sampler():LDR(AN_LDR_PIN) {
-    sample_thread.start(sample)
+    sampleThread.start(callback(this, &sampler::sample));
 
 }
 
 
-sampler::sample(){
+void sampler::sample(){
     while(true){
     ThisThread::flags_wait_any(1);
     if(sampleLock.trylock_for(1ms)==1){
