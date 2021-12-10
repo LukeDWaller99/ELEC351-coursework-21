@@ -1,9 +1,12 @@
+//AUTHOR - NOAH HARVEY
+
 #ifndef _FIFOBUFFER_
 #define _FIFOBUFFER_
 
 #include "mbed.h"
 #include "printQueue.h"
 #include "FATFileSystem.h"
+#include "sd.h"
 
 #define buffer_size 800
 

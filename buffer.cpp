@@ -1,6 +1,7 @@
+//AUTHOR - NOAH HARVEY
+
 #include "mbed.h"
 #include "buffer.h"
-#include "sd.h"
 
 
 Semaphore spaceBuffer(buffer_size);
@@ -31,33 +32,27 @@ void bufferClass::writeBuffer(){
     bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
         if(spaceAvailable == 0){
             printQueue.call(bufferFull);
-            //criticalError
+            errorSeverity(CRITICAL);
 
         }else{
             bool lockBufferTry = lockBuffer.trylock_for(1s);
             if(lockBufferTry == 0){
                 printQueue.call(bufferLockTimeout);
-                //criticalError
+                errorSeverity(CRITICAL);
 
             } else{
                 bool timeLock = Time.trylock_for(1s);
                 if(timeLock == 0){
                     printQueue.call(timeLockTimeout);
-                    //critical error
+                    errorSeverity(CRITICAL);
                 }else{
-                //Time.lock();//maybe?
-                //copy time and date
-                
-               
-                
-
-                Time.unlock(); //release time lock
-                }
-                //copy all sensor data
+                //copy all sensor data, for Jack to decide how
                 // dataRecord.LDR = 
                 // dataRecord.temp = 
                 // dataRecord.pressure = 
-        
+                Time.unlock(); //release time lock
+                }
+                
                 //update the buffer
                 newIDX = (newIDX + 1); //increment buffer size
                 buffer[newIDX] = dataRecord;
@@ -86,7 +81,7 @@ void bufferClass::flushBuffer(FILE &fp){
     bool checkBuffer = samplesBuffer.try_acquire_for(1s);
     if(checkBuffer == 0){
         printQueue.call(emptyFlush);
-        //criticalError- not so fatal?
+        errorSeverity(CRITICAL);
         return;
     }else{
         samplesBuffer.release();
@@ -94,7 +89,7 @@ void bufferClass::flushBuffer(FILE &fp){
         bool lockBufferTry = lockBuffer.trylock_for(1s);
         if(lockBufferTry == 0){
             printQueue.call(bufferFlushTimeout);
-            //criticalError - not so fatal?
+            errorSeverity(WARNING);
         }else{
             int run = 1;
             while(run == 1){
