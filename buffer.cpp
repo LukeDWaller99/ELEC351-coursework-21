@@ -3,12 +3,12 @@
 #include "mbed.h"
 #include "buffer.h"
 
-
 Semaphore spaceBuffer(buffer_size);
 Semaphore samplesBuffer(0); //
 Semaphore signalSample(0); //signal to get new sample
 
 liveData buffer[buffer_size];
+
 unsigned int newIDX = buffer_size - 1;
 unsigned int oldIDX = buffer_size - 1;
 
@@ -22,6 +22,11 @@ writeBuffer - check for space, if available, write data
 writeSD - write all data to sd card
 */
 
+bufferClass::bufferClass(){
+//buffer size
+    
+}
+
 //signal the sampling function
 void bufferClass::sampleData(){
     signalSample.release();
@@ -32,19 +37,19 @@ void bufferClass::writeBuffer(){
     bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
         if(spaceAvailable == 0){
             printQueue.call(bufferFull);
-            errorSeverity(CRITICAL);
+            //severityHandler(CRITICAL);
 
         }else{
             bool lockBufferTry = lockBuffer.trylock_for(1s);
             if(lockBufferTry == 0){
                 printQueue.call(bufferLockTimeout);
-                errorSeverity(CRITICAL);
+                //errorSeverity(CRITICAL);
 
             } else{
                 bool timeLock = Time.trylock_for(1s);
                 if(timeLock == 0){
                     printQueue.call(timeLockTimeout);
-                    errorSeverity(CRITICAL);
+                    //errorSeverity(CRITICAL);
                 }else{
                 //copy all sensor data, for Jack to decide how
                 // dataRecord.LDR = 
@@ -81,7 +86,7 @@ void bufferClass::flushBuffer(FILE &fp){
     bool checkBuffer = samplesBuffer.try_acquire_for(1s);
     if(checkBuffer == 0){
         printQueue.call(emptyFlush);
-        errorSeverity(CRITICAL);
+        //errorSeverity(CRITICAL);
         return;
     }else{
         samplesBuffer.release();
@@ -89,7 +94,7 @@ void bufferClass::flushBuffer(FILE &fp){
         bool lockBufferTry = lockBuffer.trylock_for(1s);
         if(lockBufferTry == 0){
             printQueue.call(bufferFlushTimeout);
-            errorSeverity(WARNING);
+            //errorSeverity(WARNING);
         }else{
             int run = 1;
             while(run == 1){

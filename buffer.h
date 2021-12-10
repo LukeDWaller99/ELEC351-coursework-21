@@ -24,6 +24,10 @@ class bufferClass{
     void sampleData();
     void writeBuffer();
     void acquireData();
+    
+    //constructor and destructor
+    bufferClass();
+    ~bufferClass():
 
 
 };
@@ -56,7 +60,5 @@ struct liveData{
 };
 
 extern liveData dataRecord;
-
-
 
 #endif
