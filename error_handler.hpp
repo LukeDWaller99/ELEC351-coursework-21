@@ -1,7 +1,11 @@
 #ifndef H_ERROR_HANDLER
 #define H_ERROR_HANDLER
+#include "DigitalOut.h"
 #include "mbed.h"
 #include "Mutex.h"
+#include <uop_msb.h>
+using namespace uop_msb;
+
 
 #define ERROR_THREAD_NAME eHandler
 
@@ -22,6 +26,8 @@
 
 class error_handler {
     private:
+    DigitalOut yellowLED = TRAF_YEL1_PIN;
+    DigitalOut redLED = TRAF_RED1_PIN;
     Mutex flagLock;
     static int flag_value;
     void clear_all();
@@ -32,11 +38,11 @@ class error_handler {
     static void error_thread();
     void severityHandler();
 
-
+    enum errorSeverity{
+    CRITICAL, WARNING
 };
 
-enum errorSeverity{
-    CRITICAL, WARNING
+
 };
 
 

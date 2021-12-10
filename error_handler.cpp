@@ -1,8 +1,7 @@
 //AUTHOR - JACK PENDLEBURY
-
 #include <error_handler.hpp>
-#include <uop_msb.h>
-//#define ERROR_THREAD_NAME "eHandler"
+// #define ERROR_THREAD_NAME eHandler
+
 
 void error_handler::clear_all(){
     if (flagLock.trylock_for(10ms) == true){
@@ -11,10 +10,18 @@ void error_handler::clear_all(){
         flagLock.unlock();
     }
     else {
-        //soz dunno m8
-        //ERROR_THREAD_NAME.flags_set(0x99);
+        // Maybe try this? This will just reset the system if this error occours
+        // I can see this being define as a critical error that may just require resetting the board?
+        // From what I can see it isnt possible to set a flag for a thread that you are currently operating in
+        NVIC_SystemReset();
         
     }
+}
+
+error_handler::error_handler(){
+    Thread ERROR_THREAD_NAME;
+    ERROR_THREAD_NAME.set_priority(osPriorityRealtime);
+    ERROR_THREAD_NAME.start(error_thread);
 }
 
  void error_handler::error_thread(){
@@ -25,37 +32,32 @@ void error_handler::clear_all(){
     }
 }
 
-error_handler::error_handler(){
-    Thread ERROR_THREAD_NAME;
-    ERROR_THREAD_NAME.set_priority(osPriorityRealtime);
-    ERROR_THREAD_NAME.start(error_thread);
-}
-
 
 void error_handler::severityHandler(){
 
-    switch(errorSeverity){
-        case 0:
-        //WARNING:
+    errorSeverity severity = error_handler::errorSeverity();
+
+    switch(severity) 
+    {
+        case WARNING:
         yellowLED = 1;
-        ThisThread::sleep_for(200); //test thist time
+        ThisThread::sleep_for(200ms); //test thist time
         yellowLED = 0;
         break;
 
-
-        case 1:
-        //CRITICAL:
+        case CRITICAL:
         //alarm to sound for 30 seconds
         redLED = 1;
-        ThisThread::sleep_for(30000);
+        ThisThread::sleep_for(30s);
         redLED = 0;
-        ThisThread::sleep_for(30000);
+        ThisThread::sleep_for(30s);
         break;
 
         //does it need a
-        //default:
+        // default:
+        // break;
 
-    }        
+    }
 }
 
 
