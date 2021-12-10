@@ -9,7 +9,7 @@
 #include "sd.h"
 
 #define buffer_size 800
-
+using namespace std;
 //create a class for buffer
 //pc2 for full error, red led
 

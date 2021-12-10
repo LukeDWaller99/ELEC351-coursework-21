@@ -14,7 +14,6 @@ DETECT PF_4
 */
 //green led PC_6 for when mounted
 
-BufferC BufferClass;
 
 class SDCard{
     private:
