@@ -125,12 +125,12 @@ void SevenSegmentDisplay::setNumber(int number) {
 }
 
 void SevenSegmentDisplay::test() {
-    for(int h = 0; h <= 2; h++){
-  for (int i = 0; i < 16; i++) {
-    setDigit(h, i);
-    wait_us(100000);
-  }
+  for (int h = 0; h <= 2; h++) {
+    for (int i = 0; i < 16; i++) {
+      setDigit(h, i);
+      wait_us(100000);
     }
+  }
   clear();
 }
 
