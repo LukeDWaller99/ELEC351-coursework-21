@@ -3,7 +3,7 @@
 #include <mbed.h>
 #include <Mutex.h>
 #include <uop_msb.h>
-//#include "buffer.h"
+#include "buffer.h"
 
 class sampler {
     private:
