@@ -2,9 +2,13 @@
 #include "sd.h"
 #include "buffer.h"
 
-bufferClass obj;
+//bufferClass obj;
 bool SDState = 0;
 FILE *fp; //file pointer
+
+SDCard::SDCard(){
+    
+}
 
 // //function to flash green LED before and after the SD card is being written to, LED alternates state during write process
 // void flashGreen() {		
@@ -44,7 +48,7 @@ void SDCard::writeSD(){
         printQueue.call(unmountedFlush);
     }else{
         //obj::flushBuffer(FILE *fp); //pass flushBuffer function file pointer
-        flushBuffer(*fp);
+        //flushBuffer(FILE *fp);
         //bufferClass::flushBuffer(FILE &fp); //flush buffer data
 
     }

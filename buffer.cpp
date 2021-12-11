@@ -75,6 +75,8 @@ void bufferClass::writeBuffer(){
 void bufferClass::acquireData(){
     //jacks data in here
     //buff.attach(&Sampler, T);
+    //buff.attach(&sampler);
+
     while(1){
         signalSample.acquire();
         writeBuffer();

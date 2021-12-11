@@ -24,6 +24,7 @@ class bufferClass{
     void sampleData();
     void writeBuffer();
     void acquireData();
+    sampler bufferSamples;
     
     //constructor and destructor
     bufferClass();
