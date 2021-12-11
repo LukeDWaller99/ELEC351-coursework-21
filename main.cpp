@@ -19,10 +19,19 @@ LEDMatrix matrix;
 SevenSegmentDisplay display;
 EnvSensor sensor;
 AnalogIn LDR(AN_LDR_PIN);
+Buzzer buzz;
+char note = D;
+char* notename;
+
+
 
 int main() {
+    notename = &note;
     display.test();
     matrix.test();
+    buzz.playTone(notename);
+    wait_us(100000);
+    buzz.rest();
     while (true){
     wait_us(1000000);
     printf("Temp = %f \n",sensor.getTemperature());
