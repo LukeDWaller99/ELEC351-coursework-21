@@ -13,10 +13,12 @@
 #include <sampling.h>
 using namespace uop_msb;
 sampler SampleModule;
-
-
 int main() {
-    
-    
+    //run hardware test 
+
+    //start clock
+    //samplingThread.start(fetchSample);
+
     // return 0;
 }
+

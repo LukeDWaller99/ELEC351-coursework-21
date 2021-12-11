@@ -6,6 +6,7 @@
 #include "mbed.h"
 #include "printQueue.h"
 #include "FATFileSystem.h"
+#include "sampling.h"
 
 #define buffer_size 800
 using namespace std;
@@ -56,6 +57,7 @@ struct liveData{
 	float LDR;
 	float temp;
 	float pressure;
+    float humidity;
 };
 
 extern liveData dataRecord;
