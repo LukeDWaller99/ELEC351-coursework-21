@@ -12,15 +12,16 @@ class sampler {
     Ticker sampleTick;
     Thread sampleThread;
     bufferClass sampleBuffer;
-    
-    
+    uop_msb::EnvSensor sensor;
     AnalogIn LDR;
-
+    liveData sampleData;
      void sample();
 
     public:
     sampler();
     ~sampler();
+
+
 
 };
 

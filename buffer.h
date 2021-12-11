@@ -53,9 +53,9 @@ struct liveData{
 	int month;
 	int year;
     //data
-	double LDR;
-	double temp;
-	double pressure;
+	float LDR;
+	float temp;
+	float pressure;
 };
 
 extern liveData dataRecord;
