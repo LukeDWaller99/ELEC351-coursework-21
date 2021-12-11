@@ -2,9 +2,12 @@
 
 sampler::sampler():LDR(AN_LDR_PIN) {
     sampleThread.start(callback(this, &sampler::sample));
-
+    sampleTick.attach(callback(this, &sampler::sampleflag),1s);
 }
 
+void sampler::sampleflag(){
+    sampler::sampleThread.flags_set(1);
+}
 
 void sampler::sample(){
     while(true){

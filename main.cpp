@@ -10,11 +10,13 @@
 #include "azure_c_shared_utility/xlogging.h"
 #include <cstring>
 #include <string.h>
+#include <sampling.h>
 using namespace uop_msb;
-
+sampler SampleModule;
 
 
 int main() {
+    
     
     // return 0;
 }

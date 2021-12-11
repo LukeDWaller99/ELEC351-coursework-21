@@ -16,11 +16,12 @@ class sampler {
     AnalogIn LDR;
     liveData sampleData;
      void sample();
+     void sampleflag();
 
     public:
     sampler();
     ~sampler();
-
+    //liveData sampleData;
 
 
 };
