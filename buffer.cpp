@@ -3,9 +3,9 @@
 #include "mbed.h"
 #include "buffer.h"
 
-Semaphore spaceBuffer(buffer_size);
-Semaphore samplesBuffer(0); //
-Semaphore signalSample(0); //signal to get new sample
+Semaphore spaceBuffer(buffer_size); //buffer space tracking
+Semaphore samplesBuffer(0);         //sample no tracking
+Semaphore signalSample(0);          //signal to get new sample
 
 liveData buffer[buffer_size];
 
@@ -55,6 +55,7 @@ void bufferClass::writeBuffer(){
                 // dataRecord.LDR = 
                 // dataRecord.temp = 
                 // dataRecord.pressure = 
+                // dataRecord.humidty = 
                 Time.unlock(); //release time lock
                 }
                 
@@ -73,6 +74,7 @@ void bufferClass::writeBuffer(){
 
 void bufferClass::acquireData(){
     //jacks data in here
+    //buff.attach(&Sampler, T);
     while(1){
         signalSample.acquire();
         writeBuffer();
@@ -105,7 +107,11 @@ void bufferClass::flushBuffer(FILE &fp){
                     samplesBuffer.try_acquire_for(1s);
                     oldIDX = (oldIDX + 1);
                     liveData flushRecord = buffer[oldIDX];
-                    fprintf(&fp, "Time recorded = %d:%d:%d %d/%d/%d, \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",flushRecord.hour,flushRecord.minute,flushRecord.second,flushRecord.day,flushRecord.month,flushRecord.year,flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
+                    //fprintf(&fp, "Time recorded = %d:%d:%d %d/%d/%d, \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",flushRecord.hour,flushRecord.minute,flushRecord.second,flushRecord.day,flushRecord.month,flushRecord.year,flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
+                    
+                    //just jacks sampled values
+                    fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
+                    
                     spaceBuffer.release();//space in buffer signal
                 }
             } //end while

@@ -3,7 +3,7 @@
 #include <mbed.h>
 #include <Mutex.h>
 #include <uop_msb.h>
-#include <buffer.h>
+//#include "buffer.h"
 
 class sampler {
     private:
@@ -11,7 +11,7 @@ class sampler {
     Mutex sampleLock;
     Ticker sampleTick;
     Thread sampleThread;
-    bufferClass sampleBuffer;
+    //bufferClass sampleBuffer;
     
     
     AnalogIn LDR;
@@ -21,6 +21,7 @@ class sampler {
     public:
     sampler();
     ~sampler();
+    int T = 10;
 
 };
 

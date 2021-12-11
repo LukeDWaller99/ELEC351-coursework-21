@@ -12,9 +12,21 @@
 #include <string.h>
 using namespace uop_msb;
 
+#include "buffer.h"
+#include "sd.h"
+#include "printQueue.h"
+
+//threads
+Thread samplingThread;
+
 
 
 int main() {
-    
+    //run hardware test 
+
+    //start clock
+    //samplingThread.start(fetchSample);
+
     // return 0;
 }
+
