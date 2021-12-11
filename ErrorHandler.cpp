@@ -46,8 +46,11 @@ void ErrorHandler::error_thread(void){
         case CRITICAL:
         printf("Critical Error\n");
         // turn on red led
+        redLED = 1;
+        
         // buzzer for 30 seconds
-        // system reset 
+        // system reset
+        NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong  
         break;
 
         case FATAL:

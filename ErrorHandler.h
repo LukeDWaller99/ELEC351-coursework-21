@@ -42,6 +42,7 @@ class ErrorHandler {
     private:
     DigitalOut yellowLED = TRAF_YEL1_PIN;
     DigitalOut redLED = TRAF_RED1_PIN;
+    Buzzer buzz;
     SevenSegmentDisplay errorDisplay;
     Mutex flagLock;
     void clear_all();
@@ -54,11 +55,13 @@ class ErrorHandler {
 
     public:
     Thread ERROR_THREAD_NAME;
+    EventQueue errorQueue;
     ErrorHandler();
     ~ErrorHandler();
     void error_thread();
     void severityHandler();
     void setErrorFlag(int errorCode);
+
 
 
 };
