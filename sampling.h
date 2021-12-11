@@ -13,6 +13,7 @@ class sampler {
     Thread sampleThread;
     bufferClass sampleBuffer;
     
+    
     AnalogIn LDR;
 
      void sample();
