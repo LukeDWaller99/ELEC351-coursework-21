@@ -18,14 +18,16 @@ using namespace uop_msb;
 LEDMatrix matrix;
 SevenSegmentDisplay display;
 EnvSensor sensor;
+AnalogIn LDR(AN_LDR_PIN);
 
 int main() {
     display.test();
     matrix.test();
     while (true){
-    wait_us(100000);
+    wait_us(1000000);
     printf("Temp = %f \n",sensor.getTemperature());
     printf("Humidity = %f \n",sensor.getHumidity());
     printf("Pressure = %f \n",sensor.getPressure());
+    printf("Light = %f \n", LDR.read());
     }
 }
