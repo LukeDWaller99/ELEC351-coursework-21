@@ -6,7 +6,7 @@ EventQueue printQueue;
 //BUFFER PRINT QUEUES
 //**************************
 void bufferFull(){
-    printf("CRITICAL ERROR - the buffer is full. you cannot write to the buffer. \n");
+    printf("INDIVIDUAL CRITICAL ERROR - the buffer is full. you cannot write to the buffer. \n");
 }
 
 void bufferLockTimeout(){
@@ -23,7 +23,7 @@ void emptyFlush(){
 }
 
 void bufferFlushTimeout(){
-    printf("CRITIAL ERROR - buffer flush lock timeout, cannot acquire lock. \n");
+    printf("CRITICAL ERROR - buffer flush lock timeout, cannot acquire lock. \n");
 }
 
 void flushedBuffer(){
@@ -52,3 +52,8 @@ void unmountedFlush(){
 void unmountedSD(){
     printf("sd card - you have unmounted the SD card \n"); 
 }
+
+//******************
+
+//add environment threshold error messages
+

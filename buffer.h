@@ -6,12 +6,11 @@
 #include "mbed.h"
 #include "printQueue.h"
 #include "FATFileSystem.h"
-#include "sd.h"
 
 #define buffer_size 800
+//eventually this will be in an overrding contructor
+//where you can redfine the buffer size
 using namespace std;
-//create a class for buffer
-//pc2 for full error, red led
 
 
 class bufferClass{

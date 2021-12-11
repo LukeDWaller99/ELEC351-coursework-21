@@ -3,18 +3,17 @@
 #include "mbed.h"
 #include "buffer.h"
 
-
-Semaphore spaceBuffer(buffer_size);
-Semaphore samplesBuffer(0); //
-Semaphore signalSample(0); //signal to get new sample
+Semaphore spaceBuffer(buffer_size); //buffer space tracking
+Semaphore samplesBuffer(0);         //sample no tracking
+Semaphore signalSample(0);          //signal to get new sample
 
 liveData buffer[buffer_size];
 unsigned int newIDX = buffer_size - 1;
 unsigned int oldIDX = buffer_size - 1;
 
 Mutex lockBuffer;
+Ticker tick;
 
-Ticker buff;
 /*
 sampleData - output signal that buffer is ready for data
 acquireData - get the data
@@ -32,21 +31,24 @@ void bufferClass::writeBuffer(){
     bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
         if(spaceAvailable == 0){
             printQueue.call(bufferFull);
-            errorSeverity(CRITICAL);
+            //errorSeverity(CRITICAL);
 
         }else{
             bool lockBufferTry = lockBuffer.trylock_for(1s);
             if(lockBufferTry == 0){
                 printQueue.call(bufferLockTimeout);
-                errorSeverity(CRITICAL);
+                //errorSeverity(CRITICAL);
 
             } else{
                 bool timeLock = Time.trylock_for(1s);
                 if(timeLock == 0){
                     printQueue.call(timeLockTimeout);
-                    errorSeverity(CRITICAL);
+                    //errorSeverity(CRITICAL);
                 }else{
                 //copy all sensor data, for Jack to decide how
+                
+                //worry about inputting timestamp when networking is done
+                
                 // dataRecord.LDR = 
                 // dataRecord.temp = 
                 // dataRecord.pressure = 
@@ -68,9 +70,13 @@ void bufferClass::writeBuffer(){
 
 void bufferClass::acquireData(){
     //jacks data in here
+    //tick.attach();
+        //where you place('&yourSampleData, yoursamplerate)
+        
     while(1){
         signalSample.acquire();
         writeBuffer();
+
     }
 }
 
@@ -81,7 +87,7 @@ void bufferClass::flushBuffer(FILE &fp){
     bool checkBuffer = samplesBuffer.try_acquire_for(1s);
     if(checkBuffer == 0){
         printQueue.call(emptyFlush);
-        errorSeverity(CRITICAL);
+        //errorSeverity(CRITICAL);
         return;
     }else{
         samplesBuffer.release();
@@ -89,7 +95,7 @@ void bufferClass::flushBuffer(FILE &fp){
         bool lockBufferTry = lockBuffer.trylock_for(1s);
         if(lockBufferTry == 0){
             printQueue.call(bufferFlushTimeout);
-            errorSeverity(WARNING);
+            //errorSeverity(WARNING);
         }else{
             int run = 1;
             while(run == 1){
@@ -100,7 +106,10 @@ void bufferClass::flushBuffer(FILE &fp){
                     samplesBuffer.try_acquire_for(1s);
                     oldIDX = (oldIDX + 1);
                     liveData flushRecord = buffer[oldIDX];
-                    fprintf(&fp, "Time recorded = %d:%d:%d %d/%d/%d, \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",flushRecord.hour,flushRecord.minute,flushRecord.second,flushRecord.day,flushRecord.month,flushRecord.year,flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
+                    //fprintf(&fp, "Time recorded = %d:%d:%d %d/%d/%d, \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",flushRecord.hour,flushRecord.minute,flushRecord.second,flushRecord.day,flushRecord.month,flushRecord.year,flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
+                    
+                    //just jacks sampled values
+                    fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
                     spaceBuffer.release();//space in buffer signal
                 }
             } //end while
