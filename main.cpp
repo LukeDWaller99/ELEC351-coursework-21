@@ -59,8 +59,9 @@ SevenSegmentDisplay display;
 // }
 
 int main() {
+    matrix.clear();
+    display.clear();
     display.test();
-        matrix.test();
     while(true)
     {
         // samples[0] = 0xffff;
