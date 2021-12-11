@@ -13,11 +13,13 @@
 #include <string.h>
 #include <LEDMatrix.h>
 #include "SevenSegmentDisplay.h"
-#include <error_handler.hpp>
+#include <ErrorHandler.h>
 using namespace uop_msb;
-error_handler EH;
+ErrorHandler EH;
 LEDMatrix matrix;
-SevenSegmentDisplay display;
+// SevenSegmentDisplay display;
+
+// Thread Err_thread;
 
 // double samples[8];
 
@@ -60,9 +62,12 @@ SevenSegmentDisplay display;
 // }
 
 int main() {
-    display.test();
-        matrix.test();
-    while(true)
+    // Err_thread.start(&EH.error_thread);
+    // display.test();
+    // matrix.test();
+    matrix.clear();
+    EH.setErrorFlag(T_UPPER);
+        while(true)
     {
         // samples[0] = 0xffff;
         // samples[1] = 0x0000;
