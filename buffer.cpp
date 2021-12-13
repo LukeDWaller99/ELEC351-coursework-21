@@ -9,7 +9,7 @@ Semaphore signalSample(0);          //signal to get new sample
 
 liveData buffer[buffer_size];
 liveData dataRecord;
-samples sampleData;
+samples sampledData;
 
 unsigned int newIDX = buffer_size - 1;
 unsigned int oldIDX = buffer_size - 1;
@@ -58,9 +58,9 @@ void bufferClass::writeBuffer(){
                     //errorSeverity(CRITICAL);
                 }else{   //dataLock = 1
                 //copy all sensor data, for Jack to decide how
-                //  dataRecord.LDR = sampleData.LDR;
-                //  dataRecord.temp = sampleData.temp;
-                //  dataRecord.pressure = sampleData.pressure;
+                dataRecord.LDR = sampledData.LDR;
+                dataRecord.temp = sampledData.temp;
+                dataRecord.pressure = sampledData.pressure;
                  //dataRecord.humidity = 
                 dataLock.unlock(); //release time lock
                 }
@@ -81,6 +81,7 @@ void bufferClass::writeBuffer(){
 void bufferClass::acquireData(){
     //jacks data in here
     //buff.attach(&Sampler, T);
+    //NOT TO WORRY, JACK HAS DEFINE THE SAMPLING TIME
     while(1){
         signalSample.acquire();
         writeBuffer();

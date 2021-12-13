@@ -1,9 +1,6 @@
 #include <sampling.h>
 
-
-extern samples sampleData;
-
-
+extern samples sampledData;
 
 sampler::sampler():LDR(AN_LDR_PIN) {
     sampleThread.start(callback(this, &sampler::sample));
@@ -19,9 +16,9 @@ void sampler::sample(){
     ThisThread::flags_wait_any(1);
     if(sampleLock.trylock_for(1ms)==1){
         
-        sampleData.temp = sensor.getTemperature();
-        sampleData.pressure = sensor.getPressure();
-        sampleData.LDR = LDR.read();
+        sampledData.temp = sensor.getTemperature();
+        sampledData.pressure = sensor.getPressure();
+        sampledData.LDR = LDR.read();
         
         
         //samples[0] = LDR.read_u16(); //read the LDR
