@@ -4,8 +4,12 @@
 #define _FIFOBUFFER_
 
 #include "mbed.h"
+#include "Mutex.h"
 #include "printQueue.h"
+//#include "uop_msb.h"
 #include "FATFileSystem.h"
+#include "sampling.h"
+
 
 #define buffer_size 800
 using namespace std;
@@ -16,34 +20,35 @@ using namespace std;
 class bufferClass{
 
     private: 
-    //maybe a red led
+    //mutex locks
+    Mutex bufferLock;
+    Mutex dataLock;
+    Ticker bufferTick;
+    sampler dataSampler;
 
     public:
     void flushBuffer(FILE &fp);
     void sampleData();
     void writeBuffer();
+   // (sampleData.temp, sampleData.pressure, sampleData.LDR);
+
     void acquireData();
+
+    //sampler sampledData;
     
+    //semaphores
+    Semaphore samplesBuffer;
+    Semaphore spaceBuffer;
+    Semaphore signalSample;
+
     //constructor and destructor
     bufferClass();
     ~bufferClass();
 
-
 };
 
-//external semaphores
-extern Semaphore samplesBuffer;
-extern Semaphore spaceBuffer;
-extern Semaphore signalSample;
-
-//mutex
-extern Mutex lockBuffer;
-extern Mutex Time;
-
-extern Ticker buff;
-
 //real time data
-struct liveData{
+ struct liveData{
     //time
 	int hour;
 	int minute;
@@ -59,6 +64,6 @@ struct liveData{
     float humidity;
 };
 
-extern liveData dataRecord;
+//liveData dataRecord;
 
 #endif
