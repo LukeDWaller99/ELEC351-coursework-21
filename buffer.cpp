@@ -8,9 +8,8 @@ Semaphore samplesBuffer(0);         //sample no tracking
 Semaphore signalSample(0);          //signal to get new sample
 
 liveData buffer[buffer_size];
-liveData dataRecord;
-samples sampledData;
-
+liveData dataRecord; //save samples for buffer output
+samples sampledData; //load in samples
 unsigned int newIDX = buffer_size - 1;
 unsigned int oldIDX = buffer_size - 1;
 
@@ -39,17 +38,19 @@ void bufferClass::writeBuffer(){
 //(sampleData.temp, sampleData.pressure, sampleData.LDR){
        //check for space
     bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
-        if(spaceAvailable == 0){
+        if(spaceAvailable == 0){ //there is no space
             printQueue.call(bufferFull);
             //severityHandler(CRITICAL);
 
         }else{
-            
+            //attempt to unlock buffer
             if(bufferLock.trylock_for(1s) == 0){
                 printQueue.call(bufferLockTimeout);
                 //errorSeverity(CRITICAL);
 
             } else{
+                //buffer is unlocked
+            //load in timestamp
                 
 
                 if(dataLock.trylock_for(1s) == 0){
