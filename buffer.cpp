@@ -8,8 +8,9 @@ Semaphore samplesBuffer(0);         //sample no tracking
 Semaphore signalSample(0);          //signal to get new sample
 
 liveData buffer[buffer_size];
-liveData dataRecord; //save samples for buffer output
-samples sampledData; //load in samples
+liveData dataRecord;
+samples sampleData;
+
 unsigned int newIDX = buffer_size - 1;
 unsigned int oldIDX = buffer_size - 1;
 
@@ -38,19 +39,17 @@ void bufferClass::writeBuffer(){
 //(sampleData.temp, sampleData.pressure, sampleData.LDR){
        //check for space
     bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
-        if(spaceAvailable == 0){ //there is no space
+        if(spaceAvailable == 0){
             printQueue.call(bufferFull);
             //severityHandler(CRITICAL);
 
         }else{
-            //attempt to unlock buffer
+            
             if(bufferLock.trylock_for(1s) == 0){
                 printQueue.call(bufferLockTimeout);
                 //errorSeverity(CRITICAL);
 
             } else{
-                //buffer is unlocked
-            //load in timestamp
                 
 
                 if(dataLock.trylock_for(1s) == 0){
@@ -59,9 +58,9 @@ void bufferClass::writeBuffer(){
                     //errorSeverity(CRITICAL);
                 }else{   //dataLock = 1
                 //copy all sensor data, for Jack to decide how
-                dataRecord.LDR = sampledData.LDR;
-                dataRecord.temp = sampledData.temp;
-                dataRecord.pressure = sampledData.pressure;
+                //  dataRecord.LDR = sampleData.LDR;
+                //  dataRecord.temp = sampleData.temp;
+                //  dataRecord.pressure = sampleData.pressure;
                  //dataRecord.humidity = 
                 dataLock.unlock(); //release time lock
                 }
@@ -82,7 +81,8 @@ void bufferClass::writeBuffer(){
 void bufferClass::acquireData(){
     //jacks data in here
     //buff.attach(&Sampler, T);
-    //NOT TO WORRY, JACK HAS DEFINE THE SAMPLING TIME
+    //buff.attach(&sampler);
+
     while(1){
         signalSample.acquire();
         writeBuffer();

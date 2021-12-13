@@ -24,6 +24,10 @@ class SDCard{
     void unmountSD();
     void SDThread();
 
+    bufferClass buffer;
+
+    SDCard();
+    ~SDCard();
 };
 
 
