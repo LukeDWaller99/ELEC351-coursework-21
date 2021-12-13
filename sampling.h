@@ -12,17 +12,29 @@ class sampler {
     Ticker sampleTick;
     Thread sampleThread;
     //bufferClass sampleBuffer;
-    
-    
+    uop_msb::EnvSensor sensor;
     AnalogIn LDR;
 
+    //liveData sampleData;
      void sample();
+     void sampleflag();
 
     public:
     sampler();
     ~sampler();
-    int T = 10;
+    
+    
 
 };
+
+
+//live sample data struct
+struct samples{
+    float temp, pressure, LDR;
+};
+
+// extern liveData sampleData;
+
+
 
 #endif

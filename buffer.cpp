@@ -8,13 +8,13 @@ Semaphore samplesBuffer(0);         //sample no tracking
 Semaphore signalSample(0);          //signal to get new sample
 
 liveData buffer[buffer_size];
+liveData dataRecord;
+samples sampleData;
 
 unsigned int newIDX = buffer_size - 1;
 unsigned int oldIDX = buffer_size - 1;
 
-Mutex lockBuffer;
 
-Ticker buff;
 /*
 sampleData - output signal that buffer is ready for data
 acquireData - get the data
@@ -22,6 +22,7 @@ writeBuffer - check for space, if available, write data
 writeSD - write all data to sd card
 */
 
+//constructor
 bufferClass::bufferClass(){
 //buffer size
     
@@ -31,32 +32,37 @@ bufferClass::bufferClass(){
 void bufferClass::sampleData(){
     signalSample.release();
 }
+//void sensorData(sampleData.temp, sampleData.pressure, sampleData.LDR);
 
 void bufferClass::writeBuffer(){
-    //check for space
+
+//(sampleData.temp, sampleData.pressure, sampleData.LDR){
+       //check for space
     bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
         if(spaceAvailable == 0){
             printQueue.call(bufferFull);
             //severityHandler(CRITICAL);
 
         }else{
-            bool lockBufferTry = lockBuffer.trylock_for(1s);
-            if(lockBufferTry == 0){
+            
+            if(bufferLock.trylock_for(1s) == 0){
                 printQueue.call(bufferLockTimeout);
                 //errorSeverity(CRITICAL);
 
             } else{
-                bool timeLock = Time.trylock_for(1s);
-                if(timeLock == 0){
-                    printQueue.call(timeLockTimeout);
+                
+
+                if(dataLock.trylock_for(1s) == 0){
+                    //the data has taken too long to access
+                    //printQueue.call(bLockData);
                     //errorSeverity(CRITICAL);
-                }else{
+                }else{   //dataLock = 1
                 //copy all sensor data, for Jack to decide how
-                // dataRecord.LDR = 
-                // dataRecord.temp = 
-                // dataRecord.pressure = 
-                // dataRecord.humidty = 
-                Time.unlock(); //release time lock
+                //  dataRecord.LDR = sampleData.LDR;
+                //  dataRecord.temp = sampleData.temp;
+                //  dataRecord.pressure = sampleData.pressure;
+                 //dataRecord.humidity = 
+                dataLock.unlock(); //release time lock
                 }
                 
                 //update the buffer
@@ -64,7 +70,7 @@ void bufferClass::writeBuffer(){
                 buffer[newIDX] = dataRecord;
             }
     
-        lockBuffer.unlock();
+        bufferLock.unlock();
     }
     //sample added, release signal
     samplesBuffer.release();
@@ -95,8 +101,8 @@ void bufferClass::flushBuffer(FILE &fp){
     }else{
         samplesBuffer.release();
 
-        bool lockBufferTry = lockBuffer.trylock_for(1s);
-        if(lockBufferTry == 0){
+        //bool lockBufferTry = lockBuffer.trylock_for(1s);
+        if(bufferLock.trylock_for(1s) == 0){
             printQueue.call(bufferFlushTimeout);
             //errorSeverity(WARNING);
         }else{
@@ -112,14 +118,14 @@ void bufferClass::flushBuffer(FILE &fp){
                     //fprintf(&fp, "Time recorded = %d:%d:%d %d/%d/%d, \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",flushRecord.hour,flushRecord.minute,flushRecord.second,flushRecord.day,flushRecord.month,flushRecord.year,flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
                     
                     //just jacks sampled values
-                    fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
+                    fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
                     
                     spaceBuffer.release();//space in buffer signal
                 }
             } //end while
             printQueue.call(flushedBuffer);
             //flash green led
-            lockBuffer.unlock();
+            bufferLock.unlock();
         }
    }
 } //end function writeSD
