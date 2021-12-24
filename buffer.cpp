@@ -14,7 +14,6 @@ samples sampleData;
 unsigned int newIDX = buffer_size - 1;
 unsigned int oldIDX = buffer_size - 1;
 
-
 /*
 sampleData - output signal that buffer is ready for data
 acquireData - get the data

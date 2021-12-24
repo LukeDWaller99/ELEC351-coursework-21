@@ -3,26 +3,63 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "mbed.h"
+//#include "mbed.h"
 #include "uop_msb.h"
 #include "rtos/ThisThread.h"
-#include "NTPClient.h"
+//#include "NTPClient.h"
 //#include "azure_c_shared_utility/xlogging.h"
-#include <cstring>
-#include <string.h>
+//#include <cstring>
+//#include <string.h>
+
 #include <sampling.h>
 #include <buffer.h>
-using namespace uop_msb;
-//sampler SampleModule;
-liveData flushRecord;
-int main() {
-    //run hardware test 
 
-    //start clock
-    //samplingThread.start(fetchSample);
-    printf(" \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+bufferClass buffer;
+sampler samplerer;
+liveData flushRecord;
+
+int timestamp = 0;
+
+int main() {
+
+    printf("%d\n", timestamp);
+    //while(i < 26){
+        //while(1){
+    //raw
+    //printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
+    //passed into buffer
+    //printf(" in \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
+    //out of buffer
+    buffer.clear();
+    //buffer1.acquireData();
+    //buffer1.writeBuffer();
+    
+    buffer.testOutputs();
+    printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+    wait_us(10000);
+
+    
+    buffer.testOutputs();
+    printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+    wait_us(10000);
+
+    buffer.testOutputs();
+    printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+    wait_us(10000);
+
+    buffer.testOutputs();
+    printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+    wait_us(10000);
+   
+    
+    //printf("%d\n", i);
+
+    //printf("%d\n", samplesBuffer); 
+    
+    //}
     // return 0;
 }
+
 
 
 // // 
