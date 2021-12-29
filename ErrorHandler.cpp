@@ -48,12 +48,13 @@ void ErrorHandler::error_thread(void){
         // turn on red led
         redLED = 1;
         
+        
         // buzzer for 30 seconds
         // system reset
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong  
         break;
 
-        case FATAL:
+        case FATAL:                     //FATAL ERROR - Immediate hardware reset
         printf("Fatal Error\n");
         ThisThread::sleep_for(1000ms);
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong 
