@@ -47,8 +47,9 @@ void ErrorHandler::error_thread(void){
         printf("Critical Error\n");
         // turn on red led
         redLED = 1;
-        
-        
+        buzz.playTone(&note);
+        ThisThread::sleep_for(30s);
+        buzz.rest();
         // buzzer for 30 seconds
         // system reset
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong  
@@ -67,6 +68,9 @@ void ErrorHandler::error_thread(void){
 
         case ENV_ERR:
         printf("ENV Error\n");
+        buzz.playTone(&note);
+        ThisThread::sleep_for(3s);
+        buzz.rest();
         // sound buzzer
         break; 
     }
@@ -114,3 +118,44 @@ void ErrorHandler::setErrorFlag(int errorCode){
 
 }
 
+// void ErrorHandler::alarmstop(){
+//     alarm_status= 0;    //stop alarm handler-wide
+// }
+
+
+// void ErrorHandler::alarm(errorSeverity severity){
+//     Ticker Alarm;
+//     char note = 'A';
+//     switch(severity) {
+//         case CRITICAL :     //alarm for 30s
+//         alarm_status = 1;   //set alarm status
+//         Alarm.attach(callback(this,&ErrorHandler::alarmstop), 30000000us);
+//         while(alarm_status == 1){
+//         buzz.playTone(&note);
+//         ThisThread::sleep_for(100000ms);
+//         buzz.rest();
+//         buzz.playTone(&note,uop_msb::Buzzer::HIGHER_OCTAVE);
+//         ThisThread::sleep_for(100000ms);
+//         buzz.rest();
+//         }
+//         break;
+
+//         case ENV_ERR :
+//         Alarm.attach(callback(this,&ErrorHandler::alarmstop), 3000000us);
+//         while(alarm_status == 1){
+//         buzz.playTone(&note);
+//         ThisThread::sleep_for(100000ms);
+//         buzz.rest();
+//         buzz.playTone(&note,uop_msb::Buzzer::HIGHER_OCTAVE);
+//         ThisThread::sleep_for(100000ms);
+//         buzz.rest();
+//         }
+//         break;
+//         default :
+//         alarm_status = 0;
+//     }
+// }
+
+// void ErrorHandler::alarmtest() {
+//     alarm(CRITICAL);
+// }

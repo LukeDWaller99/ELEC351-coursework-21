@@ -38,20 +38,27 @@ using namespace uop_msb;
 #define FLAG_CLEAR_ERROR 0x299 // FATAL ERROR
 
 
+
 class ErrorHandler {
     private:
-    DigitalOut yellowLED = TRAF_YEL1_PIN;
-    DigitalOut redLED = TRAF_RED1_PIN;
-    Buzzer buzz;
-    SevenSegmentDisplay errorDisplay;
-    Mutex flagLock;
-    void clear_all();
     enum errorSeverity{
     WARNING = 0x0, 
     CRITICAL = 0x1, 
     FATAL = 0x2,
     BUFF_FULL = 0x3,
     ENV_ERR = 0x4};
+    typedef void(*funcPointer_t)(void);
+    DigitalOut yellowLED = TRAF_YEL1_PIN;
+    DigitalOut redLED = TRAF_RED1_PIN;
+    Buzzer buzz;
+    SevenSegmentDisplay errorDisplay;
+    Mutex flagLock;
+    int alarm_status=0;
+    char note = 'C';
+    void clear_all();
+    //void alarm(errorSeverity severity);
+    //void alarmstop();
+    
 
     public:
     Thread ERROR_THREAD_NAME;
@@ -61,6 +68,7 @@ class ErrorHandler {
     void error_thread();
     void severityHandler();
     void setErrorFlag(int errorCode);
+    //void alarmtest();
 
 
 

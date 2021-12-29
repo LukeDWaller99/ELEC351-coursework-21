@@ -24,9 +24,12 @@ int main() {
     // display.test();
     // matrix.test();
     matrix.clear();
-    EH.setErrorFlag(T_UPPER);
-        while(true)
-    {
+    wait_us(100000);
+     EH.setErrorFlag(T_UPPER);
+     //EH.setErrorFlag(BUFFER_FULL);
+         while(true)
+     {
         
-    }
+     }
+    //EH.alarmtest();
 }
