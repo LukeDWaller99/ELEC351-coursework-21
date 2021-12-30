@@ -25,7 +25,7 @@ using namespace uop_msb;
 #define BUFFER_LOCK_TIMEOUT     0x111   //CRITICAL
 #define TIMER_LOCK_TIMEOUT      0x112   //CRITICAL
 #define EMPTY_FLUSH             0x013   //WARNING
-#define BUFFER_FLUSH_TIMEOUT    0x114   //Confirm with noah   
+#define BUFFER_FLUSH_TIMEOUT    0x114   //CRITICAL 
 
 //sd card errors - 20s - All Critical
 #define MOUNT_ERROR             0x120      //checked if card mounted, it is not
