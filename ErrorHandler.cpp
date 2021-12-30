@@ -39,12 +39,13 @@ void ErrorHandler::error_thread(void){
     switch(currentErrorSeverity) 
     {
         case WARNING:
-        printf("Warning Error\n");
+        printf("WARNING Error Code - %d\n",(errorNumber & 255));
         // yellow LED
+        yellowLED = 1;
         break;
 
         case CRITICAL:
-        printf("Critical Error\n");
+        printf("CRITICAL Error Code - %d\n",(errorNumber & 255));
         // turn on red led
         redLED = 1;
         buzz.playTone(&note);
@@ -56,18 +57,19 @@ void ErrorHandler::error_thread(void){
         break;
 
         case FATAL:                     //FATAL ERROR - Immediate hardware reset
-        printf("Fatal Error\n");
+        printf("FATAL Error Code - %d\n",(errorNumber & 255));
         ThisThread::sleep_for(1000ms);
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong 
         break;
 
         case BUFF_FULL:
         printf("Buffer Full Error\n");
+        redLED = 1;
         // turn on red LED
         break;
 
         case ENV_ERR:
-        printf("ENV Error\n");
+        printf("ENV Error %d\n",(errorNumber & 255));
         buzz.playTone(&note);
         ThisThread::sleep_for(3s);
         buzz.rest();

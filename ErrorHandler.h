@@ -8,6 +8,12 @@
 #include <uop_msb.h>
 using namespace uop_msb;
 
+//ERROR CODE FORMAT
+//TWELVE BITS
+//  11->8   Severity Code
+//  7->4    Module Code
+//  3->0    Error ID
+//SEVERITY CODES
 // 0x0 - WARNING
 // 0x1 - CRITICAL
 // 0x2 - FATAL
@@ -19,12 +25,12 @@ using namespace uop_msb;
 #define BUFFER_LOCK_TIMEOUT     0x111   //CRITICAL
 #define TIMER_LOCK_TIMEOUT      0x112   //CRITICAL
 #define EMPTY_FLUSH             0x013   //WARNING
-#define BUFFER_FLUSH_TIMEOUT    14      
+#define BUFFER_FLUSH_TIMEOUT    0x114   //Confirm with noah   
 
-//sd card errors - 20s
-#define MOUNT_ERROR             20      //checked if card mounted, it is not
-#define NO_SD_FILE              21      //cannot find a new file to write in
-#define UNMOUNTED_FLUSH         22      //you are trying to flush to an empty sd card slot
+//sd card errors - 20s - All Critical
+#define MOUNT_ERROR             0x120      //checked if card mounted, it is not
+#define NO_SD_FILE              0x121      //cannot find a new file to write in
+#define UNMOUNTED_FLUSH         0x122      //you are trying to flush to an empty sd card slot
 
 //ENV_ERRORS - 30s
 #define T_LOWER 0x430 
@@ -36,7 +42,6 @@ using namespace uop_msb;
 
 //error handler errors
 #define FLAG_CLEAR_ERROR 0x299 // FATAL ERROR
-
 
 
 class ErrorHandler {
