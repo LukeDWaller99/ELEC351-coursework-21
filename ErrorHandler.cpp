@@ -75,6 +75,12 @@ void ErrorHandler::error_thread(void){
         buzz.rest();
         // sound buzzer
         break; 
+
+        case CLEAR:
+        printf("ALL CLEAR - CODE %d\n",(errorNumber & 255));
+        yellowLED = 0;
+        redLED = 0;
+        buzz.rest();
     }
     clear_all();
     }
@@ -116,6 +122,10 @@ void ErrorHandler::setErrorFlag(int errorCode){
         currentErrorSeverity = ENV_ERR;
         ERROR_THREAD_NAME.flags_set(errorVal);
         break;
+
+        case CLEAR:
+        currentErrorSeverity = CLEAR;
+        ERROR_THREAD_NAME.flags_set(errorVal);
     }
 
 }

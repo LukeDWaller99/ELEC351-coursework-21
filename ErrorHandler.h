@@ -17,8 +17,8 @@ using namespace uop_msb;
 // 0x0 - WARNING
 // 0x1 - CRITICAL
 // 0x2 - FATAL
-// 0x3 - BUFF_FULL
 // 0x4 - ENV_ERROR
+// 0x9 - ALL CLEAR
 
 //error codes - 10s
 #define BUFFER_FULL             0x110   //CRITICAL
@@ -43,6 +43,8 @@ using namespace uop_msb;
 //error handler errors
 #define FLAG_CLEAR_ERROR 0x299 // FATAL ERROR
 
+#define ALL_CLEAR 0x900 //All clear from ENV sensor
+
 
 class ErrorHandler {
     private:
@@ -51,7 +53,8 @@ class ErrorHandler {
     CRITICAL = 0x1, 
     FATAL = 0x2,
     BUFF_FULL = 0x3,
-    ENV_ERR = 0x4};
+    ENV_ERR = 0x4,
+    CLEAR = 0x9};
     typedef void(*funcPointer_t)(void);
     DigitalOut yellowLED = TRAF_YEL1_PIN;
     DigitalOut redLED = TRAF_RED1_PIN;
