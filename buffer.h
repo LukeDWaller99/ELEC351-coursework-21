@@ -33,8 +33,8 @@ class bufferClass{
     void acquireData();
     
     //semaphores
-    Semaphore samplesBuffer;
-    Semaphore spaceBuffer;
+    Semaphore samplesInBuffer;
+    Semaphore spaceInBuffer;
     Semaphore signalSample;
 
     //constructor and destructor
@@ -60,6 +60,7 @@ class bufferClass{
     float humidity;
 };
 
-//liveData dataRecord;
+//extern liveData dataRecord;
+//extern liveData flushRecord;
 
 #endif

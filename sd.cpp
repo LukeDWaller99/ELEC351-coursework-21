@@ -3,7 +3,7 @@
 #include "buffer.h"
 
 //bufferClass obj;
-bool SDState = 0;
+//bool SDState = 0;
 FILE *fp; //file pointer
 
 SDCard::SDCard(){
@@ -63,7 +63,7 @@ void SDCard::unmountSD(){
 } //end unmountSD function
 
 //thread for SD writing
-void SDCard::SDThread(){
+void SDCard::SDRun(){
     initSD();
     while(1){
         if(SDState == 1){

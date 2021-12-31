@@ -1,18 +1,22 @@
-//AUTHOR - NOAH HARVEY
-
 #include "mbed.h"
 #include "buffer.h"
+#include "sampling.h"
 
-Semaphore spaceBuffer(buffer_size); //buffer space tracking
-Semaphore samplesBuffer(0);         //sample no tracking
-Semaphore signalSample(0);          //signal to get new sample
+Semaphore spaceInBuffer(buffer_size);  //buffer space tracking
+Semaphore samplesInBuffer(0);          //sample no tracking
+Semaphore signalSample(0);             //signal to get new sample
+
+unsigned int newIDX = buffer_size - 1; 
+unsigned int oldIDX = buffer_size - 1;
 
 liveData buffer[buffer_size];
+extern samples sampleData;
 liveData dataRecord;
-samples sampleData;
-
-unsigned int newIDX = buffer_size - 1;
-unsigned int oldIDX = buffer_size - 1;
+//liveData dataRecord;  //store new samples
+//liveData printRecord; //print saved samples
+//liveData flushRecord; //flush samples to SD card
+//samples sampleData;   //new samples
+//extern samples Sampled
 
 /*
 sampleData - output signal that buffer is ready for data
@@ -33,41 +37,37 @@ void bufferClass::sampleFunc(){
 
 ////****************** TESTING BUFFER **************************
 void bufferClass::writeBuffer(){
-    //check for space
-    bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
+    bool spaceAvailable = spaceInBuffer.try_acquire_for(5s);//check for space
         if(spaceAvailable == 0){
             printf("no space available\n");
-
+            //fatal error
         }else{
             printf("space available\n");
-            if(bufferLock.trylock_for(1s) == 0){
+            if(bufferLock.trylock_for(10s) == 0){
                 printf("could not unlock buffer\n");
-
+                //fatal error
             } else{
-                printf("buffer unlocked\n");
-
-                //PROTECT THE DATA
-                if(dataLock.trylock_for(1s) == 0){
-                printf("cannot acquire data lock\n");
-                }else{   //dataLock = 1
+                //printf("buffer unlocked\n");
+                //if(dataLock.trylock_for(5s) == 0){ //PROTECT THE DATA
+                //printf("cannot acquire data lock\n");
+                //}else{ //dataLock = 1
                 printf("data lock acquired\n");
                 dataRecord.LDR = sampleData.LDR;
                 dataRecord.temp = sampleData.temp;
                 dataRecord.pressure = sampleData.pressure;
-                dataLock.unlock(); //release time lock
-                }
+
+                dataLock.unlock(); //release lock
+                //}
                 newIDX = (newIDX + 1); //increment buffer size
                 buffer[newIDX] = dataRecord; //update the buffer
             }
         bufferLock.unlock();
     }
-    samplesBuffer.release();
+    samplesInBuffer.release();
 } // writeBuffer function end
 
-
-
-
 ////****************** END OF TESTING BUFFER **************************
+
 
 /*
 void bufferClass::writeBuffer(){
@@ -113,28 +113,29 @@ void bufferClass::writeBuffer(){
 */
 
 void bufferClass::acquireData(){
+    bufferTick.attach(callback(this, &bufferClass::sampleFunc), 5s);
     while(1){
         signalSample.acquire();
         writeBuffer();
     }
 }
 
-/*
+
 //rename this, needed in new write SD function in sd.cpp
 void bufferClass::flushBuffer(FILE &fp){
 
     //check for samples in the buffer
-    bool checkBuffer = samplesBuffer.try_acquire_for(1s);
+    bool checkBuffer = samplesInBuffer.try_acquire_for(5s);
     if(checkBuffer == 0){
-        printQueue.call(emptyFlush);
+        //printQueue.call(emptyFlush);
         //errorSeverity(CRITICAL);
         return;
     }else{
-        samplesBuffer.release();
+        samplesInBuffer.release();
 
         //bool lockBufferTry = lockBuffer.trylock_for(1s);
-        if(bufferLock.trylock_for(1s) == 0){
-            printQueue.call(bufferFlushTimeout);
+        if(bufferLock.trylock_for(5s) == 0){
+            //printQueue.call(bufferFlushTimeout);
             //errorSeverity(WARNING);
         }else{
             int run = 1;
@@ -143,7 +144,7 @@ void bufferClass::flushBuffer(FILE &fp){
                     run = 0; //everything is out
                 } else{
                     //greenLED =!greenLED;
-                    samplesBuffer.try_acquire_for(1s);
+                    samplesInBuffer.try_acquire_for(5s);
                     oldIDX = (oldIDX + 1);
                     liveData flushRecord = buffer[oldIDX];
                     //fprintf(&fp, "Time recorded = %d:%d:%d %d/%d/%d, \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",flushRecord.hour,flushRecord.minute,flushRecord.second,flushRecord.day,flushRecord.month,flushRecord.year,flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
@@ -151,13 +152,13 @@ void bufferClass::flushBuffer(FILE &fp){
                     //just jacks sampled values
                     fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
                     
-                    spaceBuffer.release();//space in buffer signal
+                    spaceInBuffer.release();//space in buffer signal
                 }
             } //end while
-            printQueue.call(flushedBuffer);
+            //printQueue.call(flushedBuffer);
             //flash green led
             bufferLock.unlock();
         }
    }
 } //end function writeSD
-*/
+

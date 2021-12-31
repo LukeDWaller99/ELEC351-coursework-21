@@ -20,7 +20,6 @@ void sampler::sample(){
         sampledData.pressure = sensor.getPressure();
         sampledData.LDR = LDR.read();
         
-        
         //samples[0] = LDR.read_u16(); //read the LDR
         sampleLock.unlock();        //hand back the lock
     }

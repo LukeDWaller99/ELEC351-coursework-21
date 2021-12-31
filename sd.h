@@ -22,9 +22,10 @@ class SDCard{
     void initSD();
     void writeSD();
     void unmountSD();
-    void SDThread();
+    void SDRun();
 
     bufferClass buffer;
+    bool SDState = 0;
 
     SDCard();
     ~SDCard();

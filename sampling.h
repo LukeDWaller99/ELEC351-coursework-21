@@ -24,6 +24,7 @@ class sampler {
     ~sampler();
     
     
+    
 
 };
 
@@ -33,6 +34,7 @@ struct samples{
     float temp, pressure, LDR;
 };
 
+//samples sampleData;
 // extern liveData sampleData;
 
 
