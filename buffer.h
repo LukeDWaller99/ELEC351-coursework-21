@@ -28,13 +28,9 @@ class bufferClass{
 
     public:
     void flushBuffer(FILE &fp);
-    void sampleData();
+    void sampleFunc();
     void writeBuffer();
-   // (sampleData.temp, sampleData.pressure, sampleData.LDR);
-
     void acquireData();
-
-    //sampler sampledData;
     
     //semaphores
     Semaphore samplesBuffer;

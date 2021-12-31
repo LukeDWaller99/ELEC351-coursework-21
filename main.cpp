@@ -12,6 +12,7 @@
 //#include <string.h>
 
 #include <sampling.h>
+<<<<<<< Updated upstream
 #include <buffer.h>
 
 bufferClass buffer;
@@ -19,6 +20,10 @@ sampler samplerer;
 liveData flushRecord;
 
 int timestamp = 0;
+=======
+using namespace uop_msb;
+sampler SampleModule;
+>>>>>>> Stashed changes
 
 int main() {
 

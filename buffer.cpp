@@ -24,19 +24,54 @@ writeSD - write all data to sd card
 //constructor
 bufferClass::bufferClass(){
 //buffer size
-    
 }
 
 //signal the sampling function
-void bufferClass::sampleData(){
+void bufferClass::sampleFunc(){
     signalSample.release();
 }
-//void sensorData(sampleData.temp, sampleData.pressure, sampleData.LDR);
 
+////****************** TESTING BUFFER **************************
 void bufferClass::writeBuffer(){
+    //check for space
+    bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
+        if(spaceAvailable == 0){
+            printf("no space available\n");
 
-//(sampleData.temp, sampleData.pressure, sampleData.LDR){
-       //check for space
+        }else{
+            printf("space available\n");
+            if(bufferLock.trylock_for(1s) == 0){
+                printf("could not unlock buffer\n");
+
+            } else{
+                printf("buffer unlocked\n");
+
+                //PROTECT THE DATA
+                if(dataLock.trylock_for(1s) == 0){
+                printf("cannot acquire data lock\n");
+                }else{   //dataLock = 1
+                printf("data lock acquired\n");
+                dataRecord.LDR = sampleData.LDR;
+                dataRecord.temp = sampleData.temp;
+                dataRecord.pressure = sampleData.pressure;
+                dataLock.unlock(); //release time lock
+                }
+                newIDX = (newIDX + 1); //increment buffer size
+                buffer[newIDX] = dataRecord; //update the buffer
+            }
+        bufferLock.unlock();
+    }
+    samplesBuffer.release();
+} // writeBuffer function end
+
+
+
+
+////****************** END OF TESTING BUFFER **************************
+
+/*
+void bufferClass::writeBuffer(){
+    //check for space
     bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
         if(spaceAvailable == 0){
             printQueue.call(bufferFull);
@@ -75,19 +110,16 @@ void bufferClass::writeBuffer(){
     samplesBuffer.release();
 
 } // writeBuffer function end
-
+*/
 
 void bufferClass::acquireData(){
-    //jacks data in here
-    //buff.attach(&Sampler, T);
-    //buff.attach(&sampler);
-
     while(1){
         signalSample.acquire();
         writeBuffer();
     }
 }
 
+/*
 //rename this, needed in new write SD function in sd.cpp
 void bufferClass::flushBuffer(FILE &fp){
 
@@ -128,4 +160,4 @@ void bufferClass::flushBuffer(FILE &fp){
         }
    }
 } //end function writeSD
-
+*/
