@@ -43,7 +43,7 @@ using namespace uop_msb;
 //error handler errors
 #define FLAG_CLEAR_ERROR 0x299 // FATAL ERROR
 
-#define ALL_CLEAR 0x900 //All clear from ENV sensor
+#define ALL_CLEAR 0x999 //All clear from ENV sensor
 
 
 class ErrorHandler {

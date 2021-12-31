@@ -25,7 +25,9 @@ int main() {
     // matrix.test();
     matrix.clear();
     wait_us(100000);
-     //EH.setErrorFlag(T_UPPER);
+    EH.setErrorFlag(T_UPPER);
+    wait_us(5000000);
+    EH.setErrorFlag(ALL_CLEAR);
     // EH.setErrorFlag(BUFFER_FULL);
          while(true)
      {

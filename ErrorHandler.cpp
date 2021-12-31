@@ -78,6 +78,7 @@ void ErrorHandler::error_thread(void){
 
         case CLEAR:
         printf("ALL CLEAR - CODE %d\n",(errorNumber & 255));
+        errorDisplay.clear();
         yellowLED = 0;
         redLED = 0;
         buzz.rest();
