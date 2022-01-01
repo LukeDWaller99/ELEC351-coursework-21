@@ -1,6 +1,6 @@
 #include <sampling.h>
 
-extern samples sampledData;
+//extern samples sampledData;
 
 sampler::sampler():LDR(AN_LDR_PIN) {
     sampleThread.start(callback(this, &sampler::sample));

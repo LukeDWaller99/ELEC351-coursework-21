@@ -10,7 +10,8 @@ unsigned int newIDX = buffer_size - 1;
 unsigned int oldIDX = buffer_size - 1;
 
 liveData buffer[buffer_size];
-extern samples sampleData;
+samples sampledData;
+sampler bufferSampler;
 liveData dataRecord;
 //liveData dataRecord;  //store new samples
 //liveData printRecord; //print saved samples
@@ -47,17 +48,17 @@ void bufferClass::writeBuffer(){
                 printf("could not unlock buffer\n");
                 //fatal error
             } else{
-                //printf("buffer unlocked\n");
-                //if(dataLock.trylock_for(5s) == 0){ //PROTECT THE DATA
-                //printf("cannot acquire data lock\n");
-                //}else{ //dataLock = 1
+                printf("buffer unlocked\n");
+                if(dataLock.trylock_for(5s) == 0){ //PROTECT THE DATA
+                printf("cannot acquire data lock\n");
+                }else{ //dataLock = 1
                 printf("data lock acquired\n");
-                dataRecord.LDR = sampleData.LDR;
-                dataRecord.temp = sampleData.temp;
-                dataRecord.pressure = sampleData.pressure;
+                dataRecord.LDR = sampledData.LDR;
+                dataRecord.temp = sampledData.temp;
+                dataRecord.pressure = sampledData.pressure;
 
                 dataLock.unlock(); //release lock
-                //}
+                }
                 newIDX = (newIDX + 1); //increment buffer size
                 buffer[newIDX] = dataRecord; //update the buffer
             }

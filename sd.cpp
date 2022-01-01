@@ -7,7 +7,7 @@
 FILE *fp; //file pointer
 
 SDCard::SDCard(){
-    
+    SDThread.start(callback(this, &SDCard::SDRun));
 }
 
 // //function to flash green LED before and after the SD card is being written to, LED alternates state during write process

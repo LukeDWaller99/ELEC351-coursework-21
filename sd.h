@@ -17,7 +17,7 @@ DETECT PF_4
 
 class SDCard{
     private:
-
+    Thread SDThread;
     public:
     void initSD();
     void writeSD();

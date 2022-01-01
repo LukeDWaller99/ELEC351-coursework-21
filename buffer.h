@@ -60,7 +60,7 @@ class bufferClass{
     float humidity;
 };
 
-//extern liveData dataRecord;
-//extern liveData flushRecord;
+extern liveData dataRecord;
+extern liveData flushRecord;
 
 #endif
