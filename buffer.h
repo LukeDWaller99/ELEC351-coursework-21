@@ -31,6 +31,7 @@ class bufferClass{
     void sampleFunc();
     void writeBuffer();
     void acquireData();
+    void emptyBuffer();
     
     //semaphores
     Semaphore samplesInBuffer;

@@ -36,23 +36,54 @@ void bufferClass::sampleFunc(){
     signalSample.release();
 }
 
+void bufferClass::emptyBuffer(){
+    // //check for samples in the buffer
+    // bool checkBuffer = samplesInBuffer.try_acquire_for(1s);
+    // if(checkBuffer == 0){
+    //     printQueue.call(emptyFlush);
+    //     //errorSeverity(CRITICAL);
+    //     return;
+    // }else{
+    //     samplesInBuffer.release();
+
+    //     //bool lockBufferTry = lockBuffer.trylock_for(1s);
+         if(bufferLock.trylock_for(1s) == 0){
+             printQueue.call(bufferFlushTimeout);
+             //errorSeverity(WARNING);
+         }else{
+            int run = 1;
+            while(run == 1){
+                if(oldIDX == newIDX){
+                    run = 0; //everything is out
+                } else{
+                    samplesInBuffer.try_acquire_for(1s);
+                    oldIDX = (oldIDX + 1);
+                    liveData flushRecord = buffer[oldIDX];
+                    spaceInBuffer.release();//space in buffer signal
+                }
+            } 
+            bufferLock.unlock();
+        }
+  // } 
+}
+
 ////****************** TESTING BUFFER **************************
 void bufferClass::writeBuffer(){
-    bool spaceAvailable = spaceInBuffer.try_acquire_for(5s);//check for space
+    bool spaceAvailable = spaceInBuffer.try_acquire_for(1s);//check for space
         if(spaceAvailable == 0){
-            printf("no space available\n");
+            printQueue.call(bufferFull);
             //fatal error
         }else{
-            printf("space available\n");
-            if(bufferLock.trylock_for(10s) == 0){
-                printf("could not unlock buffer\n");
+            //printf("space available\n");
+            if(bufferLock.trylock_for(1s) == 0){
+                printQueue.call(bufferLockTimeout);
                 //fatal error
             } else{
-                printf("buffer unlocked\n");
-                if(dataLock.trylock_for(5s) == 0){ //PROTECT THE DATA
-                printf("cannot acquire data lock\n");
+                //printf("buffer unlocked\n");
+                if(dataLock.trylock_for(1s) == 0){ //PROTECT THE DATA
+                printQueue.call(timeLockTimeout);
                 }else{ //dataLock = 1
-                printf("data lock acquired\n");
+                //printf("data lock acquired\n");
                 dataRecord.LDR = sampledData.LDR;
                 dataRecord.temp = sampledData.temp;
                 dataRecord.pressure = sampledData.pressure;
@@ -128,15 +159,15 @@ void bufferClass::flushBuffer(FILE &fp){
     //check for samples in the buffer
     bool checkBuffer = samplesInBuffer.try_acquire_for(5s);
     if(checkBuffer == 0){
-        //printQueue.call(emptyFlush);
+        printQueue.call(emptyFlush);
         //errorSeverity(CRITICAL);
         return;
     }else{
         samplesInBuffer.release();
 
         //bool lockBufferTry = lockBuffer.trylock_for(1s);
-        if(bufferLock.trylock_for(5s) == 0){
-            //printQueue.call(bufferFlushTimeout);
+        if(bufferLock.trylock_for(1s) == 0){
+            printQueue.call(bufferFlushTimeout);
             //errorSeverity(WARNING);
         }else{
             int run = 1;

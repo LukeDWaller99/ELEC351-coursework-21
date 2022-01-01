@@ -18,6 +18,8 @@ SDCard::SDCard(){
 // 	greenLED = 1;
 // }
 
+
+
 void SDCard::initSD(){
     if (SDState == 0){ //the card is not mounted
         //criticalError - not fatal while initialising
