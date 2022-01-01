@@ -8,6 +8,8 @@
 #include <sampling.h>
 #include <buffer.h>
 #include <sd.h>
+#include "SDBlockDevice.h"
+#include "FATFileSystem.h"
 
 using namespace uop_msb;
 using namespace std;
@@ -44,24 +46,24 @@ Thread print;
 */
 int main() {
     print.start(callback(&printQueue, &EventQueue::dispatch_forever));
-    //dont know why they dont work below
-    //SDThread.start(callback(&SDCardClass::SDRun));
-    //samplingThread.start(&samplerer::sample));
-    
-    //sampleThread.start(callback(, (&samplerer::sample));
+    //mybuffer.emptyBuffer();
+
     //test buffer code
-    int i = 0;
-    while(i < 20){
-        mybuffer.emptyBuffer();
-    printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    wait_us(100);
-    mybuffer.writeBuffer();
-    //mybuffer.acquireData();
-    wait_us(10000000);
-    printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
-    printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
-    wait_us(1000);
-    i++;
-    }
+    //int i = 0;
+    //while(i < 20){
+    
+    // printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
+    // wait_us(100);
+    // //mybuffer.writeBuffer();
+    // //mybuffer.acquireData();
+    // //wait_us(10000000);
+    // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+    // printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
+    // wait_us(1000);
+
+    SDCardClass.testWriteSD();
+    SDCardClass.readSD();
+    //i++;
+    //}
 
 }

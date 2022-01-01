@@ -18,11 +18,14 @@ DETECT PF_4
 class SDCard{
     private:
     Thread SDThread;
+
     public:
     void initSD();
+    void testWriteSD();
     void writeSD();
     void unmountSD();
     void SDRun();
+    void readSD();
 
     bufferClass buffer;
     bool SDState = 0;

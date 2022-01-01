@@ -13,11 +13,6 @@ liveData buffer[buffer_size];
 samples sampledData;
 sampler bufferSampler;
 liveData dataRecord;
-//liveData dataRecord;  //store new samples
-//liveData printRecord; //print saved samples
-//liveData flushRecord; //flush samples to SD card
-//samples sampleData;   //new samples
-//extern samples Sampled
 
 /*
 sampleData - output signal that buffer is ready for data
@@ -29,6 +24,7 @@ writeSD - write all data to sd card
 //constructor
 bufferClass::bufferClass(){
 //buffer size
+//thread to call buffer write every 11s?
 }
 
 //signal the sampling function
@@ -37,19 +33,8 @@ void bufferClass::sampleFunc(){
 }
 
 void bufferClass::emptyBuffer(){
-    // //check for samples in the buffer
-    // bool checkBuffer = samplesInBuffer.try_acquire_for(1s);
-    // if(checkBuffer == 0){
-    //     printQueue.call(emptyFlush);
-    //     //errorSeverity(CRITICAL);
-    //     return;
-    // }else{
-    //     samplesInBuffer.release();
-
-    //     //bool lockBufferTry = lockBuffer.trylock_for(1s);
          if(bufferLock.trylock_for(1s) == 0){
              printQueue.call(bufferFlushTimeout);
-             //errorSeverity(WARNING);
          }else{
             int run = 1;
             while(run == 1){
@@ -61,10 +46,9 @@ void bufferClass::emptyBuffer(){
                     liveData flushRecord = buffer[oldIDX];
                     spaceInBuffer.release();//space in buffer signal
                 }
-            } 
-            bufferLock.unlock();
-        }
-  // } 
+        } 
+        bufferLock.unlock();
+    }
 }
 
 ////****************** TESTING BUFFER **************************
@@ -157,7 +141,7 @@ void bufferClass::acquireData(){
 void bufferClass::flushBuffer(FILE &fp){
 
     //check for samples in the buffer
-    bool checkBuffer = samplesInBuffer.try_acquire_for(5s);
+    bool checkBuffer = samplesInBuffer.try_acquire_for(1s);
     if(checkBuffer == 0){
         printQueue.call(emptyFlush);
         //errorSeverity(CRITICAL);
@@ -165,7 +149,6 @@ void bufferClass::flushBuffer(FILE &fp){
     }else{
         samplesInBuffer.release();
 
-        //bool lockBufferTry = lockBuffer.trylock_for(1s);
         if(bufferLock.trylock_for(1s) == 0){
             printQueue.call(bufferFlushTimeout);
             //errorSeverity(WARNING);
@@ -176,7 +159,7 @@ void bufferClass::flushBuffer(FILE &fp){
                     run = 0; //everything is out
                 } else{
                     //greenLED =!greenLED;
-                    samplesInBuffer.try_acquire_for(5s);
+                    samplesInBuffer.try_acquire_for(1s);
                     oldIDX = (oldIDX + 1);
                     liveData flushRecord = buffer[oldIDX];
                     //fprintf(&fp, "Time recorded = %d:%d:%d %d/%d/%d, \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",flushRecord.hour,flushRecord.minute,flushRecord.second,flushRecord.day,flushRecord.month,flushRecord.year,flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
@@ -187,7 +170,7 @@ void bufferClass::flushBuffer(FILE &fp){
                     spaceInBuffer.release();//space in buffer signal
                 }
             } //end while
-            //printQueue.call(flushedBuffer);
+            printQueue.call(flushedBuffer);
             //flash green led
             bufferLock.unlock();
         }
