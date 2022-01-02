@@ -8,8 +8,6 @@
 int flag_value = 0;
 int currentErrorSeverity = 0;
 
-Thread ERROR_THREAD_NAME;
-
 void ErrorHandler::clear_all(){
     if (flagLock.trylock_for(10ms) == true){
         ThisThread::flags_clear(0x7fffffff);
@@ -22,11 +20,14 @@ void ErrorHandler::clear_all(){
     }
 }
 
-ErrorHandler::ErrorHandler(){
+
+ErrorHandler::ErrorHandler(EventQueue* outputQueue){
     // ERROR_THREAD_NAME.set_priority(osPriorityRealtime);
+    queue = outputQueue;
     ERROR_THREAD_NAME.start(callback(this, &ErrorHandler::error_thread));
     // errorDisplay.test();
 }
+
 
 void ErrorHandler::error_thread(void){
     while(true){
@@ -39,40 +40,51 @@ void ErrorHandler::error_thread(void){
     switch(currentErrorSeverity) 
     {
         case WARNING:
-        printf("WARNING Error Code - %d\n",(errorNumber & 255));
-        // yellow LED
+        queue->call(printf, "WARNING Error Code - %d\n", (errorNumber & 255));
         yellowLED = 1;
         break;
 
         case CRITICAL:
-        printf("CRITICAL Error Code - %d\n",(errorNumber & 255));
+        queue->call(printf, "CRITICAL Error Code - %d\n", (errorNumber & 255));
         // turn on red led
         redLED = 1;
-        buzz.playTone(&note);
-        ThisThread::sleep_for(30s);
-        buzz.rest();
+        #if BUZZER_ENABLE == 1
+            buzz.playTone(&note);
+            ThisThread::sleep_for(30s);
+            buzz.rest();
+        #else
+            queue->call(printf, "BUZZER ON FOR 30\n");
+            ThisThread::sleep_for(30s);
+            queue->call(printf,"BUZZER OFF\n");
+        #endif
         // buzzer for 30 seconds
         // system reset
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong  
         break;
 
         case FATAL:                     //FATAL ERROR - Immediate hardware reset
-        printf("FATAL Error Code - %d\n",(errorNumber & 255));
-        ThisThread::sleep_for(1000ms);
+        queue->call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong 
         break;
 
         case BUFF_FULL:
-        printf("Buffer Full Error\n");
+        queue->call(printf, "BUFFER FULL\n");
         redLED = 1;
         // turn on red LED
         break;
 
         case ENV_ERR:
-        printf("ENV Error %d\n",(errorNumber & 255));
-        buzz.playTone(&note);
-        ThisThread::sleep_for(3s);
-        buzz.rest();
+        //printf("ENV Error %d\n",(errorNumber & 255));
+        queue->call(printf, "ENV Error %d\n",(errorNumber & 255));
+        #if BUZZER_ENABLE == 1
+            buzz.playTone(&note);
+            ThisThread::sleep_for(3s);
+            buzz.rest();
+        #else
+            queue->call(printf, "BUZZER ON FOR 3\n");
+            ThisThread::sleep_for(3s);
+            queue->call(printf,"BUZZER OFF\n");
+        #endif
         // sound buzzer
         break; 
 
@@ -81,7 +93,9 @@ void ErrorHandler::error_thread(void){
         errorDisplay.clear();
         yellowLED = 0;
         redLED = 0;
+        #if BUZZER_ENABLE == 1
         buzz.rest();
+        #endif
     }
     clear_all();
     }
@@ -130,45 +144,3 @@ void ErrorHandler::setErrorFlag(int errorCode){
     }
 
 }
-
-// void ErrorHandler::alarmstop(){
-//     alarm_status= 0;    //stop alarm handler-wide
-// }
-
-
-// void ErrorHandler::alarm(errorSeverity severity){
-//     Ticker Alarm;
-//     char note = 'A';
-//     switch(severity) {
-//         case CRITICAL :     //alarm for 30s
-//         alarm_status = 1;   //set alarm status
-//         Alarm.attach(callback(this,&ErrorHandler::alarmstop), 30000000us);
-//         while(alarm_status == 1){
-//         buzz.playTone(&note);
-//         ThisThread::sleep_for(100000ms);
-//         buzz.rest();
-//         buzz.playTone(&note,uop_msb::Buzzer::HIGHER_OCTAVE);
-//         ThisThread::sleep_for(100000ms);
-//         buzz.rest();
-//         }
-//         break;
-
-//         case ENV_ERR :
-//         Alarm.attach(callback(this,&ErrorHandler::alarmstop), 3000000us);
-//         while(alarm_status == 1){
-//         buzz.playTone(&note);
-//         ThisThread::sleep_for(100000ms);
-//         buzz.rest();
-//         buzz.playTone(&note,uop_msb::Buzzer::HIGHER_OCTAVE);
-//         ThisThread::sleep_for(100000ms);
-//         buzz.rest();
-//         }
-//         break;
-//         default :
-//         alarm_status = 0;
-//     }
-// }
-
-// void ErrorHandler::alarmtest() {
-//     alarm(CRITICAL);
-// }

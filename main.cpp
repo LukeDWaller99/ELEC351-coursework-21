@@ -15,20 +15,28 @@
 #include "SevenSegmentDisplay.h"
 #include <ErrorHandler.h>
 using namespace uop_msb;
-ErrorHandler EH;
+EventQueue* queue = new EventQueue();
+ErrorHandler EH(queue);
 LEDMatrix matrix;
+Thread t;
 
 
 int main() {
     // Err_thread.start(&EH.error_thread);
     // display.test();
     // matrix.test();
+    t.start(callback(queue, &EventQueue::dispatch_forever));
     matrix.clear();
     wait_us(100000);
     EH.setErrorFlag(T_UPPER);
     wait_us(5000000);
     EH.setErrorFlag(ALL_CLEAR);
-    // EH.setErrorFlag(BUFFER_FULL);
+    wait_us(100000);
+    EH.setErrorFlag(EMPTY_FLUSH);
+    wait_us(5000000);
+    EH.setErrorFlag(ALL_CLEAR);
+    wait_us(5000000);
+    EH.setErrorFlag(BUFFER_FULL);
          while(true)
      {
         
