@@ -48,22 +48,24 @@ int main() {
     print.start(callback(&printQueue, &EventQueue::dispatch_forever));
     //mybuffer.emptyBuffer();
 
+
+    //SDCardClass.testWriteSD();
+    //SDCardClass.readSD();
+
+
     //test buffer code
-    //int i = 0;
-    //while(i < 20){
+    int i = 0;
+    while(i < 20){
     
-    // printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    // wait_us(100);
-    // //mybuffer.writeBuffer();
+    printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
+    wait_us(100);
+    mybuffer.writeBuffer();
     // //mybuffer.acquireData();
     // //wait_us(10000000);
     // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
-    // printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
-    // wait_us(1000);
-
-    SDCardClass.testWriteSD();
-    SDCardClass.readSD();
-    //i++;
-    //}
+    printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
+    wait_us(1000);
+    i++;
+    }
 
 }

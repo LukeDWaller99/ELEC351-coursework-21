@@ -53,33 +53,33 @@ void bufferClass::emptyBuffer(){
 
 ////****************** TESTING BUFFER **************************
 void bufferClass::writeBuffer(){
-    bool spaceAvailable = spaceInBuffer.try_acquire_for(1s);//check for space
-        if(spaceAvailable == 0){
-            printQueue.call(bufferFull);
-            //fatal error
-        }else{
-            //printf("space available\n");
-            if(bufferLock.trylock_for(1s) == 0){
-                printQueue.call(bufferLockTimeout);
-                //fatal error
-            } else{
-                //printf("buffer unlocked\n");
-                if(dataLock.trylock_for(1s) == 0){ //PROTECT THE DATA
-                printQueue.call(timeLockTimeout);
-                }else{ //dataLock = 1
-                //printf("data lock acquired\n");
+    // bool spaceAvailable = spaceInBuffer.try_acquire_for(1s);//check for space
+    //     if(spaceAvailable == 0){
+    //         printQueue.call(bufferFull);
+    //         //fatal error
+    //     }else{
+    //         //printf("space available\n");
+    //         if(bufferLock.trylock_for(1s) == 0){
+    //             printQueue.call(bufferLockTimeout);
+    //             //fatal error
+    //         } else{
+    //             //printf("buffer unlocked\n");
+    //             if(dataLock.trylock_for(1s) == 0){ //PROTECT THE DATA
+    //             printQueue.call(timeLockTimeout);
+    //             }else{ //dataLock = 1
+    //             //printf("data lock acquired\n");
                 dataRecord.LDR = sampledData.LDR;
                 dataRecord.temp = sampledData.temp;
                 dataRecord.pressure = sampledData.pressure;
 
-                dataLock.unlock(); //release lock
-                }
-                newIDX = (newIDX + 1); //increment buffer size
-                buffer[newIDX] = dataRecord; //update the buffer
-            }
-        bufferLock.unlock();
-    }
-    samplesInBuffer.release();
+    //             dataLock.unlock(); //release lock
+    //             }
+    //             newIDX = (newIDX + 1); //increment buffer size
+    //             buffer[newIDX] = dataRecord; //update the buffer
+    //         }
+    //     bufferLock.unlock();
+    // }
+    // samplesInBuffer.release();
 } // writeBuffer function end
 
 ////****************** END OF TESTING BUFFER **************************
