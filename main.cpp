@@ -7,7 +7,7 @@
 #include <string.h>
 #include <sampling.h>
 #include <buffer.h>
-#include <sd.h>
+//#include <sd.h>
 #include "SDBlockDevice.h"
 #include "FATFileSystem.h"
 
@@ -21,10 +21,9 @@ extern samples sampleData;
 bufferClass mybuffer;
 liveData flushRecord;
 //liveData dataRecord;
-SDCard SDCardClass;
+//SDCard SDCardClass;
 
 //threads
-Thread samplingThread(osPriorityRealtime);
 //Thread SDThread;
 Thread print;
 
@@ -59,12 +58,12 @@ int main() {
     
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
     wait_us(100);
-    mybuffer.writeBuffer();
+    //mybuffer.writeBuffer();
     // //mybuffer.acquireData();
     // //wait_us(10000000);
     // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
-    printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
-    wait_us(1000);
+    //printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
+    //wait_us(1000);
     i++;
     }
 
