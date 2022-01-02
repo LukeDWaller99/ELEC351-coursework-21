@@ -13,50 +13,13 @@
 #include <string.h>
 #include <LEDMatrix.h>
 #include "SevenSegmentDisplay.h"
+#include <ErrorHandler.h>
 using namespace uop_msb;
-
+EventQueue* queue = new EventQueue();
+ErrorHandler EH(queue);
 LEDMatrix matrix;
-SevenSegmentDisplay display;
+Thread t;
 
-// double samples[8];
-
-// extern void azureDemo();
-// extern NetworkInterface *_defaultSystemNetwork;
-
-// bool connect()
-// {
-//     LogInfo("Connecting to the network");
-
-//     _defaultSystemNetwork = NetworkInterface::get_default_instance();
-//     if (_defaultSystemNetwork == nullptr) {
-//         LogError("No network interface found");
-//         return false;
-//     }
-
-//     int ret = _defaultSystemNetwork->connect();
-//     if (ret != 0) {
-//         LogError("Connection error: %d", ret);
-//         return false;
-//     }
-//     LogInfo("Connection success, MAC: %s", _defaultSystemNetwork->get_mac_address());
-//     return true;
-// }
-
-// bool setTime()
-// {
-//     LogInfo("Getting time from the NTP server");
-
-//     NTPClient ntp(_defaultSystemNetwork);
-//     ntp.set_server("time.google.com", 123);
-//     time_t timestamp = ntp.get_timestamp();
-//     if (timestamp < 0) {
-//         LogError("Failed to get the current time, error: %ud", timestamp);
-//         return false;
-//     }
-//     LogInfo("Time: %s", ctime(&timestamp));
-//     set_time(timestamp);
-//     return true;
-// }
 
 int main() {
     matrix.clear();
@@ -91,9 +54,24 @@ int main() {
 
     // matrix.clear();
 
+    // Err_thread.start(&EH.error_thread);
+    // display.test();
     // matrix.test();
-        // for (int j = 1; j <= 2; j++) {
-    
-
-    }
+    t.start(callback(queue, &EventQueue::dispatch_forever));
+    matrix.clear();
+    wait_us(100000);
+    EH.setErrorFlag(T_UPPER);
+    wait_us(5000000);
+    EH.setErrorFlag(ALL_CLEAR);
+    wait_us(100000);
+    EH.setErrorFlag(EMPTY_FLUSH);
+    wait_us(5000000);
+    EH.setErrorFlag(ALL_CLEAR);
+    wait_us(5000000);
+    EH.setErrorFlag(BUFFER_FULL);
+         while(true)
+     {
+        
+     }
+    //EH.alarmtest();
 }
