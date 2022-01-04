@@ -29,26 +29,27 @@ bufferClass::bufferClass(){
 
 //signal the sampling function
 void bufferClass::sampleFunc(){
-    signalSample.release();
+    signalSample.release(); 
 }
 
 void bufferClass::emptyBuffer(){
-         if(bufferLock.trylock_for(1s) == 0){
-             printQueue.call(bufferFlushTimeout);
-         }else{
-            int run = 1;
-            while(run == 1){
-                if(oldIDX == newIDX){
-                    run = 0; //everything is out
-                } else{
-                    samplesInBuffer.try_acquire_for(1s);
-                    oldIDX = (oldIDX + 1);
-                    liveData flushRecord = buffer[oldIDX];
-                    spaceInBuffer.release();//space in buffer signal
-                }
-        } 
-        bufferLock.unlock();
-    }
+    samplesInBuffer.release(); //reset the semaphore   
+    //      if(bufferLock.trylock_for(1s) == 0){
+    //          printQueue.call(bufferFlushTimeout);
+    //      }else{
+    //         int run = 1;
+    //         while(run == 1){
+    //             if(oldIDX == newIDX){
+    //                 run = 0; //everything is out
+    //             } else{
+    //                 samplesInBuffer.try_acquire_for(1s);
+    //                 oldIDX = (oldIDX + 1);
+    //                 liveData flushRecord = buffer[oldIDX];
+    //                 spaceInBuffer.release();//space in buffer signal
+    //             }
+    //     } 
+    //     bufferLock.unlock();
+    // }
 }
 
 ////****************** TESTING BUFFER **************************

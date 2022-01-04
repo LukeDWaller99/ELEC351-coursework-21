@@ -7,9 +7,9 @@
 #include <string.h>
 #include <sampling.h>
 #include <buffer.h>
-//#include <sd.h>
-#include "SDBlockDevice.h"
-#include "FATFileSystem.h"
+#include <sd.h>
+//#include "SDBlockDevice.h"
+//#include "FATFileSystem.h"
 
 using namespace uop_msb;
 using namespace std;
@@ -21,7 +21,7 @@ extern samples sampleData;
 bufferClass mybuffer;
 liveData flushRecord;
 //liveData dataRecord;
-//SDCard SDCardClass;
+SDCard SDCardClass;
 
 //threads
 //Thread SDThread;
@@ -29,25 +29,27 @@ Thread print;
 
 //check sd mounted
 //FIND PIN FOR SD CARD
-/*
+
     void sd_check(){
         while(true){
             if(SDCardClass.SDState == 1){
-                SDCardClass.unmountSD();
+               
+                //SDCardClass.unmountSD();
             }
             else if (SDCardClass.SDState == 0){
                 SDCardClass.initSD();
-                SDCardClass.writeSD();
+                //SDCardClass.testWriteSD();
             }
         ThisThread::sleep_for(20s);
         }
     }
-*/
+
 int main() {
     print.start(callback(&printQueue, &EventQueue::dispatch_forever));
-    //mybuffer.emptyBuffer();
+    mybuffer.emptyBuffer();
 
-
+    //sd_check();
+    //SDCardClass.initSD();
     //SDCardClass.testWriteSD();
     //SDCardClass.readSD();
 
@@ -55,16 +57,21 @@ int main() {
     //test buffer code
     int i = 0;
     while(i < 20){
+        SDCardClass.initSD();
     
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    wait_us(100);
-    //mybuffer.writeBuffer();
+    wait_us(10000);
+    mybuffer.writeBuffer();
+    wait_us(10000);
     // //mybuffer.acquireData();
     // //wait_us(10000000);
     // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
-    //printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
+    printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
     //wait_us(1000);
     i++;
     }
-
+    //SDCardClass.testWriteSD();
+    //wait_us(1000);
+    //sd_check();
+    //SDCardClass.readSD();
 }
