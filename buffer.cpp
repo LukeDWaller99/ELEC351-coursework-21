@@ -28,6 +28,10 @@ bufferClass::bufferClass(){
 //thread to call buffer write every 11s?
    // bufferThread.start(callback(this, &))
    bufferTick.attach(callback(this, &bufferClass::writeBuffer), 5s);
+
+   //in the way the sampler was done:
+
+   bufferThread.start(callback(this, &))
 }
 
 //signal the sampling function
