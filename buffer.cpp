@@ -27,7 +27,7 @@ bufferClass::bufferClass(){
 //buffer size
 //thread to call buffer write every 11s?
    // bufferThread.start(callback(this, &))
-   bufferTick.attach(callback(this, &bufferClass::writeBuffer), 5s);
+//    bufferTick.attach(callback(this, &bufferClass::writeBuffer), 5s);
 
    //in the way the sampler was done:
 
@@ -44,36 +44,37 @@ void bufferClass::emptyBuffer(){
 }
 
 void bufferClass::writeBuffer(){
-    bool spaceAvailable = spaceInBuffer.try_acquire_for(1s);//check for space
+    bool spaceAvailable = spaceInBuffer.try_acquire_for(1ms);//check for space
         if(spaceAvailable == 0){
             printQueue.call(bufferFull);
     //         //fatal error
         }else{
-    //         //printf("space available\n");
-            if(bufferLock.trylock_for(1s) == 0){
-                printQueue.call(bufferLockTimeout);
-    //             //fatal error
-            } else{
-                if(dataLock.trylock_for(1s) == 0){ //PROTECT THE DATA
-                printQueue.call(timeLockTimeout);
-                }else{ //dataLock = 1
+    // //         //printf("space available\n");
+    //         if(bufferLock.trylock_for(1ms) == 0){
+    //             printQueue.call(bufferLockTimeout);
+    // //             //fatal error
+    //         } else{
+    //             if(dataLock.trylock_for(1ms) == 0){ //PROTECT THE DATA
+    //             printQueue.call(timeLockTimeout);
+    //             }else{ //dataLock = 1
                 dataRecord.LDR = sampledData.LDR;
                 dataRecord.temp = sampledData.temp;
                 dataRecord.pressure = sampledData.pressure;
 
-                dataLock.unlock(); //release lock
-                }
+                //dataLock.unlock(); //release lock
+                //}
                 newIDX = (newIDX + 1); //increment buffer size
                 buffer[newIDX] = dataRecord; //update the buffer
             }
-        bufferLock.unlock();
-    }
+    //     bufferLock.unlock();
+    // }
     spaceInBuffer.release();
+    //samplesInBuffer.release();
 } // writeBuffer function end
 
 
 void bufferClass::acquireData(){
-    bufferTick.attach(callback(this, &bufferClass::sampleFunc), 15s);
+    //bufferTick.attach(callback(this, &bufferClass::sampleFunc), 15s);
     while(1){
         signalSample.acquire();
         writeBuffer();

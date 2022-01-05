@@ -23,7 +23,6 @@ class bufferClass{
     Mutex dataLock;
     Ticker bufferTick;
     sampler dataSampler;
-    Thread bufferThread;
 
     public:
     void flushBuffer(FILE &fp);

@@ -11,7 +11,6 @@ void bufferFull(){
 
 void bufferLockTimeout(){
     printf("CRITICAL ERROR - mutex lock timeout, cannot acquire lock. \n");
-
 }
 
 void timeLockTimeout(){

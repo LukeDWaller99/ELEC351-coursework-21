@@ -4,6 +4,8 @@
 #include "mbed.h"
 #include "FATFileSystem.h"
 #include "buffer.h"
+#include "SDBlockDevice.h"
+#include "uop_msb.h"
 
 /*
 CS PE3 //DigitalOut

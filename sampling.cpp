@@ -1,5 +1,4 @@
 #include <sampling.h>
-
 //extern samples sampledData;
 
 sampler::sampler():LDR(AN_LDR_PIN) {
@@ -27,5 +26,8 @@ void sampler::sample(){
        printf("timeout\n");
     }
     ThisThread::flags_clear(1);
+
+    //set flag for buffer write
+    buffer::bufferThread.flags_set(10);
     }
 }
