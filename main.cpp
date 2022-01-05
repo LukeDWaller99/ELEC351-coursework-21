@@ -3,13 +3,14 @@
 #include "rtos/ThisThread.h"
 //#include "NTPClient.h"
 //#include "azure_c_shared_utility/xlogging.h"
+#include <cstdio>
 #include <cstring>
 #include <string.h>
 #include <sampling.h>
 #include <buffer.h>
 #include <sd.h>
-//#include "SDBlockDevice.h"
-//#include "FATFileSystem.h"
+#include "SDBlockDevice.h"
+#include "FATFileSystem.h"
 
 using namespace uop_msb;
 using namespace std;
@@ -60,12 +61,12 @@ int main() {
     //test buffer code
     int i = 0;
     while(i < 200){
-    //     SDCardClass.initSD();
+         SDCardClass.initSD();
     
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    wait_us(100000);
+    wait_us(100);
     //mybuffer.writeBuffer();
-    wait_us(100000);
+    //wait_us(100000);
     // //mybuffer.acquireData();
     // //wait_us(10000000);
     // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
@@ -78,5 +79,5 @@ int main() {
     //sd_check();
     //SDCardClass.readSD();
 
-    //mybuffer.printBufferContents();
+    //mybuffer.flushBuffer(FILE &fp);
 }

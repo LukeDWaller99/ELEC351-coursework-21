@@ -6,7 +6,7 @@
 #include "mbed.h"
 #include "Mutex.h"
 #include "printQueue.h"
-//#include "uop_msb.h"
+#include "uop_msb.h"
 #include "FATFileSystem.h"
 #include "sampling.h"
 

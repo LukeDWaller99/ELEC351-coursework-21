@@ -31,7 +31,7 @@ bufferClass::bufferClass(){
 
    //in the way the sampler was done:
 
-   bufferThread.start(callback(this, &))
+   //bufferThread.start(callback(this, &))
 }
 
 //signal the sampling function
@@ -118,19 +118,19 @@ void bufferClass::printBufferContents(){
 //rename this, needed in new write SD function in sd.cpp
 void bufferClass::flushBuffer(FILE &fp){
 
-    //check for samples in the buffer
-    bool checkBuffer = samplesInBuffer.try_acquire_for(1s);
-    if(checkBuffer == 0){
-        printQueue.call(emptyFlush);
-        //errorSeverity(CRITICAL);
-        return;
-    }else{
-        samplesInBuffer.release();
+    // //check for samples in the buffer
+    // bool checkBuffer = samplesInBuffer.try_acquire_for(1s);
+    // if(checkBuffer == 0){
+    //     printQueue.call(emptyFlush);
+    //     //errorSeverity(CRITICAL);
+    //     return;
+    // }else{
+    //     samplesInBuffer.release();
 
-        if(bufferLock.trylock_for(1s) == 0){
-            printQueue.call(bufferFlushTimeout);
-            //errorSeverity(WARNING);
-        }else{
+    //     if(bufferLock.trylock_for(1s) == 0){
+    //         printQueue.call(bufferFlushTimeout);
+    //         //errorSeverity(WARNING);
+    //     }else{
             int run = 1;
             while(run == 1){
                 if(oldIDX == newIDX){
@@ -140,18 +140,17 @@ void bufferClass::flushBuffer(FILE &fp){
                     samplesInBuffer.try_acquire_for(1s);
                     oldIDX = (oldIDX + 1);
                     liveData flushRecord = buffer[oldIDX];
-                    //fprintf(&fp, "Time recorded = %d:%d:%d %d/%d/%d, \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",flushRecord.hour,flushRecord.minute,flushRecord.second,flushRecord.day,flushRecord.month,flushRecord.year,flushRecord.temp,flushRecord.pressure,flushRecord.LDR);
-                    
-                    //just jacks sampled values
+                    //fprintf(&fp, "Time recorded = );
                     fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
                     
-                    spaceInBuffer.release();//space in buffer signal
-                }
-            } //end while
-            printQueue.call(flushedBuffer);
-            //flash green led
-            bufferLock.unlock();
-        }
-   }
+                    //spaceInBuffer.release();//space in buffer signal
+                 }
+             } //end while
+             samplesInBuffer.release();
+        //     printQueue.call(flushedBuffer);
+        //     //flash green led
+        //     bufferLock.unlock();
+        // }
+   //}
 } //end function writeSD
 
