@@ -13,9 +13,7 @@
 
 #define buffer_size 800
 using namespace std;
-//create a class for buffer
 //pc2 for full error, red led
-
 
 class bufferClass{
 
@@ -31,6 +29,7 @@ class bufferClass{
     void sampleFunc();
     void writeBuffer();
     void acquireData();
+    void printBufferContents();
     void emptyBuffer();
     
     //semaphores
@@ -46,14 +45,7 @@ class bufferClass{
 
 //real time data
  struct liveData{
-    //time
-	int hour;
-	int minute;
-	int second;
-    //date
-    int day;
-	int month;
-	int year;
+    //luke is doing the time stamp
     //data
 	float LDR;
 	float temp;
@@ -63,5 +55,6 @@ class bufferClass{
 
 extern liveData dataRecord;
 extern liveData flushRecord;
+//extern liveData printRecord{buffer_size};
 
 #endif

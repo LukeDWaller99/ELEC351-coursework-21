@@ -26,6 +26,7 @@ SDCard SDCardClass;
 //threads
 //Thread SDThread;
 Thread print;
+Thread buffer_run;
 
 //check sd mounted
 //FIND PIN FOR SD CARD
@@ -48,6 +49,8 @@ int main() {
     print.start(callback(&printQueue, &EventQueue::dispatch_forever));
     mybuffer.emptyBuffer();
 
+
+
     //sd_check();
     //SDCardClass.initSD();
     //SDCardClass.testWriteSD();
@@ -56,13 +59,13 @@ int main() {
 
     //test buffer code
     int i = 0;
-    while(i < 20){
-        SDCardClass.initSD();
+    while(i < 200){
+    //     SDCardClass.initSD();
     
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    wait_us(10000);
-    mybuffer.writeBuffer();
-    wait_us(10000);
+    wait_us(100000);
+    //mybuffer.writeBuffer();
+    wait_us(100000);
     // //mybuffer.acquireData();
     // //wait_us(10000000);
     // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
@@ -74,4 +77,6 @@ int main() {
     //wait_us(1000);
     //sd_check();
     //SDCardClass.readSD();
+
+    //mybuffer.printBufferContents();
 }

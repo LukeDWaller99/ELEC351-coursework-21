@@ -1,6 +1,7 @@
 #include "mbed.h"
 #include "buffer.h"
 #include "sampling.h"
+#include <cstdio>
 
 Semaphore spaceInBuffer(buffer_size);  //buffer space tracking
 Semaphore samplesInBuffer(0);          //sample no tracking
@@ -25,6 +26,8 @@ writeSD - write all data to sd card
 bufferClass::bufferClass(){
 //buffer size
 //thread to call buffer write every 11s?
+   // bufferThread.start(callback(this, &))
+   bufferTick.attach(callback(this, &bufferClass::writeBuffer), 5s);
 }
 
 //signal the sampling function
@@ -33,110 +36,80 @@ void bufferClass::sampleFunc(){
 }
 
 void bufferClass::emptyBuffer(){
-    samplesInBuffer.release(); //reset the semaphore   
-    //      if(bufferLock.trylock_for(1s) == 0){
-    //          printQueue.call(bufferFlushTimeout);
-    //      }else{
-    //         int run = 1;
-    //         while(run == 1){
-    //             if(oldIDX == newIDX){
-    //                 run = 0; //everything is out
-    //             } else{
-    //                 samplesInBuffer.try_acquire_for(1s);
-    //                 oldIDX = (oldIDX + 1);
-    //                 liveData flushRecord = buffer[oldIDX];
-    //                 spaceInBuffer.release();//space in buffer signal
-    //             }
-    //     } 
-    //     bufferLock.unlock();
-    // }
+    samplesInBuffer.release(); //reset the semaphore 
 }
 
-////****************** TESTING BUFFER **************************
 void bufferClass::writeBuffer(){
-    // bool spaceAvailable = spaceInBuffer.try_acquire_for(1s);//check for space
-    //     if(spaceAvailable == 0){
-    //         printQueue.call(bufferFull);
+    bool spaceAvailable = spaceInBuffer.try_acquire_for(1s);//check for space
+        if(spaceAvailable == 0){
+            printQueue.call(bufferFull);
     //         //fatal error
-    //     }else{
+        }else{
     //         //printf("space available\n");
-    //         if(bufferLock.trylock_for(1s) == 0){
-    //             printQueue.call(bufferLockTimeout);
+            if(bufferLock.trylock_for(1s) == 0){
+                printQueue.call(bufferLockTimeout);
     //             //fatal error
-    //         } else{
-    //             //printf("buffer unlocked\n");
-    //             if(dataLock.trylock_for(1s) == 0){ //PROTECT THE DATA
-    //             printQueue.call(timeLockTimeout);
-    //             }else{ //dataLock = 1
-    //             //printf("data lock acquired\n");
+            } else{
+                if(dataLock.trylock_for(1s) == 0){ //PROTECT THE DATA
+                printQueue.call(timeLockTimeout);
+                }else{ //dataLock = 1
                 dataRecord.LDR = sampledData.LDR;
                 dataRecord.temp = sampledData.temp;
                 dataRecord.pressure = sampledData.pressure;
 
-    //             dataLock.unlock(); //release lock
-    //             }
-    //             newIDX = (newIDX + 1); //increment buffer size
-    //             buffer[newIDX] = dataRecord; //update the buffer
-    //         }
-    //     bufferLock.unlock();
-    // }
-    // samplesInBuffer.release();
-} // writeBuffer function end
-
-////****************** END OF TESTING BUFFER **************************
-
-
-/*
-void bufferClass::writeBuffer(){
-    //check for space
-    bool spaceAvailable = spaceBuffer.try_acquire_for(1s);
-        if(spaceAvailable == 0){
-            printQueue.call(bufferFull);
-            //severityHandler(CRITICAL);
-
-        }else{
-            
-            if(bufferLock.trylock_for(1s) == 0){
-                printQueue.call(bufferLockTimeout);
-                //errorSeverity(CRITICAL);
-
-            } else{
-                
-
-                if(dataLock.trylock_for(1s) == 0){
-                    //the data has taken too long to access
-                    //printQueue.call(bLockData);
-                    //errorSeverity(CRITICAL);
-                }else{   //dataLock = 1
-                //copy all sensor data, for Jack to decide how
-                //  dataRecord.LDR = sampleData.LDR;
-                //  dataRecord.temp = sampleData.temp;
-                //  dataRecord.pressure = sampleData.pressure;
-                 //dataRecord.humidity = 
-                dataLock.unlock(); //release time lock
+                dataLock.unlock(); //release lock
                 }
-                
-                //update the buffer
                 newIDX = (newIDX + 1); //increment buffer size
-                buffer[newIDX] = dataRecord;
+                buffer[newIDX] = dataRecord; //update the buffer
             }
-    
         bufferLock.unlock();
     }
-    //sample added, release signal
-    samplesBuffer.release();
-
+    spaceInBuffer.release();
 } // writeBuffer function end
-*/
+
 
 void bufferClass::acquireData(){
-    bufferTick.attach(callback(this, &bufferClass::sampleFunc), 5s);
+    bufferTick.attach(callback(this, &bufferClass::sampleFunc), 15s);
     while(1){
         signalSample.acquire();
         writeBuffer();
     }
 }
 
+void bufferClass::printBufferContents(){
+    // bool isDataInBuffer = samplesInBuffer.try_acquire_for(1s);
+    // if(isDataInBuffer ==0 ){
+    //     printf("no data\n");
+    // }
+    // else{
+    //     bool unlockingBuffer = bufferLock.trylock_for(1s);
+    //     if(unlockingBuffer == 0){
+    //         printf("could not unlock buffer\n");
+    //     }
+    //     else{
+    //         int runPrint = 1;
+    //         int printIDX = oldIDX;
+    //         int printRecordsIDX = 0;
+    //         while(runPrint == 1){
+    //             if(printIDX == newIDX){
+    //                 runPrint = 0;
+    //             }
+    //             else{
+    //                 printIDX = (printIDX + 1) % buffer_size;
+    //                 printRecord[printRecordsIDX] = buffer[printIDX];
+    //                 printRecordsIDX++;
+    //             }
+    //         }
+
+    //         bufferLock.unlock();
+    //         for(int pRIDX = 0; pRIDX < printRecordsIDX; pRIDX++){
+    //             printf(" printRecords \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", printRecord[pRIDX].temp, printRecord[pRIDX].pressure, printRecord[pRIDX].LDR);
+    
+    //         }
+    //     }
+    // }
+    // samplesInBuffer.release();
+}
 
 //rename this, needed in new write SD function in sd.cpp
 void bufferClass::flushBuffer(FILE &fp){
