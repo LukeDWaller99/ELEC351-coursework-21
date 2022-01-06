@@ -9,33 +9,35 @@
 #include <string.h>
 #include <sampling.h>
 #include <buffer.h>
+#include <printQueue.h>
 #include <sd.h>
 #include "SDBlockDevice.h"
 #include "FATFileSystem.h"
 
 using namespace uop_msb;
 using namespace std;
-sampler SampleModule;
 sampler samplerer;
 extern samples sampleData;
 //extern samples sampledData1;
 //extern liveData dataRecord1;
 bufferClass mybuffer;
-liveData flushRecord;
+//liveData flushRecord;
+
 //liveData dataRecord;
-SDCard SDCardClass;
+SDCard mySDCard;
 
 //threads
 //Thread SDThread;
 Thread print;
-Thread buffer_run;
+//Thread buffer_run;
 
 //*************
 /* going to get SDState to store if its mounted or not to use ISR in main
 green flash added
 constructor updated
 SDRun updated - can test now with a thread for timing?
-writeSD updated - need to copy last time flush occured and use that to track
+writeSD updated - need to copy last time flush occured and use that to track, uses
+its own thread to check capacity of buffer throughout
 */
 
 // void SDCardISR(){
@@ -59,34 +61,40 @@ writeSD updated - need to copy last time flush occured and use that to track
 int main() {
     print.start(callback(&printQueue, &EventQueue::dispatch_forever));
     mybuffer.emptyBuffer();
-
-    //SDCardClass.initSD();
-
-
-    //test buffer code
-    // SDCardClass.initSD(); // PUT THIS IN THE CONSTRUCTOR
-    //create isr for when sd card is removed
-
+    
     int i = 0;
     while(i < 20){
-         
-    
+             
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
     //wait_us(900000);
-    //mybuffer.writeBuffer();
-    wait_us(5000);
+    mybuffer.writeBuffer();
+    wait_us(100);
+    //mySDCard.writeSD();
+    //mySDCard.testWriteSD();
     // //mybuffer.acquireData();
     // //wait_us(10000000);
     // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
     printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
-    wait_us(500000);
+    wait_us(100);
     i++;
+    printf("%i\n", i);
+    //SDCardClass.readSD();
+
     }
 
     //these functions work
     //SDCardClass.writeSD();
-    //SDCardClass.readSD();
 
+    wait_us(10000);
+    mySDCard.mywrite_sdcard();
+    //wait_us(1000000);
+    //mySDCard.myread_sdcard();
+    //mySDCard.readSD();
+    // wait_us(100000);
 
+    // mySDCard.writeDataSD();
+    // wait_us(100000);
+    // //mySDCard.readSD();
+    // wait_us(100000);
 
 }

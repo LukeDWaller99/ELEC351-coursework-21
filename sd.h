@@ -24,12 +24,15 @@ class SDCard{
     public:
     void initSD();
     void flashGreen();
-    void testWriteSD();
-    void writeSD();
-    void unmountSD();
-    void SDRun();
-    void readSD();
+    //void testWriteSD();
+    //void writeDataSD();
+    //void writeSD();
+    //void unmountSD();
+    //void SDRun();
+    //void readSD();
 
+    int mywrite_sdcard();
+    int myread_sdcard();
 
     bufferClass buffer;
     bool SDState = 0;
@@ -42,3 +45,4 @@ class SDCard{
     
 
 #endif
+

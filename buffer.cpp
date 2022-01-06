@@ -6,6 +6,7 @@
 Semaphore spaceInBuffer(buffer_size);  //buffer space tracking
 Semaphore samplesInBuffer(0);          //sample no tracking
 Semaphore signalSample(0);             //signal to get new sample
+SDBlockDevice mysd2(PB_5, PB_4, PB_3, PF_3);
 
 // unsigned int newIDX = buffer_size - 1; 
 // unsigned int oldIDX = buffer_size - 1;
@@ -44,11 +45,11 @@ void bufferClass::emptyBuffer(){
 }
 
 void bufferClass::writeBuffer(){
-    bool spaceAvailable = spaceInBuffer.try_acquire_for(1ms);//check for space
-        if(spaceAvailable == 0){
-            printQueue.call(bufferFull);
-    //         //fatal error
-        }else{
+    // bool spaceAvailable = spaceInBuffer.try_acquire_for(1ms);//check for space
+    //     if(spaceAvailable == 0){
+    //         printQueue.call(bufferFull);
+    // //         //fatal error
+    //     }else{
     // //         //printf("space available\n");
     //         if(bufferLock.trylock_for(1ms) == 0){
     //             printQueue.call(bufferLockTimeout);
@@ -65,10 +66,10 @@ void bufferClass::writeBuffer(){
                 //}
                 newIDX = (newIDX + 1); //increment buffer size
                 buffer[newIDX] = dataRecord; //update the buffer
-            }
+            //}
     //     bufferLock.unlock();
     // }
-    spaceInBuffer.release();
+    //spaceInBuffer.release();
     //samplesInBuffer.release();
 } // writeBuffer function end
 
@@ -117,8 +118,8 @@ void bufferClass::printBufferContents(){
 }
 
 //rename this, needed in new write SD function in sd.cpp
+//void bufferClass::flushBuffer(){
 void bufferClass::flushBuffer(FILE &fp){
-
     // //check for samples in the buffer
     // bool checkBuffer = samplesInBuffer.try_acquire_for(1s);
     // if(checkBuffer == 0){
@@ -128,30 +129,35 @@ void bufferClass::flushBuffer(FILE &fp){
     // }else{
     //     samplesInBuffer.release();
 
-    //     if(bufferLock.trylock_for(1s) == 0){
-    //         printQueue.call(bufferFlushTimeout);
-    //         //errorSeverity(WARNING);
-    //     }else{
+        if(bufferLock.trylock_for(1s) == 0){
+            printQueue.call(bufferFlushTimeout);
+            //errorSeverity(WARNING);
+        }else{
             int run = 1;
+            // FATFileSystem fs("sd", &mysd2);
+            // FILE *fp = fopen("/sd/test.txt","w");
+
             while(run == 1){
                 if(oldIDX == newIDX){
                     run = 0; //everything is out
                 } else{
                     //greenLED =!greenLED;
-                    samplesInBuffer.try_acquire_for(1s);
+                    samplesInBuffer.try_acquire_for(1ms);
                     oldIDX = (oldIDX + 1);
                     liveData flushRecord = buffer[oldIDX];
                     //fprintf(&fp, "Time recorded = );
-                    fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+                    //fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
                     
+                    fprintf(&fp, "printing things\n");
                     //spaceInBuffer.release();//space in buffer signal
                  }
              } //end while
-             samplesInBuffer.release();
-        //     printQueue.call(flushedBuffer);
-        //     //flash green led
-        //     bufferLock.unlock();
-        // }
-   //}
+            samplesInBuffer.release();
+            printQueue.call(flushedBuffer);
+            //flash green led
+            bufferLock.unlock();
+            printQueue.call(printf, "unlocked buffer after\n");
+        }
+//    }
 } //end function writeSD
 
