@@ -10,6 +10,7 @@
 #include "FATFileSystem.h"
 #include "sampling.h"
 #include "SDBlockDevice.h"
+#include <cstdio>
 
 #define buffer_size 800
 using namespace std;
@@ -20,7 +21,7 @@ class bufferClass{
     private: 
     //mutex locks
     Mutex bufferLock;
-    Mutex dataLock;
+    Mutex timeLock;
     Ticker bufferTick;
     sampler dataSampler;
 
@@ -31,6 +32,7 @@ class bufferClass{
     void acquireData();
     void printBufferContents();
     void emptyBuffer();
+    //liveData printToWebpage();
 
     unsigned int newIDX = buffer_size - 1; 
     unsigned int oldIDX = buffer_size - 1;
@@ -58,6 +60,8 @@ class bufferClass{
 
 extern liveData dataRecord;
 extern liveData flushRecord;
-//extern liveData printRecord{buffer_size};
+extern liveData printRecord[buffer_size];
 
+
+liveData printToWebpage();
 #endif

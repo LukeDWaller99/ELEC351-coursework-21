@@ -87,14 +87,14 @@ int main() {
     //SDCardClass.readSD();
         
     }
-
+    mybuffer.printBufferContents();
     //these functions work
     //SDCardClass.writeSD();
 
-    wait_us(100);
-    mySDCard.mywrite_sdcard();
-    wait_us(100);
-    mySDCard.testWriteSD();
+    // wait_us(100);
+    // mySDCard.mywrite_sdcard();
+    // wait_us(100);
+    // mySDCard.testWriteSD();
     
     //mySDCard.myread_sdcard();
     //mySDCard.readSD();
