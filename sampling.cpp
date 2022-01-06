@@ -2,14 +2,15 @@
 
 //extern samples sampledData;
 
-sampler::sampler():LDR(AN_LDR_PIN) {
+sampler::sampler():LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
     sampleThread.start(callback(this, &sampler::sample));
     matrixThread.start(callback(this, &sampler::matrixInterface));
     sampleTick.attach(callback(this, &sampler::sampleflag),1s);
+    BT_A.rise(callback(this, &sampler::sensorflag));
 }
 
 
-sampler::sampler(float limits[6]):LDR(AN_LDR_PIN) {
+sampler::sampler(float limits[6]):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
     //set threshold values
     threshold.bind(limits);
     sampleThread.start(callback(this, &sampler::sample));
@@ -19,6 +20,10 @@ sampler::sampler(float limits[6]):LDR(AN_LDR_PIN) {
 
 void sampler::sampleflag(){
     sampler::sampleThread.flags_set(1);
+}
+
+void sampler::sensorflag(){
+    sampler::matrixThread.flags_set(2);
 }
 
 void sampler::sample(){
@@ -49,16 +54,34 @@ void sampler::sample(){
 }
 
 void sampler::matrixInterface(){
+    int flags;
     while(true){
-        ThisThread::flags_wait_any(1);
-        quantise(LIGHT);
+        ThisThread::flags_wait_any(1); //wait for wake-up call
+        flags = ThisThread::flags_get(); //check if sensor needs to be cycled
+        if (flags == 2) {
+        switch (currentSensor) {
+            case TEMP :
+                currentSensor = PRESSURE;
+            break;
+            case PRESSURE:
+                currentSensor = LIGHT;
+            break;
+            case LIGHT :
+                currentSensor = TEMP;
+            break;
+            default:
+                currentSensor = TEMP;
+            }
+        }
+        quantise(currentSensor);
+        
         ThisThread::flags_clear(1);
     }
 }
 
 void sampler::quantise(sensor_type selectedSensor){
-    int i;
-    float quantInterval,rawVals[8],quantVals[8],upper,lower,min,max;
+    int i,quantVals[8];
+    float quantInterval,rawVals[8],upper,lower,min,max;
     //Calculate quantisation interval
     if (selectedSensor == TEMP){
         upper = threshold.t_upper;  //extract upper limit
@@ -85,8 +108,12 @@ void sampler::quantise(sensor_type selectedSensor){
     min = lower -(3*quantInterval);
     max = upper +(3*quantInterval);
     for(i=0;i<8;i++){
-        quantVals[i]=(rawVals[i]-lower)/quantInterval;
-        printf("%d \t%f \n",i,quantVals[i]);
+        quantVals[i]=static_cast<int>((rawVals[i]-lower)/quantInterval);
+        if (quantVals[i] < 0){
+            quantVals[i] = 0;
+        }
+
+        printf("%d \t%d \n",i,quantVals[i]);
     }
 
 }

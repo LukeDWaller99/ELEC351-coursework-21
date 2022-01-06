@@ -8,10 +8,19 @@
 
 
 /**
-Structure for holding the sample data. The samples struct 
+Structure for holding the sample data. The samples struct holds three values, one from each sensor, taken at 1 
+second intervals.
 **/
 struct samples{
     float temp, pressure, LDR;
+};
+
+/**
+Structure for holding quantised samples. This structure is primarily used for interfacing with the 
+matrix display, and holds eight interger values.
+**/
+struct quantised_samples{
+    int qsamples[8];
 };
 
 struct limits{
@@ -43,6 +52,16 @@ struct limits{
         l_upper = limits[4];
         l_lower = limits[5];
     }
+
+    /**
+    Method to set all limits at once using an array. This method allows an array to be used to override all limits
+    at once, with a single call. Limits cannot be selectively over-written, the array must have a length of six.
+    @param limits   Array of limits, upper and lower, temperature, pressure, light.
+                    Temperature in Celsius.
+                    Pressure in millibars.
+                    Light value as a 0->1 float value.
+
+    **/
     void bind(float limits[6]){
         t_upper = limits[0];
         t_lower = limits[1];
@@ -59,25 +78,39 @@ class sampler {
     enum sensor_type{
         TEMP,
         PRESSURE,
-        LIGHT
+        LIGHT,
     };
-    limits threshold;
-    float limits[6];
-    Mutex sampleLock;
-    Ticker sampleTick;
-    Thread sampleThread,matrixThread;
-    LEDMatrix matrix;
+    InterruptIn BT_A;                       ///Button for controlling the matrix output sensor
+    limits threshold;                       ///limits object to store the current alarm thresholds
+    sensor_type currentSensor = LIGHT;      ///Current sensor output, default is 'LIGHT'
+    //float limits[6];    
+    Mutex sampleLock;                       ///Mutex Lock to ensure thread safety on sample values
+    Ticker sampleTick;                      ///Ticker interrupt to trigger sampling at once per second
+    Thread sampleThread,matrixThread;       ///Thread declarations.
+    LEDMatrix matrix;                       ///LED Matrix display for outputting sample bar graphs.
     //bufferClass sampleBuffer;
-    uop_msb::EnvSensor sensor;
+    uop_msb::EnvSensor sensor;        
     AnalogIn LDR;
 
-    
+    /**
+    Main sampling function. This function contains the majority of the sampler's functionality. After being
+    awoken by the ticker, it reads the sensor values in a thread safe manner, checking the values against the 
+    set thresholds. If any of these thresholds are broken, the appropriate error flag is raised. The sample data is 
+    quantised and then sent to the matrix.
+    **/
     void sample();
+
     /**
     ISR to raise the sample flag. This interrupt service routine is triggered by a ticker attached in the class
     constructor, and fires every second waking the sampler up.
     **/
     void sampleflag();
+
+    /**
+    ISR to flip the sensor flag. The sensor flag indicates that the desired output sensor has been changed.
+    **/
+    void sensorflag();
+
     /**
     Quantise the internal buffer to sixteen levels and send to the matrix. This function quantises the 
     internal buffer to sixteen levels, before sending the selected measurement (Temp, Pressure, Light), to the
@@ -85,9 +118,14 @@ class sampler {
     @param selectedSensor   Stores what measurement is to be output onto the matrix display. The function
                             only quantises the desired measurement values.
      **/
-    void matrixInterface();
     void quantise(sensor_type selectedSensor);
+
+    /**
+    Matrix interface funtion.
+    **/
+    void matrixInterface();
     public:
+    quantised_samples matrix_input; ///Holds quantised values to be passed to the matrix display
     samples internal_buffer[8];
     samples sampleData;
     /**
