@@ -108,7 +108,15 @@ class ErrorHandler {
     ~ErrorHandler();
     /**
     Main error handler functionality. Waits for a flag to be set using setErrorFlag, before
-    responding with the appropriate outputs based on the error severity.
+    responding with the appropriate outputs based on the error severity. An example call can be seen below.
+    @code
+    EventQueue* queue = new EventQueue();
+    ErrorHandler EH(queue);
+    @endcode
+    To send an error to the error handler, use the format
+    @code
+    EH.setErrorFlag(T_UPPER);
+    @endcode
     **/
     void error_thread();
 
