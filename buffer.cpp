@@ -7,8 +7,8 @@ Semaphore spaceInBuffer(buffer_size);  //buffer space tracking
 Semaphore samplesInBuffer(0);          //sample no tracking
 Semaphore signalSample(0);             //signal to get new sample
 
-unsigned int newIDX = buffer_size - 1; 
-unsigned int oldIDX = buffer_size - 1;
+// unsigned int newIDX = buffer_size - 1; 
+// unsigned int oldIDX = buffer_size - 1;
 
 liveData buffer[buffer_size];
 samples sampledData;

@@ -21,6 +21,7 @@ class sampler {
     public:
     sampler();
     ~sampler();
+    int bufferWriteSignal;
     
 };
 

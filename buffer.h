@@ -31,6 +31,9 @@ class bufferClass{
     void acquireData();
     void printBufferContents();
     void emptyBuffer();
+
+    unsigned int newIDX = buffer_size - 1; 
+    unsigned int oldIDX = buffer_size - 1;
     
     //semaphores
     Semaphore samplesInBuffer;

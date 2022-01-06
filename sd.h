@@ -23,18 +23,22 @@ class SDCard{
 
     public:
     void initSD();
+    void flashGreen();
     void testWriteSD();
     void writeSD();
     void unmountSD();
     void SDRun();
     void readSD();
 
+
     bufferClass buffer;
     bool SDState = 0;
+    
 
     SDCard();
     ~SDCard();
 };
 
+    
 
 #endif

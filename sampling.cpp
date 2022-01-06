@@ -14,6 +14,7 @@ void sampler::sample(){
     while(true){
     ThisThread::flags_wait_any(1);
     if(sampleLock.trylock_for(1ms)==1){
+        bufferWriteSignal = 0;
         
         sampledData.temp = sensor.getTemperature();
         sampledData.pressure = sensor.getPressure();
@@ -28,6 +29,7 @@ void sampler::sample(){
     ThisThread::flags_clear(1);
 
     //set flag for buffer write
-    buffer::bufferThread.flags_set(10);
+    bufferWriteSignal = 1;
+    //buffer::bufferThread.flags_set(10);
     }
 }

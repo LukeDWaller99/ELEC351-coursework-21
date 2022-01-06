@@ -30,8 +30,17 @@ SDCard SDCardClass;
 Thread print;
 Thread buffer_run;
 
-//check sd mounted
-//FIND PIN FOR SD CARD
+//*************
+/* going to get SDState to store if its mounted or not to use ISR in main
+green flash added
+constructor updated
+SDRun updated - can test now with a thread for timing?
+writeSD updated - need to copy last time flush occured and use that to track
+*/
+
+// void SDCardISR(){
+//     SDCardThread.flags_set(SDDetect);
+// }
 
     // void sd_check(){
     //     while(true){

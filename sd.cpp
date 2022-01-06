@@ -11,9 +11,13 @@ SDBlockDevice mysd(PB_5, PB_4, PB_3, PF_3);
 // SDBlockDevice SDDetect(PF_4);
 DigitalOut greenLED(PC_6);
 DigitalIn SDDetect(PF_4);
+extern unsigned int newIDX = buffer_size - 1; 
+extern unsigned int oldIDX = buffer_size - 1;
+
 
 SDCard::SDCard() {
-  // SDThread.start(callback(this, &SDCard::SDRun));
+    // SDThread.start(callback(this, &SDCard::SDRun));
+    SDCard::initSD();
 }
 
 // //function to flash green LED before and after the SD card is being written
@@ -37,6 +41,16 @@ void SDCard::initSD() {
     printQueue.call(mountedSD);
   }
 }
+
+void flashGreen(){
+    greenLED = 0;
+    ThisThread::sleep_for(10ms);
+    greenLED = 1;
+}
+
+// void SDCardISR(){
+//     SDThread.flags_set(SDDetect)
+// }
 
 void SDCard::testWriteSD() {
 
@@ -82,6 +96,12 @@ void SDCard::writeSD(){
         printQueue.call(unmountedFlush);
     }else{
         SDBuffer.flushBuffer(*fp); //flush buffer data
+        //NOW STORE THE TIME OF THIS FLUSH
+        //TO TRACK TIME UNTIL NEXT FLUSH
+        //*********
+
+
+        //*********
 
     }
     fclose(fp); //close file
@@ -122,20 +142,24 @@ void SDCard::readSD() {
     return;
   }
 }
-// thread for SD writing
-/*
+
 void SDCard::SDRun(){
     initSD();
     while(1){
-        if(SDState == 1){
-            //if buffer is almost full at 1 minute, flush
-           // if(longer than a minute) && (newIDX == (oldIDX -
-(round(BUFFERSIZE*0.1))))){ writeSD();
-           }
-            else if( )
-            //if buffer hasn't filled in an hour, still flush
+        if(SDDetect == 0){
 
+            if(newIDX == (oldIDX - (round(buffer_size * 0.1)))){
+                SDCard::writeSD();
+
+            }
+            //******************************************************
+            //if buffer is almost full at 1 minute, flush
+            // if(longer than a minute) && (newIDX == (oldIDX -
+            //(round(buffer_size*0.1))))){ writeSD();
+            //}
+            //else if( )
+            //if buffer hasn't filled in an hour, still flush
+            //******************************************************
         }
     }
 } //end SDThread function
-*/
