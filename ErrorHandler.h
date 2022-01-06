@@ -75,6 +75,7 @@ class ErrorHandler {
     typedef void(*funcPointer_t)(void);
     DigitalOut yellowLED = TRAF_YEL1_PIN;
     DigitalOut redLED = TRAF_RED1_PIN;
+    InterruptIn override_button;
     #if BUZZER_ENABLE == 1
     Buzzer buzz;
     char note = 'C';
@@ -89,7 +90,12 @@ class ErrorHandler {
     /**Function for clearing the Error Handler's thread flags safely
     **/
     void clear_all();
-    
+
+    /**
+    ISR to handle the user button alarm override. This ISR disables the buzzer prematurely, before the error 
+    handler normally would. 
+    **/
+    void alarm_override();
 
     public:
     Thread ERROR_THREAD_NAME;

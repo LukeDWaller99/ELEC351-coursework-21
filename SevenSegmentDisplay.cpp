@@ -1,5 +1,5 @@
 #include "SevenSegmentDisplay.h"
-#include "iothub_message_private.h"
+//#include "iothub_message_private.h"
 #include "mbed_retarget.h"
 #include "mbed_wait_api.h"
 
