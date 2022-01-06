@@ -40,6 +40,12 @@ writeSD updated - need to copy last time flush occured and use that to track, us
 its own thread to check capacity of buffer throughout
 */
 
+//*************
+
+//UOP_MSB_TEST board;
+
+//************
+
 // void SDCardISR(){
 //     SDCardThread.flags_set(SDDetect);
 // }
@@ -66,29 +72,30 @@ int main() {
     while(i < 20){
              
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    //wait_us(900000);
+    //wait_us(900);
     mybuffer.writeBuffer();
     wait_us(100);
     //mySDCard.writeSD();
     //mySDCard.testWriteSD();
     // //mybuffer.acquireData();
-    // //wait_us(10000000);
+    // //wait_us(100);
     // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
     printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
     wait_us(100);
     i++;
     printf("%i\n", i);
     //SDCardClass.readSD();
-
+        
     }
 
     //these functions work
     //SDCardClass.writeSD();
 
-    wait_us(10000);
-    //mySDCard.mywrite_sdcard();
+    wait_us(100);
+    mySDCard.mywrite_sdcard();
+    wait_us(100);
     mySDCard.testWriteSD();
-    //wait_us(1000000);
+    
     //mySDCard.myread_sdcard();
     //mySDCard.readSD();
     // wait_us(100000);
@@ -97,5 +104,5 @@ int main() {
     // wait_us(100000);
     // //mySDCard.readSD();
     // wait_us(100000);
-
+    //board.test();
 }

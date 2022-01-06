@@ -54,11 +54,11 @@ void SDCard::flashGreen(){
 //int SDCard::mywrite_sdcard()
 void SDCard::mywrite_sdcard()
 {
-    printf("Initialise and write to a file\n");
+    printf("Initialise and write data to a file\n");
     int err;
     // call the SDBlockDevice instance initialisation method.
 
-    err=mysd.init();
+    err = mysd.init();
     if ( 0 != err) {
         printf("Init failed %d\n",err);
         greenLED = 0;
