@@ -86,7 +86,8 @@ int main() {
     //SDCardClass.writeSD();
 
     wait_us(10000);
-    mySDCard.mywrite_sdcard();
+    //mySDCard.mywrite_sdcard();
+    mySDCard.testWriteSD();
     //wait_us(1000000);
     //mySDCard.myread_sdcard();
     //mySDCard.readSD();

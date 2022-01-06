@@ -129,10 +129,10 @@ void bufferClass::flushBuffer(FILE &fp){
     // }else{
     //     samplesInBuffer.release();
 
-        if(bufferLock.trylock_for(1s) == 0){
-            printQueue.call(bufferFlushTimeout);
-            //errorSeverity(WARNING);
-        }else{
+        // if(bufferLock.trylock_for(1ms) == 0){
+        //     printQueue.call(bufferFlushTimeout);
+        //     //errorSeverity(WARNING);
+        // }else{
             int run = 1;
             // FATFileSystem fs("sd", &mysd2);
             // FILE *fp = fopen("/sd/test.txt","w");
@@ -155,9 +155,9 @@ void bufferClass::flushBuffer(FILE &fp){
             samplesInBuffer.release();
             printQueue.call(flushedBuffer);
             //flash green led
-            bufferLock.unlock();
-            printQueue.call(printf, "unlocked buffer after\n");
-        }
+            //bufferLock.unlock();
+            //printQueue.call(printf, "unlocked buffer after\n");
+        //}
 //    }
 } //end function writeSD
 

@@ -24,14 +24,14 @@ class SDCard{
     public:
     void initSD();
     void flashGreen();
-    //void testWriteSD();
+    void testWriteSD();
     //void writeDataSD();
     //void writeSD();
     //void unmountSD();
     //void SDRun();
     //void readSD();
 
-    int mywrite_sdcard();
+    void mywrite_sdcard();
     int myread_sdcard();
 
     bufferClass buffer;

@@ -3,7 +3,7 @@
 
 // bufferClass obj;
 // bool SDState = 0;
-// FILE *fp; //file pointer
+FILE *fp; //file pointer
 bufferClass SDBuffer;
 // SDPins SDPinNumbers(PB_5, PB_4, PB_3, PE_3);
 SDBlockDevice mysd(PB_5, PB_4, PB_3, PF_3);
@@ -50,17 +50,19 @@ void SDCard::flashGreen(){
 // // }
 
 
-int SDCard::mywrite_sdcard()
+
+//int SDCard::mywrite_sdcard()
+void SDCard::mywrite_sdcard()
 {
     printf("Initialise and write to a file\n");
- int err;
+    int err;
     // call the SDBlockDevice instance initialisation method.
 
     err=mysd.init();
     if ( 0 != err) {
         printf("Init failed %d\n",err);
         greenLED = 0;
-        return -1;
+        //return -1;
     }
     
     FATFileSystem fs("sd", &mysd);
@@ -69,16 +71,12 @@ int SDCard::mywrite_sdcard()
         error("Could not open file for write\n");
         mysd.deinit();
         greenLED = 0;
-        return -1;
+        //return -1;
     } else {
         //*****************************************
-        SDCard::flashGreen();
+        //SDCard::flashGreen();
         SDBuffer.flushBuffer(*fp);
         //greenLED = 1;   
-
-
-
-
         //*****************************************
         
         //Tidy up here
@@ -86,132 +84,132 @@ int SDCard::mywrite_sdcard()
         //SDCard::flashGreen();
         printf("SD Write done...\n");
         mysd.deinit();
-        return 0;
+        //return 0;
     }
     
 }
 
-int SDCard::myread_sdcard()
-{
-    printf("Initialise and read from a file\n");
+// int SDCard::myread_sdcard()
+// {
+//     printf("Initialise and read from a file\n");
 
-    // call the SDBlockDevice instance initialisation method.
-    if ( 0 != mysd.init()) {
-        printf("Init failed \n");
-        return -1;
-    }
+//     // call the SDBlockDevice instance initialisation method.
+//     if ( 0 != mysd.init()) {
+//         printf("Init failed \n");
+//         return -1;
+//     }
     
-    FATFileSystem fs("sd", &mysd);
-    FILE *fp = fopen("/sd/test.txt","r");
-    if(fp == NULL) {
-        error("Could not open or find file for read\n");
-        mysd.deinit();
-        return -1;
-    } else {
-        //Put some text in the file...
-        char buff[64]; buff[63] = 0;
-        while (!feof(fp)) {
-            fgets(buff, 63, fp);
-            printf("%s\n", buff);
-        }
-        //Tidy up here
-        fclose(fp);
-        printf("SD read done...\n");
-        mysd.deinit();
-        return 0;
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// void SDCard::testWriteSD() {
-
-//   int err;
-//   err = mysd.init();
-//   if (0 != err) {
-//       printf("%d\n", err);
-//     printQueue.call(mountError);
-//     return;
-//   }
-
-//   FATFileSystem fs("sd", &mysd);
-//   FILE *fp = fopen("sd/test.txt", "w");
-
-//   if (fp == NULL) {
-//     printQueue.call(noSDFile);
-//     mysd.deinit();
-//   }
-
-//   //SDState = 1;
-//   //green led on
-//   printQueue.call(mountedSD);
-
-//   //testing
-//   //printQueue.call(fprintf(fp, "there are words here\n"));
-//   fprintf(fp, "there are words here\n");
-//   fclose(fp);
-//   SDCard::flashGreen();
-//   //printQueue.call(printf, "WE GOT THIS FAR\n");
-//   mysd.deinit();
+//     FATFileSystem fs("sd", &mysd);
+//     FILE *fp = fopen("/sd/test.txt","r");
+//     if(fp == NULL) {
+//         error("Could not open or find file for read\n");
+//         mysd.deinit();
+//         return -1;
+//     } else {
+//         //Put some text in the file...
+//         char buff[64]; buff[63] = 0;
+//         while (!feof(fp)) {
+//             fgets(buff, 63, fp);
+//             printf("%s\n", buff);
+//         }
+//         //Tidy up here
+//         fclose(fp);
+//         printf("SD read done...\n");
+//         mysd.deinit();
+//         return 0;
+//     }
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void SDCard::testWriteSD() {
+
+  int err;
+  err = mysd.init();
+  if (0 != err) {
+      printf("%d\n", err);
+    printQueue.call(mountError);
+    return;
+  }
+
+  FATFileSystem fs("sd", &mysd);
+  FILE *fp = fopen("sd/test.txt", "w");
+
+  if (fp == NULL) {
+    printQueue.call(noSDFile);
+    mysd.deinit();
+  }
+
+  //SDState = 1;
+  //green led on
+  printQueue.call(mountedSD);
+
+  //testing
+  //printQueue.call(fprintf(fp, "there are words here\n"));
+  fprintf(fp, "there are words here\n");
+  fclose(fp);
+  SDCard::flashGreen();
+  //printQueue.call(printf, "WE GOT THIS FAR\n");
+  mysd.deinit();
+}
 
 // // void SDCard::writeDataSD() {
 
