@@ -19,6 +19,7 @@ EventQueue* queue = new EventQueue();
 ErrorHandler EH(queue);
 LEDMatrix matrix;
 Thread t;
+SevenSegmentDisplay display;
 
 
 int main() {
@@ -74,4 +75,5 @@ int main() {
         
      }
     //EH.alarmtest();
+}
 }

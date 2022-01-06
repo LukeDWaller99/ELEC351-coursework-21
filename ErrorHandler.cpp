@@ -1,9 +1,6 @@
 //AUTHOR - JACK PENDLEBURY
-#include "Callback.h"
-#include "SevenSegmentDisplay.h"
-#include "ThisThread.h"
 #include <ErrorHandler.h>
-#include <cstdio>
+
 
 int flag_value = 0;
 int currentErrorSeverity = 0;

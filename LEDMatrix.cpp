@@ -1,6 +1,4 @@
 #include "LEDMatrix.h"
-#include <algorithm>
-#include <cstdio>
 
 #define SCAN_RATE_MS 50
 

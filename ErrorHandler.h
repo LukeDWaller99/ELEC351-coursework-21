@@ -11,6 +11,9 @@ Error Handler class header file
 #include "mbed.h"
 #include "Mutex.h"
 #include <uop_msb.h>
+#include <cstdio>
+#include "Callback.h"
+#include "ThisThread.h"
 using namespace uop_msb;
 ///BUZZER ENABLE
 ///set to 0 when using networking
