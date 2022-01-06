@@ -31,10 +31,12 @@ using namespace uop_msb;
 //  0x9 - ALL CLEAR
 
 //error codes - 10s
-#define BUFFER_FULL             0x110   ///FULL BUFFER - SEVERITY CRITICAL
-#define TIMER_LOCK_TIMEOUT      0x112   ///TIMER LOCK TIMEOUT - CRITICAL
-#define EMPTY_FLUSH             0x013   ///FLUSH WHEN EMPTY - WARNING
-#define BUFFER_FLUSH_TIMEOUT    0x114   ///FAILED FLUSH - CRITICAL
+
+#define BUFFER_FULL             0x110 ///< FULL BUFFER - SEVERITY CRITICAL  
+#define BUFFER_LOCK_TIMEOUT     0x111 ///< BUFFER LOCK TIMEOUT - CRITICAL 
+#define TIMER_LOCK_TIMEOUT      0x112 ///< TIMER LOCK TIMEOUT - CRITICAL   
+#define EMPTY_FLUSH             0x013 ///< FLUSH WHEN EMPTY - WARNING  
+#define BUFFER_FLUSH_TIMEOUT    0x114 ///< FAILED FLUSH - CRITICAL    
 
 //sd card errors - 20s - All Critical
 ///NO SD CARD MOUNTED - CRITICAL
