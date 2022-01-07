@@ -32,6 +32,7 @@ class bufferClass{
     void acquireData();
     void printBufferContents();
     void emptyBuffer();
+    void printToWebpage(vector<int> & webpageData);
     //liveData printToWebpage();
 
     unsigned int newIDX = buffer_size - 1; 

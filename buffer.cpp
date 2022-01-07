@@ -161,34 +161,24 @@ void bufferClass::flushBuffer(FILE &fp){
 } //end function writeSD
 
 
-//this function is not in the class, dont know how to return the data when it is?
-/*
-liveData printToWebpage(){
+void bufferClass::printToWebpage(vector<int> & webpageData){
     
-    bool isThereData = samplesInBuffer.try_acquire_for(1ms);
-    if(isThereData == 0){
+    if(samplesInBuffer.try_acquire_for(1ms) == 0){
         printQueue.call(printf, "no data to put on webpage\n");
     }
-    // not a fatal error but should probably output something?
-
-    //liveData webpageData = 
-    //return webpageData
-
     else{
         if(bufferLock.trylock_for(1ms) == 0){
             printQueue.call(printf, "buffer not locked to put data on webpage\n");
         }
-
         else{
             liveData webpageData = buffer[newIDX]; //latest set of environmental data
             //******************************
-            //update to index through all values when i know how
+            //update to index through all once tested
             //******************************
             bufferLock.unlock();
             samplesInBuffer.release();
-
-            return webpageData;
+            //return webpageData;
+            //dont need to return anything with this approach
         }
     }
 }
-*/
