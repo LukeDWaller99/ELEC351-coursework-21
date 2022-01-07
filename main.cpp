@@ -7,27 +7,35 @@
 #include "mbed_wait_api.h"
 #include "uop_msb.h"
 #include "rtos/ThisThread.h"
-#include "NTPClient.h"
 #include "azure_c_shared_utility/xlogging.h"
 #include <cstring>
 #include <string.h>
 #include <LEDMatrix.h>
 #include "SevenSegmentDisplay.h"
 #include <ErrorHandler.h>
+#include "NTPConnection.h"
+#include "HTTP_Server.h"
 using namespace uop_msb;
 EventQueue* queue = new EventQueue();
 ErrorHandler EH(queue);
-LEDMatrix matrix;
-Thread t;
-SevenSegmentDisplay display;
+// NTPConnection NTP;
+// SevenSegmentDisplay display;
+HTTP_server server;
+// LEDMatrix matrix;
+// Thread t;
+
+
+time_t timestamp;
 
 
 int main() {
-    matrix.clear();
-    display.clear();
-    display.test();
-    while(true)
-    {
+    
+    // wait_us(5000000);
+    // timestamp = NTP.getTime();
+    // printf("%s\n", ctime(&timestamp));
+    // matrix.clear();
+    // display.clear();
+    // display.test();
         // samples[0] = 0xffff;
         // samples[1] = 0x0000;
         // samples[2] = 0xff00;
@@ -58,22 +66,22 @@ int main() {
     // Err_thread.start(&EH.error_thread);
     // display.test();
     // matrix.test();
-    t.start(callback(queue, &EventQueue::dispatch_forever));
-    matrix.clear();
-    wait_us(100000);
-    EH.setErrorFlag(T_UPPER);
-    wait_us(5000000);
-    EH.setErrorFlag(ALL_CLEAR);
-    wait_us(100000);
-    EH.setErrorFlag(EMPTY_FLUSH);
-    wait_us(5000000);
-    EH.setErrorFlag(ALL_CLEAR);
-    wait_us(5000000);
-    EH.setErrorFlag(BUFFER_FULL);
-         while(true)
-     {
+    // t.start(callback(queue, &EventQueue::dispatch_forever));
+    // matrix.clear();
+    // wait_us(100000);
+    // EH.setErrorFlag(T_UPPER);
+    // wait_us(5000000);
+    // EH.setErrorFlag(ALL_CLEAR);
+    // wait_us(100000);
+    // EH.setErrorFlag(EMPTY_FLUSH);
+    // wait_us(5000000);
+    // EH.setErrorFlag(ALL_CLEAR);
+    // wait_us(5000000);
+    // EH.setErrorFlag(BUFFER_FULL);
+    //      while(true)
+    //  {
         
-     }
+    //  }
     //EH.alarmtest();
-}
+
 }

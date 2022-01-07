@@ -14,7 +14,18 @@ class SevenSegmentDisplay{
     SevenSegmentDisplay();
     void clear();
     void clear(int number);
+    /**
+    Sets the number of a given seven segment display
+
+    @param digit Digit sets which seven segment display to write to
+    @param number Sets the number to output in the 7 segmenet to display
+    **/
     void setDigit(int digit, int number);
+
+    /**
+    Sets the number to be outputted on the seven segment display
+    @param number The number to be outputted onto the seven segment display (in HEX)
+    **/
     void setNumber(int number);
     void test();
     void operator=(int number);

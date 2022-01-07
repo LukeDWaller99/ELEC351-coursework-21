@@ -53,6 +53,11 @@ using namespace uop_msb;
 #define L_LOWER 0x435   ///Lower light threshold exceeded.
 #define L_UPPER 0x436   ///Upper light threshold exceeded.
 
+//networking errors - 40s
+#define NO_NETWORK_INTERFACE    0x040   ///NO NETWORK INTERFACE CONNECTED/FOUND
+#define CONNECTION_ERROR        0x041   ///COULD NOT CONNECT TO NTP SERVER
+#define TIME_ERROR              0x042   ///FAILED TO GET TIME FROM NTP SERVER
+
 //error handler errors
 #define FLAG_CLEAR_ERROR 0x299  ///Flag clear error, immediate reset
 
