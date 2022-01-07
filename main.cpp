@@ -29,7 +29,7 @@ SDCard mySDCard;
 //threads
 //Thread SDThread;
 Thread print;
-//Thread buffer_run;
+Thread buffer_run;
 
 //*************
 /* going to get SDState to store if its mounted or not to use ISR in main
@@ -63,9 +63,11 @@ its own thread to check capacity of buffer throughout
     //     ThisThread::sleep_for(20s);
     //     }
     // }
-
+    Ticker bufferTick;
 int main() {
     print.start(callback(&printQueue, &EventQueue::dispatch_forever));
+    //bufferTick.start(callback(&mybuffer::acquireData), 15s);
+    
     mybuffer.emptyBuffer();
     
     int i = 0;
@@ -73,20 +75,21 @@ int main() {
              
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
     //wait_us(900);
-    mybuffer.writeBuffer();
-    wait_us(100);
+    mybuffer.writeBuffer2();
+    wait_us(10000000);
     //mySDCard.writeSD();
     //mySDCard.testWriteSD();
     // //mybuffer.acquireData();
     // //wait_us(100);
     // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
     printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
-    wait_us(100);
+    wait_us(10000000);
     i++;
     printf("%i\n", i);
     //SDCardClass.readSD();
         
     }
+    
     mybuffer.printBufferContents();
     //these functions work
     //SDCardClass.writeSD();

@@ -29,14 +29,18 @@ class bufferClass{
     void flushBuffer(FILE &fp);
     void sampleFunc();
     void writeBuffer();
+    void writeBuffer2();
     void acquireData();
     void printBufferContents();
     void emptyBuffer();
-    void printToWebpage(vector<int> & webpageData);
-    //liveData printToWebpage();
+    //void printToWebpage(vector<int> & webpageData);
 
     unsigned int newIDX = buffer_size - 1; 
     unsigned int oldIDX = buffer_size - 1;
+    int runPrint = 1;
+    int printIDX = oldIDX; //work from oldest to newest sets data
+    int printRecordsIDX = 0; //track no of data sets
+    int pRIDX = 0;
     
     //semaphores
     Semaphore samplesInBuffer;

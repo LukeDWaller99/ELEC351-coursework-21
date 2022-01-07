@@ -1,5 +1,6 @@
+//NOAH HARVEY
+
 #include "sd.h"
-#include <cstdio>
 
 // bufferClass obj;
 // bool SDState = 0;
@@ -49,9 +50,6 @@ void SDCard::flashGreen(){
 // //     SDThread.flags_set(SDDetect)
 // // }
 
-
-
-//int SDCard::mywrite_sdcard()
 void SDCard::mywrite_sdcard()
 {
     printf("Initialise and write data to a file\n");

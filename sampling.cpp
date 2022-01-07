@@ -29,7 +29,7 @@ void sampler::sample(){
     ThisThread::flags_clear(1);
 
     //set flag for buffer write
-    bufferWriteSignal = 1;
+    //bufferWriteSignal = 1;
     //buffer::bufferThread.flags_set(10);
     }
 }
