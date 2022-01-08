@@ -112,8 +112,6 @@ class ErrorHandler {
     **/
     void setErrorFlag(int errorCode);
 
-
-
 };
 
 #endif

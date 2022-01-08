@@ -1,7 +1,4 @@
 #include "SevenSegmentDisplay.h"
-#include "iothub_message_private.h"
-#include "mbed_retarget.h"
-#include "mbed_wait_api.h"
 
 #define OFF 0b00000000
 #define ZERO 0b01111011
