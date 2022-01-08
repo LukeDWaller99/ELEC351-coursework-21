@@ -1,37 +1,29 @@
-// #ifndef __SDCARD2__
-// #define __SDCARD2__
+#ifndef __SDCARD2__
+#define __SDCARD2__
 
-// #include "mbed.h"
-// #include "FATFileSystem.h"
-// #include "SDBlockDevice.h"
-// #include "buffer.h"
+#include "mbed.h"
+#include "FATFileSystem.h"
+#include "SDBlockDevice.h"
+#include "buffer.h"
 
-// /*
-// CS PE3 //DigitalOut
-// SPI1 SCK PB_3
-// SPI1 MOSI PB_5
-// SPI1 MISO PB_4
-// DETECT PF_4
-// */
-// //green led PC_6 for when mounted
+class SDCard{
+    private:
+    bufferClass SDBuffer;
+    //Thread SDThread;
 
+    public:
+    void initSD();
+    void flashGreen();
+    //void writeSD();
+    // void unmountSD();
+    // void SDRun();
 
-// class SDCard{
-//     private:
-//     //Thread SDThread;
+    
+    bool cardMount = 0;
 
-//     public:
-//     void initSD();
-//     void writeSD();
-//     void unmountSD();
-//     void SDRun();
-
-//     bufferClass buffer;
-//     bool SDState = 0;
-
-//     SDCard();
-//     ~SDCard();
-// };
+    SDCard();
+    ~SDCard();
+};
 
 
-// #endif
+#endif

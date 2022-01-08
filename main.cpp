@@ -10,102 +10,61 @@
 #include <sampling.h>
 #include <buffer.h>
 #include <printQueue.h>
-#include <sd.h>
-#include "SDBlockDevice.h"
-#include "FATFileSystem.h"
+#include <sd2.h>
+// #include "SDBlockDevice.h"
+// #include "FATFileSystem.h"
 
 using namespace uop_msb;
 using namespace std;
-sampler samplerer;
-extern samples sampleData;
-//extern samples sampledData1;
-//extern liveData dataRecord1;
-bufferClass mybuffer;
-//liveData flushRecord;
 
-//liveData dataRecord;
+extern samples sampleData;
+
+sampler samplerer;
+bufferClass mybuffer;
 SDCard mySDCard;
 
-//threads
-//Thread SDThread;
+//Threads
 Thread print;
-Thread buffer_run;
 
-//*************
-/* going to get SDState to store if its mounted or not to use ISR in main
-green flash added
-constructor updated
+/*
 SDRun updated - can test now with a thread for timing?
 writeSD updated - need to copy last time flush occured and use that to track, uses
 its own thread to check capacity of buffer throughout
 */
 
-//*************
-
-//UOP_MSB_TEST board;
-
-//************
-
-// void SDCardISR(){
-//     SDCardThread.flags_set(SDDetect);
+// void sd_check(){
+//     while(true){
+//         if(mySDCard.cardMount == 1){
+//             mySDCard.initSD();
+//             //test write?
+//         } else if (mySDCard.cardMount == 0){
+//             printQueue.call(printf, "sd check, failed\n");
+//         }
+//     }
 // }
 
-    // void sd_check(){
-    //     while(true){
-    //         if(SDCardClass.SDState == 1){
-               
-    //             //SDCardClass.unmountSD();
-    //         }
-    //         else if (SDCardClass.SDState == 0){
-    //             SDCardClass.initSD();
-    //             //SDCardClass.testWriteSD();
-    //         }
-    //     ThisThread::sleep_for(20s);
-    //     }
-    // }
-    Ticker bufferTick;
 int main() {
     print.start(callback(&printQueue, &EventQueue::dispatch_forever));
     //bufferTick.start(callback(&mybuffer::acquireData), 15s);
     
-    mybuffer.emptyBuffer();
+    //mybuffer.emptyBuffer();
+    //mySDCard.initSD();
     
     int i = 0;
-    while(i < 20){
-             
-    printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    //wait_us(900);
-    mybuffer.writeBuffer2();
-    wait_us(10000000);
-    //mySDCard.writeSD();
-    //mySDCard.testWriteSD();
-    // //mybuffer.acquireData();
-    // //wait_us(100);
-    // printf(" out \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
-    printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
-    wait_us(10000000);
+    while(i < 5){
+    mySDCard.initSD();
     i++;
-    printf("%i\n", i);
-    //SDCardClass.readSD();
-        
+    printf("%i\n", i);       
+    printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
+    wait_us(100000);
+    mybuffer.writeBuffer();
+    printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
+    wait_us(100000);
     }
     
     mybuffer.printBufferContents();
-    //these functions work
-    //SDCardClass.writeSD();
-
-    // wait_us(100);
-    // mySDCard.mywrite_sdcard();
-    // wait_us(100);
-    // mySDCard.testWriteSD();
+    mySDCard.initSD();
+    mybuffer.flushBufferUpgrade();
     
-    //mySDCard.myread_sdcard();
-    //mySDCard.readSD();
-    // wait_us(100000);
 
-    // mySDCard.writeDataSD();
-    // wait_us(100000);
-    // //mySDCard.readSD();
-    // wait_us(100000);
-    //board.test();
 }
