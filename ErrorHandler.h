@@ -80,8 +80,6 @@ class ErrorHandler {
     };   
     ///Function pointer for callbacks
     typedef void(*funcPointer_t)(void);
-    ///member function pointer
-    void (ErrorHandler::*ErrorPointer) (int) = &ErrorHandler::ErrorServicer;
     DigitalOut yellowLED = TRAF_YEL1_PIN;
     DigitalOut redLED = TRAF_RED1_PIN;
     InterruptIn override_button;
@@ -95,10 +93,6 @@ class ErrorHandler {
     Mutex flagLock;
     ///Pointer to the output error queue
     EventQueue* queue;
-    ///Queue for servicing errors
-    EventQueue* errorQueue = new EventQueue();
-    ///Stores the current error level
-    errorSeverity currentError = CLEAR;
     int alarm_status=0;
     /**Function for clearing the Error Handler's thread flags safely
     **/
@@ -110,18 +104,6 @@ class ErrorHandler {
     **/
     void alarm_override();
 
-    /**
-    Function to compare error severities. This function compares the new error severity against the currently 
-    active one. If the new error severity is higher, it returns 1, else zero,
-    @param[in]    new_ES  The new error severity to be checked, should be of the Enum errorSeverity
-    @param[out]   output     The result of the comparison.
-
-    **/
-    int compare_severity(errorSeverity new_ES);
-
-    void ErrorServicer(int errorVal);
-
-    Thread ERROR_SERVICER;
     public:
     Thread ERROR_THREAD_NAME;
     /**
@@ -136,10 +118,10 @@ class ErrorHandler {
     @code
     EH.setErrorFlag(T_UPPER);
     @endcode
-    @param errorOutputQueue - Pointer to an eventQueue object to be used for printing the 
+    @param errorQueue - Pointer to an eventQueue object to be used for printing the 
                         error messages to a serial output device
     **/
-    ErrorHandler(EventQueue* errorOutputQueue);
+    ErrorHandler(EventQueue* errorQueue);
     ~ErrorHandler();
     /**
     Main error handler functionality. Waits for a flag to be set using setErrorFlag, before

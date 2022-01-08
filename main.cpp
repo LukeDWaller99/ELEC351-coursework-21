@@ -29,15 +29,14 @@ int main() {
     matrix.clear();
     wait_us(100000);
     EH.setErrorFlag(T_UPPER);
-    // wait_us(5000000);
-    // EH.setErrorFlag(ALL_CLEAR);
-    // wait_us(100000);
-    // EH.setErrorFlag(EMPTY_FLUSH);
-    // wait_us(5000000);
-    // EH.setErrorFlag(ALL_CLEAR);
-    // wait_us(5000000);
+    wait_us(5000000);
+    EH.setErrorFlag(ALL_CLEAR);
+    wait_us(100000);
+    EH.setErrorFlag(EMPTY_FLUSH);
+    wait_us(5000000);
+    EH.setErrorFlag(ALL_CLEAR);
+    wait_us(5000000);
     EH.setErrorFlag(BUFFER_FULL);
-    EH.setErrorFlag(T_UPPER);
          while(true)
      {
         
