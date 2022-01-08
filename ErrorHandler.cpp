@@ -26,7 +26,6 @@ ErrorHandler::ErrorHandler(EventQueue* outputQueue):override_button(USER_BUTTON)
     queue = outputQueue;
     ERROR_THREAD_NAME.start(callback(this, &ErrorHandler::error_thread));
     override_button.rise(callback(this, &ErrorHandler::alarm_override));
-    // errorDisplay.test();
 }
 
 
