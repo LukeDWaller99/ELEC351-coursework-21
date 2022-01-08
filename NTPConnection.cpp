@@ -1,45 +1,48 @@
 #include "NTPConnection.h"
 
-NTPConnection::NTPConnection() {
+NTPConnection::NTPConnection() : BTN_C(PG_2) {
 
-  NTPInterface = NetworkInterface::get_default_instance();
+  if (BTN_C == 1) {
 
-  if (NTPInterface == nullptr) {
-    printf("No Network Interface found\n");
-    return;
-  }
+    NTPInterface = NetworkInterface::get_default_instance();
 
-  // Connect to server
-  int connect = NTPInterface->connect();
-  if (connect != 0) {
+    if (NTPInterface == nullptr) {
+      printf("No Network Interface found\n");
+      return;
+    }
 
-    printf("CONNECTION ERROR\n");
-    return;
-  }
+    // Connect to server
+    int connect = NTPInterface->connect();
+    if (connect != 0) {
 
-  printf("Connection success, MAC: %s\n", NTPInterface->get_mac_address());
-  printf("Getting time from the NTP server\n");
+      printf("CONNECTION ERROR\n");
+      return;
+    }
 
-  NTPClient NTP(NTPInterface);
+    printf("Connection success, MAC: %s\n", NTPInterface->get_mac_address());
+    printf("Getting time from the NTP server\n");
 
-  NTP.set_server("time.google.com", 123);
+    NTPClient NTP(NTPInterface);
 
-  timestamp = NTP.get_timestamp();
+    NTP.set_server("time.google.com", 123);
 
-  if (timestamp < 0) {
-    // cout << "Failed to get the current time, error: " << timestamp << endl;
+    timestamp = NTP.get_timestamp();
+
+    if (timestamp < 0) {
+      // cout << "Failed to get the current time, error: " << timestamp << endl;
+      NTPInterface->disconnect();
+      return;
+    }
+
+    set_time(timestamp);
+
+    printf("Time: %s\n", ctime(&timestamp));
+
     NTPInterface->disconnect();
-    return;
+  } else {
+  printf("NOTHING\n");
+  return;
   }
-
-  set_time(timestamp);
-
-  printf("Time: %s\n", ctime(&timestamp));
-
-  NTPInterface->disconnect();
-
 };
-
-NTPConnection::~NTPConnection(){};
 
 time_t NTPConnection::getTime() { return time(NULL); }

@@ -1,4 +1,5 @@
 #include "LEDMatrix.h"
+#include "uop_msb.h"
 
 #define SCAN_RATE_MS 50
 

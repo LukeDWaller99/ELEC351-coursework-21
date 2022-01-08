@@ -17,9 +17,9 @@
 using namespace uop_msb;
 EventQueue* queue = new EventQueue();
 ErrorHandler EH(queue);
-// NTPConnection NTP;
+NTPConnection NTP;
 // SevenSegmentDisplay display;
-HTTP_server server;
+
 // LEDMatrix matrix;
 // Thread t;
 
@@ -28,7 +28,6 @@ time_t timestamp;
 
 
 int main() {
-    
     // wait_us(5000000);
     // timestamp = NTP.getTime();
     // printf("%s\n", ctime(&timestamp));
