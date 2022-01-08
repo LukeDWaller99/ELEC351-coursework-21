@@ -25,6 +25,7 @@ ErrorHandler::ErrorHandler(EventQueue* outputQueue):override_button(USER_BUTTON)
     // ERROR_THREAD_NAME.set_priority(osPriorityRealtime);
     queue = outputQueue;
     ERROR_THREAD_NAME.start(callback(this, &ErrorHandler::error_thread));
+    ERROR_SERVICER.start(callback(&errorQueue, &EventQueue::dispatch_forever));
     override_button.rise(callback(this, &ErrorHandler::alarm_override));
     // errorDisplay.test();
 }
@@ -33,11 +34,13 @@ ErrorHandler::ErrorHandler(EventQueue* outputQueue):override_button(USER_BUTTON)
 void ErrorHandler::error_thread(void){
     while(true){
     ThisThread::flags_wait_any(0x7fffffff, false); // sleeps thread until any flag is raised
-
     int errorNumber = ThisThread::flags_get();
-
     errorDisplay = errorNumber;
+    errorQueue->call(ErrorPointer,errorNumber);
 
+}
+}
+void ErrorHandler::ErrorServicer(int errorNumber){
     switch(currentErrorSeverity) 
     {
         case WARNING:
@@ -104,17 +107,12 @@ void ErrorHandler::error_thread(void){
     }
     clear_all();
     }
-}
 
 
 void ErrorHandler::setErrorFlag(int errorCode){
-
     int severityVal = errorCode >> 8; 
-
     int errorVal = errorCode & 255;
-
     errorSeverity severity = ErrorHandler::errorSeverity(severityVal);
-
     switch(severity) 
     {
         case WARNING:
@@ -161,4 +159,60 @@ void ErrorHandler::alarm_override(){
     }
     #endif
     alarm_status = 0; //disable alarm
+}
+
+int ErrorHandler::compare_severity(errorSeverity new_ES){
+    //first convert to nice numbers
+    int currentErrorInt, newErrorInt,output;
+    switch (currentError) {
+    case WARNING:
+    currentErrorInt = 0;
+    break;
+    case CRITICAL:
+    currentErrorInt = 2;
+    break;
+    case FATAL:
+    currentErrorInt = 3;
+    break;
+    case ENV_ERR:
+    currentErrorInt = 1;
+    break;
+    case CLEAR:
+    currentErrorInt = 0;
+    break;
+    case BUFF_FULL:
+    currentErrorInt = 0;
+    break;
+    default:
+    currentErrorInt = 0;
+    }
+    switch (new_ES) {
+    case WARNING:
+    newErrorInt = 0;
+    break;
+    case CRITICAL:
+    newErrorInt = 2;
+    break;
+    case FATAL:
+    newErrorInt = 3;
+    break;
+    case ENV_ERR:
+    newErrorInt = 1;
+    break;
+    case CLEAR:
+    newErrorInt = 0;
+    break;
+    case BUFF_FULL:
+    newErrorInt = 0;
+    break;
+    default:
+    newErrorInt = 0;
+    }
+    //perform comparison
+    if (newErrorInt > currentErrorInt){
+        output = 1;
+    } else{
+        output = 0;
+    }
+    return output;
 }
