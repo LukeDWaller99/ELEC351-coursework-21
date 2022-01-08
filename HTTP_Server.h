@@ -16,8 +16,7 @@ using namespace std;
 #define HTTP_MESSAGE_BODY ""                                     \
 "<html>" "\r\n" \
 "<h1 style=\"text-align: center;\">ELEC351 Coursework webpage - Group D</h1>" "\r\n" \
-"   <p style=\"text-align: center;\">Time: {{0}}</p>" "\r\n" \
-"   <p style=\"text-align: center;\">Date: {{1}}</p>" "\r\n" \
+"   <p style=\"text-align: center;\">Date and Time: {{1}}</p>" "\r\n" \
 "<h2 style=\"text-align: center;\">Peripherals</h2>"   "\r\n" \
 "   <table style=\"text-align: center; table-layout: fixed; width: 100%;\">""\r\n" \
 "       <tbody>" "\r\n" \
@@ -25,7 +24,7 @@ using namespace std;
 "           <th style=\"border: 1px solid black;\">POT</th>"                "\r\n" \
 "           <th style=\"border: 1px solid black;\">LDR</th>"                "\r\n" \
 "           <th style=\"border: 1px solid black;\">PRESSURE</th>"           "\r\n" \
-"           <th style=\"border: 1px solid black;\">TEMPRATURE</th>"         "\r\n" \
+"           <th style=\"border: 1px solid black;\">TEMPERATURE</th>"        "\r\n" \
 "       </tr>"                                                              "\r\n" \
 "       <tr>"                                                               "\r\n" \
 "           <td style=\"border: 1px solid black;\">{{2}}</td>"              "\r\n" \
@@ -41,10 +40,6 @@ using namespace std;
                       HTTP_HEADER_FIELDS "\r\n" \
                       "\r\n"                    \
                       HTTP_MESSAGE_BODY "\r\n"
-#define HTTP_TITLE     "<head><title> Plymouth Uni Weather Page </title></head>" "\r\n"
-#define HTTP_FORMAT_1 "<body style=\"display:flex;text-align:center\">" "\r\n" \
-                      "<div style=\"margin:auto\">" "\r\n"
-#define HTTP_BOTTOM "</html>" "\r\n"
 
 class HTTP_server{
 

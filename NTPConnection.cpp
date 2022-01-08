@@ -37,6 +37,7 @@ NTPConnection::NTPConnection() {
   printf("Time: %s\n", ctime(&timestamp));
 
   NTPInterface->disconnect();
+
 };
 
 NTPConnection::~NTPConnection(){};

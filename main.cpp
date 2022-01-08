@@ -7,7 +7,6 @@
 #include "mbed_wait_api.h"
 #include "uop_msb.h"
 #include "rtos/ThisThread.h"
-#include "azure_c_shared_utility/xlogging.h"
 #include <cstring>
 #include <string.h>
 #include <LEDMatrix.h>

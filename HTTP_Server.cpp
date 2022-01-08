@@ -1,5 +1,6 @@
 #include "HTTP_Server.h"
 #include <cstddef>
+#include <cstdio>
 
 
 
@@ -46,15 +47,49 @@ void HTTP_server::HTTP_server_thread(void) {
 
     //constructing the webpage
     float potVal = pot;
+    // float LDRVal = samplein;
+    // float pressureVal = samplein;
+    // float temperatureVal = samplein;
 
-    char buff[6];
-    sprintf(buff, "%5.3f", potVal);
+    time_t timestamp;
+
+    timestamp = time(NULL);
+
+    char potBuff[6];
+    char LDRBuff[6];
+    char pressureBuff[6];
+    char temperatureBuff[6];
+    
+    sprintf(potBuff, "%5.3f", potVal);
+    // sprintf(LDRBuff, "%5.3f", LDRVal);
+    // sprintf(pressureBuff, "%5.3f", pressureVal);
+    // sprintf(temperatureBuff, "%5.3f", temperatureVal);
 
     string html = string(HTTP_TEMPLATE);
 
-    size_t index = html.find("{{2}}"); //find the placeholder {{2}}
-    if (index){
-        html.replace(index, 5, buff);
+    size_t timeDateIndex = html.find("{{1}}");
+    if (timeDateIndex){
+        html.replace(timeDateIndex, 5, ctime(&timestamp));
+    }
+
+    size_t potIndex = html.find("{{2}}"); //find the placeholder {{2}}
+    if (potIndex){
+        html.replace(potIndex, 5, potBuff);
+    }
+
+    size_t LDRIndex = html.find("{{3}}");
+    if (LDRIndex){
+        html.replace(LDRIndex, 5, potBuff);
+    }
+
+    size_t pressureIndex = html.find("{{4}}");
+    if (pressureIndex){
+        html.replace(pressureIndex, 5, potBuff);
+    }
+
+    size_t temperatureIndex = html.find("{{5}}");
+    if (temperatureIndex){
+        html.replace(temperatureIndex, 5, potBuff);
     }
 
     nsapi_size_or_error_t ret =
