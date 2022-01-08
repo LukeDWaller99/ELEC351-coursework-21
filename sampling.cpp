@@ -5,7 +5,7 @@
 sampler::sampler():LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
     sampleThread.start(callback(this, &sampler::sample));
     matrixThread.start(callback(this, &sampler::matrixInterface));
-    sampleTick.attach(callback(this, &sampler::sampleflag),1s);
+    sampleTick.attach(callback(this, &sampler::sampleflag),10s);
     BT_A.rise(callback(this, &sampler::sensorflag));
 }
 
@@ -15,7 +15,7 @@ sampler::sampler(float limits[6]):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
     threshold.bind(limits);
     sampleThread.start(callback(this, &sampler::sample));
     matrixThread.start(callback(this, &sampler::matrixInterface));
-    sampleTick.attach(callback(this, &sampler::sampleflag),1s);
+    sampleTick.attach(callback(this, &sampler::sampleflag),10s);
 }
 
 void sampler::sampleflag(){
@@ -74,8 +74,8 @@ void sampler::matrixInterface(){
             }
         }
         quantise(currentSensor);
-        
-        ThisThread::flags_clear(1);
+        matrix.update(matrix_input.qsamples);
+        ThisThread::flags_clear(3);
     }
 }
 
@@ -112,8 +112,8 @@ void sampler::quantise(sensor_type selectedSensor){
         if (quantVals[i] < 0){
             quantVals[i] = 0;
         }
-
-        printf("%d \t%d \n",i,quantVals[i]);
+        matrix_input.qsamples[i] = quantVals[i];
+        //printf("%d \t%d \n",i,quantVals[i]);
     }
 
 }

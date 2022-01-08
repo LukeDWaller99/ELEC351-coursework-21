@@ -30,9 +30,9 @@ struct limits{
     **/
     limits(){
         t_upper = 35;
-        t_lower = 20;
-        p_upper = 1100;
-        p_lower = 1000;
+        t_lower = 15;
+        p_upper = 1050;
+        p_lower = 950;
         l_upper = 0.8;
         l_lower = 0.2;
     }
@@ -82,7 +82,7 @@ class sampler {
     };
     InterruptIn BT_A;                       ///Button for controlling the matrix output sensor
     limits threshold;                       ///limits object to store the current alarm thresholds
-    sensor_type currentSensor = LIGHT;      ///Current sensor output, default is 'LIGHT'
+    //sensor_type currentSensor = LIGHT;      ///<Current sensor output, default is 'LIGHT'
     //float limits[6];    
     Mutex sampleLock;                       ///Mutex Lock to ensure thread safety on sample values
     Ticker sampleTick;                      ///Ticker interrupt to trigger sampling at once per second
@@ -144,7 +144,7 @@ class sampler {
     sampler(float limits[6]);
     void displayLimits();
     ~sampler();
-    
+    sensor_type currentSensor = LIGHT;      ///<Current sensor output, default is 'LIGHT'
 };
 
 

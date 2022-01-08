@@ -26,6 +26,7 @@ int main() {
         sampledData = SampleModule.internal_buffer[i];
         printQueue.call(printf,"%d raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", i, sampledData.temp, sampledData.pressure, sampledData.LDR);
     }
+    printQueue.call(printf,"Sensorval %d\n",SampleModule.currentSensor);
     //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
     wait_us(1000000);
     }
