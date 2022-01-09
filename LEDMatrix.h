@@ -12,15 +12,18 @@ class LEDMatrix{
     private:
     SPI matrix_spi;   // MOSI, MISO, SCLK
     DigitalOut matrix_spi_cs;            //Chip Select ACTIVE LOW
-    DigitalOut matrix_spi_oe;           //Output Enable ACTIVE LOW 
+    DigitalOut matrix_spi_oe;           //Output Enable ACTIVE LOW
+    int samples[8];
 
     public:
-
+    Thread MatrixThread;
     LEDMatrix();
     void clear();
     void writeMatrix(int RHC, int LHC, int ROW);
-    void plot(double samples[]);
+    void plot();
     void test();
+    void update(int updatedSamples[]);
+    void matrixThread();
 
 };
 #endif
