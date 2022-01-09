@@ -21,11 +21,11 @@ void ErrorHandler::clear_all(){
 }
 
 
-ErrorHandler::ErrorHandler(EventQueue* outputQueue){
+ErrorHandler::ErrorHandler(EventQueue* outputQueue):override_button(USER_BUTTON){
     // ERROR_THREAD_NAME.set_priority(osPriorityRealtime);
     queue = outputQueue;
     ERROR_THREAD_NAME.start(callback(this, &ErrorHandler::error_thread));
-    // errorDisplay.test();
+    override_button.rise(callback(this, &ErrorHandler::alarm_override));
 }
 
 
@@ -48,6 +48,7 @@ void ErrorHandler::error_thread(void){
         queue->call(printf, "CRITICAL Error Code - %d\n", (errorNumber & 255));
         // turn on red led
         redLED = 1;
+        alarm_status = 1;
         #if BUZZER_ENABLE == 1
             buzz.playTone(&note);
             ThisThread::sleep_for(30s);
@@ -57,6 +58,7 @@ void ErrorHandler::error_thread(void){
             ThisThread::sleep_for(30s);
             queue->call(printf,"BUZZER OFF\n");
         #endif
+        alarm_status = 0;
         // buzzer for 30 seconds
         // system reset
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong  
@@ -75,6 +77,7 @@ void ErrorHandler::error_thread(void){
 
         case ENV_ERR:
         //printf("ENV Error %d\n",(errorNumber & 255));
+        alarm_status = 1;
         queue->call(printf, "ENV Error %d\n",(errorNumber & 255));
         #if BUZZER_ENABLE == 1
             buzz.playTone(&note);
@@ -85,6 +88,7 @@ void ErrorHandler::error_thread(void){
             ThisThread::sleep_for(3s);
             queue->call(printf,"BUZZER OFF\n");
         #endif
+        alarm_status = 0;
         // sound buzzer
         break; 
 
@@ -143,4 +147,17 @@ void ErrorHandler::setErrorFlag(int errorCode){
         ERROR_THREAD_NAME.flags_set(errorVal);
     }
 
+}
+
+void ErrorHandler::alarm_override(){
+    #if BUZZER_ENABLE == 0
+    if (alarm_status == 1){
+    queue->call(printf,"ALARM DISABLED - OVERRIDE\n");
+    }
+    #else
+    if (alarm_status == 1){
+    buzz.rest();
+    }
+    #endif
+    alarm_status = 0; //disable alarm
 }
