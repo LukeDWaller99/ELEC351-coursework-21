@@ -33,7 +33,7 @@ int main() {
     }
     printQueue.queue.call(printf,"Sensorval %d\n",SampleModule.currentSensor);
     //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    wait_us(1000000);
+    wait_us(10000000);
     }
 }
 // #include "NTPClient.h"
