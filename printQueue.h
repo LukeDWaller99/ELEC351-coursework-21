@@ -1,3 +1,7 @@
+#ifndef __print_Queue__
+#define __print_Queue__
+
+
 #include "mbed.h"
 
 extern EventQueue printQueue;
@@ -23,4 +27,6 @@ extern void unmountedFlush();
 extern void unmountedSD();
 
 
+
+#endif
 

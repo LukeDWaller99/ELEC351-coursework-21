@@ -1,5 +1,5 @@
-// #ifndef __SDCARD__
-// #define __SDCARD__
+#ifndef __SDCARD__
+#define __SDCARD__
 
 // #include "mbed.h"
 // #include "FATFileSystem.h"
@@ -44,5 +44,5 @@
 
     
 
-// #endif
+#endif
 

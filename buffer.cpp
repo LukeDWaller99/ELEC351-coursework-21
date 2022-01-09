@@ -3,6 +3,7 @@
 #include "buffer.h"
 #include <ctime>
 
+
 Semaphore spaceInBuffer(buffer_size);  //space in buffer
 Semaphore samplesInBuffer(0);          //samples in buffer
 Semaphore signalSample(0);             //signal to get new sample
@@ -11,11 +12,11 @@ liveData buffer[buffer_size];
 liveData dataRecord; //for holding data in the buffer
 liveData printRecord[buffer_size];
 
-sampler bufferSampler; 
+//sampler bufferSampler; 
 samples sampledData;
 
 FILE *fp; 
-SDBlockDevice mysd(PB_5, PB_4, PB_3, PE_3);
+SDBlockDevice mysd(PB_5, PB_4, PB_3, PF_3);
 DigitalIn SDDetect(PF_4);
 DigitalOut greenLED(PC_6);
 
@@ -101,7 +102,7 @@ void bufferClass::printBufferContents(){
             bufferLock.unlock();
             for(pRIDX = 0; pRIDX < printRecordsIDX; pRIDX++){ //iterate through data
                 //printQueue.call(printf, "print all data now\n");
-                timestamp = time(NULL);
+                //timestamp = time(NULL);
                 printf("Time: %s\n", ctime(&timestamp));
                 printf(" printRecords \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", printRecord[pRIDX].temp, printRecord[pRIDX].pressure, printRecord[pRIDX].LDR);
             }
@@ -110,43 +111,43 @@ void bufferClass::printBufferContents(){
     samplesInBuffer.release(); 
 }
 
-void bufferClass::flushBuffer(FILE &fp){
-    if(samplesInBuffer.try_acquire_for(1ms) == 0){
-        printQueue.call(emptyFlush);
-        //errorSeverity(CRITICAL);
-        return;
-    }else{
-        samplesInBuffer.release();
-        if(bufferLock.trylock_for(1ms) == 0){
-            printQueue.call(bufferFlushTimeout);
-            //errorSeverity(WARNING);
-        }else{
-            // FATFileSystem fs("sd", &mysd2);
-            // FILE *fp = fopen("/sd/environmental_data.txt","w");
+// void bufferClass::flushBuffer(FILE &fp){
+//     if(samplesInBuffer.try_acquire_for(1ms) == 0){
+//         printQueue.call(emptyFlush);
+//         //errorSeverity(CRITICAL);
+//         return;
+//     }else{
+//         samplesInBuffer.release();
+//         if(bufferLock.trylock_for(1ms) == 0){
+//             printQueue.call(bufferFlushTimeout);
+//             //errorSeverity(WARNING);
+//         }else{
+//             // FATFileSystem fs("sd", &mysd2);
+//             // FILE *fp = fopen("/sd/environmental_data.txt","w");
 
-            while(runFlush == 1){
-                if(oldIDX == newIDX){
-                    runFlush = 0; //everything is out
-                } else{
-                    //greenLED =!greenLED;
-                    samplesInBuffer.try_acquire_for(1ms);
-                    oldIDX = (oldIDX + 1);
-                    liveData flushRecord = buffer[oldIDX];
-                    //fprintf(&fp, "Time recorded = );
-                    fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+//             while(runFlush == 1){
+//                 if(oldIDX == newIDX){
+//                     runFlush = 0; //everything is out
+//                 } else{
+//                     //greenLED =!greenLED;
+//                     samplesInBuffer.try_acquire_for(1ms);
+//                     oldIDX = (oldIDX + 1);
+//                     liveData flushRecord = buffer[oldIDX];
+//                     //fprintf(&fp, "Time recorded = );
+//                     fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
                     
-                    printf("printing things\n");
-                    //spaceInBuffer.release();//space in buffer signal
-                 }
-             } //end while
-            samplesInBuffer.release();
-            printQueue.call(flushedBuffer);
-            //flash green led
-            //bufferLock.unlock();
-            //printQueue.call(printf, "unlocked buffer after\n");
-        }
-    }
-} //end function writeSD
+//                     printf("printing things\n");
+//                     //spaceInBuffer.release();//space in buffer signal
+//                  }
+//              } //end while
+//             samplesInBuffer.release();
+//             printQueue.call(flushedBuffer);
+//             //flash green led
+//             //bufferLock.unlock();
+//             //printQueue.call(printf, "unlocked buffer after\n");
+//         }
+//     }
+// } //end function writeSD
 
 
 // void bufferClass::printToWebpage(vector<int> & webpageData){
@@ -178,10 +179,10 @@ void bufferClass::initSD(){
 
 void bufferClass::flushBufferUpgrade(){
     printf("Initialise and write to a file\n");
-    int err;
-    err=mysd.init();
-    if ( 0 != err) {
-        printf("Init failed %d\n",err);
+    int err1;
+    err1=mysd.init();
+    if ( 0 != err1) {
+        printf("Init failed %d\n",err1);
         //return;
     }
     
@@ -197,6 +198,8 @@ void bufferClass::flushBufferUpgrade(){
         while(runFlush == 1){
                 if(oldIDX == newIDX){
                     runFlush = 0; //everything is out
+                    break;
+                    //return;
                 } else{
                     //greenLED =!greenLED;
                     samplesInBuffer.try_acquire_for(1ms);
@@ -205,7 +208,7 @@ void bufferClass::flushBufferUpgrade(){
                     fprintf(fp, "Time recorded = %s\n", ctime(&timestamp));
                     fprintf(fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
                     
-                    printf("printing things\n");
+                    //printf("printing things\n");
                     //spaceInBuffer.release();//space in buffer signal
                 }
              } //end while
@@ -221,3 +224,32 @@ void bufferClass::flushBufferUpgrade(){
 }
 
 
+// void bufferClass::write_sdtest()
+// {
+//     printf("Initialise and write to a file\n");
+//     int err;
+//     // call the SDBlockDevice instance initialisation method.
+
+//     err=mysd.init();
+//     if ( 0 != err) {
+//         printf("Init failed %d\n",err);
+//         return;
+//     }
+    
+//     FATFileSystem fs("sd", &mysd);
+//     FILE *fp = fopen("/sd/test.txt","w");
+//     if(fp == NULL) {
+//         error("Could not open file for write\n");
+//         mysd.deinit();
+//         //return -1;
+//     } else {
+//         //Put some text in the file...
+//         fprintf(fp, "Martin Says Hi.. there is nothing in here!\n");
+//         //Tidy up here
+//         fclose(fp);
+//         printf("SD Write done...\n");
+//         mysd.deinit();
+//         //return 0;
+//     }
+    
+// }

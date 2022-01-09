@@ -7,12 +7,10 @@
 #include <cstdio>
 #include <cstring>
 #include <string.h>
-#include <sampling.h>
+//#include <sampling.h>
 #include <buffer.h>
-#include <printQueue.h>
-#include <sd2.h>
-// #include "SDBlockDevice.h"
-// #include "FATFileSystem.h"
+//#include <printQueue.h>
+//#include <sd2.h>
 
 using namespace uop_msb;
 using namespace std;
@@ -22,6 +20,7 @@ extern samples sampleData;
 sampler samplerer;
 bufferClass mybuffer;
 //SDCard mySDCard;
+UOP_MSB_TEST board;
 
 //Threads
 Thread print;
@@ -51,20 +50,22 @@ int main() {
     //mySDCard.initSD();
     
     int i = 0;
-    while(i < 5){
+    while(i < 10){
     //mySDCard.initSD();
     i++;
     printf("%i\n", i);       
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    wait_us(100000);
+    wait_us(1000000);
     mybuffer.writeBuffer();
     printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
-    wait_us(100000);
+    wait_us(1000000);
     }
     
     mybuffer.printBufferContents();
     mybuffer.initSD();
     wait_us(1000);
     mybuffer.flushBufferUpgrade();
+    //mybuffer.write_sdtest();
+    //board.test();
 
 }

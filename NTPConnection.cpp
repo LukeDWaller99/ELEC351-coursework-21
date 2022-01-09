@@ -1,48 +1,48 @@
-#include "NTPConnection.h"
+// #include "NTPConnection.h"
 
-NTPConnection::NTPConnection() : BTN_C(PG_2) {
+// NTPConnection::NTPConnection() : BTN_C(PG_2) {
 
-  if (BTN_C == 1) {
+//   if (BTN_C == 1) {
 
-    NTPInterface = NetworkInterface::get_default_instance();
+//     NTPInterface = NetworkInterface::get_default_instance();
 
-    if (NTPInterface == nullptr) {
-      printf("No Network Interface found\n");
-      return;
-    }
+//     if (NTPInterface == nullptr) {
+//       printf("No Network Interface found\n");
+//       return;
+//     }
 
-    // Connect to server
-    int connect = NTPInterface->connect();
-    if (connect != 0) {
+//     // Connect to server
+//     int connect = NTPInterface->connect();
+//     if (connect != 0) {
 
-      printf("CONNECTION ERROR\n");
-      return;
-    }
+//       printf("CONNECTION ERROR\n");
+//       return;
+//     }
 
-    printf("Connection success, MAC: %s\n", NTPInterface->get_mac_address());
-    printf("Getting time from the NTP server\n");
+//     printf("Connection success, MAC: %s\n", NTPInterface->get_mac_address());
+//     printf("Getting time from the NTP server\n");
 
-    NTPClient NTP(NTPInterface);
+//     NTPClient NTP(NTPInterface);
 
-    NTP.set_server("time.google.com", 123);
+//     NTP.set_server("time.google.com", 123);
 
-    timestamp = NTP.get_timestamp();
+//     timestamp = NTP.get_timestamp();
 
-    if (timestamp < 0) {
-      // cout << "Failed to get the current time, error: " << timestamp << endl;
-      NTPInterface->disconnect();
-      return;
-    }
+//     if (timestamp < 0) {
+//       // cout << "Failed to get the current time, error: " << timestamp << endl;
+//       NTPInterface->disconnect();
+//       return;
+//     }
 
-    set_time(timestamp);
+//     set_time(timestamp);
 
-    printf("Time: %s\n", ctime(&timestamp));
+//     printf("Time: %s\n", ctime(&timestamp));
 
-    NTPInterface->disconnect();
-  } else {
-  printf("NOTHING\n");
-  return;
-  }
-};
+//     NTPInterface->disconnect();
+//   } else {
+//   printf("NOTHING\n");
+//   return;
+//   }
+// };
 
-time_t NTPConnection::getTime() { return time(NULL); }
+// time_t NTPConnection::getTime() { return time(NULL); }
