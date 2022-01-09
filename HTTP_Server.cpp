@@ -1,8 +1,6 @@
 #include "HTTP_Server.h"
-#include <cstddef>
-#include <cstdio>
 
-samples sampledData;
+//samples sampledData1;
 
 HTTP_server::HTTP_server() {
 
@@ -47,11 +45,11 @@ void HTTP_server::HTTP_server_thread(void) {
 
     //constructing the webpage
     float potVal = pot;
-    // float LDRVal = samplein;
-    // float pressureVal = samplein;
-    // float temperatureVal = samplein;
+    float LDRVal = sampledData.LDR;
+    float pressureVal = sampledData.pressure;
+    float temperatureVal = sampledData.temp;
 
-    extern time_t timestamp;
+    time_t timestamp;
 
     timestamp = time(NULL);
 
@@ -61,9 +59,9 @@ void HTTP_server::HTTP_server_thread(void) {
     char temperatureBuff[6];
     
     sprintf(potBuff, "%5.3f", potVal);
-    sprintf(LDRBuff, "%5.3f", sampledData.LDR);
-    sprintf(pressureBuff, "%5.3f", sampledData.pressure);
-    sprintf(temperatureBuff, "%5.3f", sampledData.temp);
+    sprintf(LDRBuff, "%5.3f", LDRVal);
+    sprintf(pressureBuff, "%5.3f", pressureVal);
+    sprintf(temperatureBuff, "%5.3f", temperatureVal);
 
     string html = string(HTTP_TEMPLATE);
 

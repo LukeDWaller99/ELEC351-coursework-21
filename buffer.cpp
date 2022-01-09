@@ -1,6 +1,7 @@
 //AUTHOR: NOAH HARVEY
 
 #include "buffer.h"
+#include <ctime>
 
 Semaphore spaceInBuffer(buffer_size);  //space in buffer
 Semaphore samplesInBuffer(0);          //samples in buffer
@@ -15,6 +16,7 @@ samples sampledData;
 
 FILE *fp; 
 SDBlockDevice mysd(PB_5, PB_4, PB_3, PE_3);
+DigitalIn SDDetect(PF_4);
 DigitalOut greenLED(PC_6);
 
 /*
@@ -99,6 +101,7 @@ void bufferClass::printBufferContents(){
             bufferLock.unlock();
             for(pRIDX = 0; pRIDX < printRecordsIDX; pRIDX++){ //iterate through data
                 //printQueue.call(printf, "print all data now\n");
+                timestamp = time(NULL);
                 printf("Time: %s\n", ctime(&timestamp));
                 printf(" printRecords \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", printRecord[pRIDX].temp, printRecord[pRIDX].pressure, printRecord[pRIDX].LDR);
             }
@@ -160,13 +163,26 @@ void bufferClass::flushBuffer(FILE &fp){
 //     }
 // }
 
+void bufferClass::initSD(){
+    //if(mysd.init() != 0){
+    if(SDDetect == 1){
+        printQueue.call(mountError);
+        greenLED = 0;
+        cardMount = 0;
+    } else{
+        cardMount = 1;
+        greenLED = 1;
+        printQueue.call(mountedSD);
+    }
+}
+
 void bufferClass::flushBufferUpgrade(){
     printf("Initialise and write to a file\n");
     int err;
     err=mysd.init();
     if ( 0 != err) {
         printf("Init failed %d\n",err);
-        return;
+        //return;
     }
     
     FATFileSystem fs("sd", &mysd);
@@ -175,7 +191,7 @@ void bufferClass::flushBufferUpgrade(){
     if(fp == NULL) {
         error("Could not open file for write\n");
         mysd.deinit();
-        return;
+        //return;
     } else{
         //***********************
         while(runFlush == 1){
@@ -186,7 +202,7 @@ void bufferClass::flushBufferUpgrade(){
                     samplesInBuffer.try_acquire_for(1ms);
                     oldIDX = (oldIDX + 1);
                     liveData flushRecord = buffer[oldIDX];
-                    //fprintf(&fp, "Time recorded = );
+                    fprintf(fp, "Time recorded = %s\n", ctime(&timestamp));
                     fprintf(fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
                     
                     printf("printing things\n");
@@ -197,9 +213,6 @@ void bufferClass::flushBufferUpgrade(){
             printQueue.call(flushedBuffer);
 
         //***********************
-        //Put some text in the file...
-        fprintf(fp, "Martin Says Hi.. there is nothing in here!\n");
-        //Tidy up here
         fclose(fp);
         printf("SD Write done...\n");
         mysd.deinit();

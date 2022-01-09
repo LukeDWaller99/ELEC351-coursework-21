@@ -21,7 +21,7 @@ extern samples sampleData;
 
 sampler samplerer;
 bufferClass mybuffer;
-SDCard mySDCard;
+//SDCard mySDCard;
 
 //Threads
 Thread print;
@@ -52,7 +52,7 @@ int main() {
     
     int i = 0;
     while(i < 5){
-    mySDCard.initSD();
+    //mySDCard.initSD();
     i++;
     printf("%i\n", i);       
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
@@ -63,8 +63,8 @@ int main() {
     }
     
     mybuffer.printBufferContents();
-    mySDCard.initSD();
+    mybuffer.initSD();
+    wait_us(1000);
     mybuffer.flushBufferUpgrade();
-    
 
 }

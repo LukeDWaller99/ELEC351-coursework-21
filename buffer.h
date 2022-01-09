@@ -26,6 +26,7 @@ class bufferClass{
     Ticker bufferTick;
     sampler dataSampler;
     HTTP_server webServer;
+    time_t timestamp;
 
     public:
     void flushBuffer(FILE &fp);
@@ -37,6 +38,7 @@ class bufferClass{
     void printBufferContents();
     void emptyBuffer();
     //void printToWebpage(vector<int> & webpageData);
+    void initSD();
 
     unsigned int newIDX = buffer_size - 1; 
     unsigned int oldIDX = buffer_size - 1;
@@ -47,6 +49,7 @@ class bufferClass{
     int printRecordsIDX = 0; //track no of data sets
     int pRIDX = 0;
     
+    bool cardMount = 0;
     //semaphores
     // Semaphore samplesInBuffer;
     // Semaphore spaceInBuffer;
@@ -70,8 +73,6 @@ class bufferClass{
 extern liveData dataRecord;
 extern liveData flushRecord;
 extern liveData printRecord[buffer_size];
-
-extern time_t timestamp;
 
 //liveData printToWebpage();
 #endif

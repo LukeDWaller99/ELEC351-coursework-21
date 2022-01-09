@@ -3,6 +3,7 @@
 
 #include "EthernetInterface.h"
 #include "TCPSocket.h"
+#include <ctime>
 #include <iostream>
 #include <string>
 #include "Thread.h"
@@ -57,5 +58,10 @@ class HTTP_server{
     Thread HTTP_thread;
     void HTTP_server_thread(void);
 };
+
+struct TandD{
+    time_t timestampVal;
+};
+
 
 #endif

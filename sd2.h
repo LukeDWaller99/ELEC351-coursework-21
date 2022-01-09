@@ -12,14 +12,14 @@ class SDCard{
     //Thread SDThread;
 
     public:
-    void initSD();
+    //void initSD();
     void flashGreen();
     //void writeSD();
     // void unmountSD();
     // void SDRun();
 
     
-    bool cardMount = 0;
+   // bool cardMount = 0;
 
     SDCard();
     ~SDCard();

@@ -5,9 +5,9 @@
 // DigitalIn SDDetect(PF_4);
 // DigitalOut greenLED(PC_6);
 
-SDCard::SDCard(){
-    //SDThread.start(callback(this, &SDCard::SDRun));
-}
+// SDCard::SDCard(){
+//     //SDThread.start(callback(this, &SDCard::SDRun));
+// }
 
 // //this works in the meantime but needs to be interrupt driven
 // void SDCard::initSD(){
