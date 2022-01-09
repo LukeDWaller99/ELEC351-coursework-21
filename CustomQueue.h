@@ -9,7 +9,7 @@ to capture all status messages.
 An example call is shown below:
 @code 
 CustomQueue* queue;
-queue->queue.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
+queue->custom.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
 @endcode
 **/
 
@@ -33,9 +33,10 @@ class CustomQueue{
     QUEUE_THREAD and sets the queue to dispatch forever via a callback. 
     The message @code "Queue Initialised" @endcode will be displayed once 
     initialisation has been completed.
+
     **/
     CustomQueue();
-    EventQueue queue;       ///<Event Queue Object. This class is a wrapper for this object.
+    EventQueue custom;       ///<Event Queue Object. This class is a wrapper for this object.
     Thread QUEUE_THREAD;    ///<Thread Object. This thread is solely responsible for the queue.
 };
 
