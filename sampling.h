@@ -7,6 +7,7 @@
 #include "ErrorHandler.h"
 //#include "buffer.h"
 
+#define SAMPLE_INTERVAL 10s
 
 /**
 Structure for holding the sample data. The samples struct holds three values, one from each sensor, taken at 1 

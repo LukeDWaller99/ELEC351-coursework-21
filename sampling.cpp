@@ -6,8 +6,9 @@ sampler::sampler(ErrorHandler* OutputHandler):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
     EH = OutputHandler;
     sampleThread.start(callback(this, &sampler::sample));
     matrixThread.start(callback(this, &sampler::matrixInterface));
-    sampleTick.attach(callback(this, &sampler::sampleflag),10s);
+    sampleTick.attach(callback(this, &sampler::sampleflag),SAMPLE_INTERVAL);
     BT_A.rise(callback(this, &sampler::sensorflag));
+    sampleThread.set_priority(osPriorityRealtime6);
 }
 
 
@@ -17,7 +18,8 @@ sampler::sampler(ErrorHandler* OutputHandler,float limits[6]):LDR(AN_LDR_PIN),BT
     threshold.bind(limits);
     sampleThread.start(callback(this, &sampler::sample));
     matrixThread.start(callback(this, &sampler::matrixInterface));
-    sampleTick.attach(callback(this, &sampler::sampleflag),10s);
+    sampleTick.attach(callback(this, &sampler::sampleflag),SAMPLE_INTERVAL);
+    sampleThread.set_priority(osPriorityRealtime6);
 }
 
 void sampler::sampleflag(){
