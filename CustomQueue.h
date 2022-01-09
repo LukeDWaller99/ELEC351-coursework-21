@@ -6,11 +6,7 @@ dispatched before being used by any of the other classes. Several of the classes
 have status prints within their constructors, so a pre-main initialisation is critical
 to capture all status messages.
 
-An example call is shown below:
-@code 
-CustomQueue* queue;
-queue->custom.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
-@endcode
+
 **/
 
 #ifndef __CUSTOM_QUEUE__
@@ -23,6 +19,11 @@ queue->custom.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
 
 /**
 Event Queue wrapper class.
+An example call is shown below:
+@code 
+CustomQueue* queue;
+queue->custom.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
+@endcode
 **/
 class CustomQueue{
     private:

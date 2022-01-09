@@ -64,6 +64,10 @@ using namespace uop_msb;
 
 /**
 Thread-safe error handler class.
+To send an error to the error handler, use the format:
+    @code
+    EH.setErrorFlag(T_UPPER);
+    @endcode
 **/
 class ErrorHandler {
     private:
