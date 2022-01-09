@@ -19,7 +19,7 @@ EventQueue* queue = new EventQueue();
 ErrorHandler EH(queue);
 NTPConnection NTP;
 // SevenSegmentDisplay display;
-
+HTTP_server HTPP;
 // LEDMatrix matrix;
 // Thread t;
 

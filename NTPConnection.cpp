@@ -1,9 +1,11 @@
 #include "NTPConnection.h"
+#include <cstdio>
 
 NTPConnection::NTPConnection() : BTN_C(PG_2) {
 
   if (BTN_C == 1) {
 
+      printf("Starting NTP interface\n");
     NTPInterface = NetworkInterface::get_default_instance();
 
     if (NTPInterface == nullptr) {
@@ -16,7 +18,7 @@ NTPConnection::NTPConnection() : BTN_C(PG_2) {
     if (connect != 0) {
 
       printf("CONNECTION ERROR\n");
-      return;
+      NVIC_SystemReset();
     }
 
     printf("Connection success, MAC: %s\n", NTPInterface->get_mac_address());
@@ -31,7 +33,7 @@ NTPConnection::NTPConnection() : BTN_C(PG_2) {
     if (timestamp < 0) {
       // cout << "Failed to get the current time, error: " << timestamp << endl;
       NTPInterface->disconnect();
-      return;
+      NVIC_SystemReset();
     }
 
     set_time(timestamp);
@@ -39,9 +41,9 @@ NTPConnection::NTPConnection() : BTN_C(PG_2) {
     printf("Time: %s\n", ctime(&timestamp));
 
     NTPInterface->disconnect();
+      NVIC_SystemReset(); 
   } else {
-  printf("NOTHING\n");
-  return;
+  delete [] &NTPInterface;
   }
 };
 
