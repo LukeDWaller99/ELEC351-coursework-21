@@ -40,12 +40,12 @@ void ErrorHandler::error_thread(void){
     switch(currentErrorSeverity) 
     {
         case WARNING:
-        queue->call(printf, "WARNING Error Code - %d\n", (errorNumber & 255));
+        queue->queue.call(printf, "WARNING Error Code - %d\n", (errorNumber & 255));
         yellowLED = 1;
         break;
 
         case CRITICAL:
-        queue->call(printf, "CRITICAL Error Code - %d\n", (errorNumber & 255));
+        queue->queue.call(printf, "CRITICAL Error Code - %d\n", (errorNumber & 255));
         // turn on red led
         redLED = 1;
         alarm_status = 1;
@@ -54,9 +54,9 @@ void ErrorHandler::error_thread(void){
             ThisThread::sleep_for(30s);
             buzz.rest();
         #else
-            queue->call(printf, "BUZZER ON FOR 30\n");
+            queue->queue.call(printf, "BUZZER ON FOR 30\n");
             ThisThread::sleep_for(30s);
-            queue->call(printf,"BUZZER OFF\n");
+            queue->queue.call(printf,"BUZZER OFF\n");
         #endif
         alarm_status = 0;
         // buzzer for 30 seconds
@@ -65,28 +65,27 @@ void ErrorHandler::error_thread(void){
         break;
 
         case FATAL:                     //FATAL ERROR - Immediate hardware reset
-        queue->call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
+        queue->queue.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong 
         break;
 
         case BUFF_FULL:
-        queue->call(printf, "BUFFER FULL\n");
+        queue->queue.call(printf, "BUFFER FULL\n");
         redLED = 1;
         // turn on red LED
         break;
 
         case ENV_ERR:
         //printf("ENV Error %d\n",(errorNumber & 255));
-        alarm_status = 1;
-        queue->call(printf, "ENV Error %d\n",(errorNumber & 255));
+        queue->queue.call(printf, "ENV Error %d\n",(errorNumber & 255));
         #if BUZZER_ENABLE == 1
             buzz.playTone(&note);
             ThisThread::sleep_for(3s);
             buzz.rest();
         #else
-            queue->call(printf, "BUZZER ON FOR 3\n");
+            queue->queue.call(printf, "BUZZER ON FOR 3\n");
             ThisThread::sleep_for(3s);
-            queue->call(printf,"BUZZER OFF\n");
+            queue->queue.call(printf,"BUZZER OFF\n");
         #endif
         alarm_status = 0;
         // sound buzzer

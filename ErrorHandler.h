@@ -11,6 +11,7 @@ Error Handler class header file.
 #include "mbed.h"
 #include "Mutex.h"
 #include <uop_msb.h>
+#include "CustomQueue.h"
 using namespace uop_msb;
 ///Macro to control the buzzer usuage.
 ///set to 0 when using networking functionality to avoid a hardware fault.
@@ -92,7 +93,7 @@ class ErrorHandler {
     ///Error flag clearing lock.
     Mutex flagLock;
     ///Pointer to the output error queue
-    EventQueue* queue;
+    CustomQueue* queue;
     int alarm_status=0;
     /**Function for clearing the Error Handler's thread flags safely
     **/
@@ -121,7 +122,7 @@ class ErrorHandler {
     @param errorQueue - Pointer to an eventQueue object to be used for printing the 
                         error messages to a serial output device
     **/
-    ErrorHandler(EventQueue* errorQueue);
+    ErrorHandler(CustomQueue* errorQueue);
     ~ErrorHandler();
     /**
     Main error handler functionality. Waits for a flag to be set using setErrorFlag, before
