@@ -104,7 +104,7 @@ void sampler::quantise(sensor_type selectedSensor){
         upper = threshold.l_upper;  //extract upper limit
         lower = threshold.l_lower;  //extract lower limit
         for(i=0;i<8;i++){
-            rawVals[i]=internal_buffer[i].LDR;
+            rawVals[i]=1-internal_buffer[i].LDR;
         }
     }
     quantInterval = (upper-lower)/10;
