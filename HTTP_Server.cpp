@@ -3,7 +3,6 @@
 #include <cstdio>
 
 
-
 HTTP_server::HTTP_server() {
 
   printf("Basic HTTP server example\n");

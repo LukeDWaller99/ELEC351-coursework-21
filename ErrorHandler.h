@@ -57,6 +57,9 @@ using namespace uop_msb;
 #define NO_NETWORK_INTERFACE    0x040   ///NO NETWORK INTERFACE CONNECTED/FOUND
 #define CONNECTION_ERROR        0x041   ///COULD NOT CONNECT TO NTP SERVER
 #define TIME_ERROR              0x042   ///FAILED TO GET TIME FROM NTP SERVER
+#define NO_IP_ADDRESS           0x043   ///COULD NOT GET IP ADDRESS
+#define LISTENER_ERROR          0x044   ///LISTENER ERROR
+
 
 //error handler errors
 #define FLAG_CLEAR_ERROR 0x299  ///Flag clear error, immediate reset
