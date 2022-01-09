@@ -154,7 +154,7 @@ void sampler::thresholdCheck(){
     }
     //check light
     if (light>threshold_t.l_upper){
-        EH->setErrorFlag(L_UPPER);
+        EH->setErrorFlag(L_LOWER);
     }
     else if (light<threshold_t.l_lower) {
         EH->setErrorFlag(L_UPPER);
