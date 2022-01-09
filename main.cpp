@@ -8,12 +8,11 @@
 using namespace uop_msb;
 using namespace std;
 
-EventQueue printQueue;
+CustomQueue printQueue;
 samples sampledData;
-EventQueue* printQueueP = &printQueue;
-ErrorHandler EH(printQueueP);
-ErrorHandler* EH_P = &EH;
-sampler SampleModule(EH_P);
+ErrorHandler EH(&printQueue);
+//ErrorHandler* EH_P = &EH;
+sampler SampleModule(&EH);
 
 //threads
 Thread samplingThread(osPriorityRealtime);
@@ -22,7 +21,7 @@ Thread print;
 
 
 int main() {
-    print.start(callback(&printQueue, &EventQueue::dispatch_forever));
+    //print.start(callback(&printQueue, &EventQueue::dispatch_forever));
     SampleModule.displayLimits();
     wait_us(1000000);
     while(true){
@@ -30,11 +29,41 @@ int main() {
     int i;
     for(i=0;i<8;i++){
         sampledData = SampleModule.internal_buffer[i];
-        printQueue.call(printf,"%d raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", i, sampledData.temp, sampledData.pressure, sampledData.LDR);
+        printQueue.queue.call(printf,"%d raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", i, sampledData.temp, sampledData.pressure, sampledData.LDR);
     }
-    printQueue.call(printf,"Sensorval %d\n",SampleModule.currentSensor);
+    printQueue.queue.call(printf,"Sensorval %d\n",SampleModule.currentSensor);
     //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
     wait_us(1000000);
     }
-
 }
+// #include "NTPClient.h"
+// #include <cstring>
+// #include <string.h>
+// #include <LEDMatrix.h>
+// #include "SevenSegmentDisplay.h"
+// #include <ErrorHandler.h>
+// #include "CustomQueue.h"
+// using namespace uop_msb;
+// //EventQueue* queue = new EventQueue();
+// CustomQueue queue;
+
+// ErrorHandler EH(&queue);
+// LEDMatrix matrix;
+// Thread t;
+
+
+// int main() {
+//     while(true)
+//     {
+//     wait_us(100000);
+//     EH.setErrorFlag(T_UPPER);
+//     wait_us(5000000);
+//     EH.setErrorFlag(ALL_CLEAR);
+//     wait_us(100000);
+//     EH.setErrorFlag(EMPTY_FLUSH);
+//     wait_us(5000000);
+//     EH.setErrorFlag(ALL_CLEAR);
+//     wait_us(5000000);
+//     EH.setErrorFlag(BUFFER_FULL);
+//     }
+// }

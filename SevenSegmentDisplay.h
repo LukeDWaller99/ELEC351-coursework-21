@@ -1,7 +1,8 @@
 #ifndef __Seven_Segment_Display__
 #define __Seven_Segment_Display__
 #include "mbed.h"
-
+#include "mbed_retarget.h"
+#include "mbed_wait_api.h"
 
 class SevenSegmentDisplay{
     private:
