@@ -2,7 +2,7 @@
 
 #include "buffer.h"
 #include <ctime>
-
+#include <Semaphore.h>
 
 Semaphore spaceInBuffer(buffer_size);  //space in buffer
 Semaphore samplesInBuffer(0);          //samples in buffer
@@ -12,25 +12,32 @@ liveData buffer[buffer_size];
 liveData dataRecord; //for holding data in the buffer
 liveData printRecord[buffer_size];
 
+Ticker bufferWriteTick;
+Ticker bufferFlushTick;
+Timer t;
 //sampler bufferSampler; 
 samples sampledData;
+int bufferSampleCount;
+float currentTime;
+float hourPassed = 59*60;//59 minutes as we check every minute
 
-FILE *fp; 
+//FILE *fp; 
 SDBlockDevice mysd(PB_5, PB_4, PB_3, PF_3);
 DigitalIn SDDetect(PF_4);
 DigitalOut greenLED(PC_6);
 
-/*
-sampleData - output signal that buffer is ready for data
-acquireData - get the data
-writeBuffer - check for space, if available, write data
-writeSD - write all data to sd card
-*/
-
 //constructor
 bufferClass::bufferClass(){
-    //THREAD TO CALL WRITE BUFFER WITH A FLAG SET BY SAMPLER?
+    //bufferWriteTick.attach(callback(this, &bufferClass::writeBuffer),15s);
+    bufferFlushTick.attach(callback(this, &bufferClass::whenToFlush),30s);
 }
+
+void bufferClass::flashGreen(){
+    greenLED = 0;
+    ThisThread::sleep_for(100ms);
+    greenLED = 1;
+}
+
 
 // //signal the sampling function (ISR)
 // void bufferClass::sampleFunc(){
@@ -74,6 +81,9 @@ void bufferClass::writeBuffer(){
     samplesInBuffer.release(); //sample added signal
 }
 
+void bufferClass::bufferCount(){
+
+}
 // void bufferClass::acquireData(){
 //     //bufferTick.attach(callback(this, &bufferClass::sampleFunc), 11s);
 //     while(1){
@@ -81,6 +91,23 @@ void bufferClass::writeBuffer(){
 //         writeBuffer();
 //     }
 // }
+
+void bufferClass::whenToFlush(){
+    //currentTime = t.read();
+    currentTime = duration_cast<seconds>(t.elapsed_time()).count();
+
+    if((currentTime > 60) && (oldIDX-(round(buffer_size*0.1)))){
+            //flush buffer at 90% 
+            //currently printing to serial
+            flashGreen();
+            bufferClass::printBufferContents();
+        }
+    if( currentTime > hourPassed){
+        //flush no matter what
+        flashGreen();
+        bufferClass::printBufferContents();
+    }
+}
 
 void bufferClass::printBufferContents(){
     if(samplesInBuffer.try_acquire_for(1ms) == 0){
@@ -100,18 +127,25 @@ void bufferClass::printBufferContents(){
                 }
             }
             bufferLock.unlock();
+            printQueue.call(printf, "Time: %s\n", ctime(&timestamp));
+            //printf("Time: %s\n", ctime(&timestamp));
             for(pRIDX = 0; pRIDX < printRecordsIDX; pRIDX++){ //iterate through data
                 //printQueue.call(printf, "print all data now\n");
                 //timestamp = time(NULL);
-                printf("Time: %s\n", ctime(&timestamp));
+                //printf("Time: %s\n", ctime(&timestamp));
+                //printQueue.call(printf(" printRecords \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", printRecord[pRIDX].temp, printRecord[pRIDX].pressure, printRecord[pRIDX].LDR));
+                //cant index through these
                 printf(" printRecords \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", printRecord[pRIDX].temp, printRecord[pRIDX].pressure, printRecord[pRIDX].LDR);
             }
+            //lastFlushTime = ctime(&timestamp);
+            t.reset(); //reset flush timer
         }
     }
     samplesInBuffer.release(); 
 }
 
-// void bufferClass::flushBuffer(FILE &fp){
+// //my way
+// void bufferClass::flushBuffer(){
 //     if(samplesInBuffer.try_acquire_for(1ms) == 0){
 //         printQueue.call(emptyFlush);
 //         //errorSeverity(CRITICAL);
@@ -122,8 +156,8 @@ void bufferClass::printBufferContents(){
 //             printQueue.call(bufferFlushTimeout);
 //             //errorSeverity(WARNING);
 //         }else{
-//             // FATFileSystem fs("sd", &mysd2);
-//             // FILE *fp = fopen("/sd/environmental_data.txt","w");
+//             FATFileSystem fs("sd", &mysd);
+//             FILE *fp = fopen("/sd/environmental_data.txt","w");
 
 //             while(runFlush == 1){
 //                 if(oldIDX == newIDX){
@@ -134,7 +168,7 @@ void bufferClass::printBufferContents(){
 //                     oldIDX = (oldIDX + 1);
 //                     liveData flushRecord = buffer[oldIDX];
 //                     //fprintf(&fp, "Time recorded = );
-//                     fprintf(&fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+//                     fprintf(fp, " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
                     
 //                     printf("printing things\n");
 //                     //spaceInBuffer.release();//space in buffer signal
@@ -143,7 +177,7 @@ void bufferClass::printBufferContents(){
 //             samplesInBuffer.release();
 //             printQueue.call(flushedBuffer);
 //             //flash green led
-//             //bufferLock.unlock();
+//             bufferLock.unlock();
 //             //printQueue.call(printf, "unlocked buffer after\n");
 //         }
 //     }
@@ -177,13 +211,14 @@ void bufferClass::initSD(){
     }
 }
 
-void bufferClass::flushBufferUpgrade(){
+//nicks way
+int bufferClass::flushBufferUpgrade(){
     printf("Initialise and write to a file\n");
     int err1;
     err1=mysd.init();
     if ( 0 != err1) {
         printf("Init failed %d\n",err1);
-        //return;
+        return -1;
     }
     
     FATFileSystem fs("sd", &mysd);
@@ -192,7 +227,7 @@ void bufferClass::flushBufferUpgrade(){
     if(fp == NULL) {
         error("Could not open file for write\n");
         mysd.deinit();
-        //return;
+        return -1;
     } else{
         //***********************
         while(runFlush == 1){
@@ -219,37 +254,11 @@ void bufferClass::flushBufferUpgrade(){
         fclose(fp);
         printf("SD Write done...\n");
         mysd.deinit();
+        return 0;
     }
     
 }
 
+void bufferClass::flushTimer(){
 
-// void bufferClass::write_sdtest()
-// {
-//     printf("Initialise and write to a file\n");
-//     int err;
-//     // call the SDBlockDevice instance initialisation method.
-
-//     err=mysd.init();
-//     if ( 0 != err) {
-//         printf("Init failed %d\n",err);
-//         return;
-//     }
-    
-//     FATFileSystem fs("sd", &mysd);
-//     FILE *fp = fopen("/sd/test.txt","w");
-//     if(fp == NULL) {
-//         error("Could not open file for write\n");
-//         mysd.deinit();
-//         //return -1;
-//     } else {
-//         //Put some text in the file...
-//         fprintf(fp, "Martin Says Hi.. there is nothing in here!\n");
-//         //Tidy up here
-//         fclose(fp);
-//         printf("SD Write done...\n");
-//         mysd.deinit();
-//         //return 0;
-//     }
-    
-// }
+}

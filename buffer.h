@@ -12,7 +12,7 @@
 //#include "NTPConnection.h"
 //#include "HTTP_Server.h"
 
-#define buffer_size 800
+#define buffer_size 20
 using namespace std;
 
 class bufferClass{
@@ -27,17 +27,19 @@ class bufferClass{
     time_t timestamp;
 
     public:
-    //void flushBuffer(FILE &fp);
-    void flushBufferUpgrade();
+    //void flushBuffer();
+    int flushBufferUpgrade();
+    void whenToFlush();
+    void flashGreen();
     //void sampleFunc();
     void writeBuffer();
-    //void writeBuffer2();
+    void bufferCount();
     //void acquireData();
     void printBufferContents();
     void emptyBuffer();
     //void printToWebpage(vector<int> & webpageData);
     void initSD();
-    void write_sdtest();
+    void flushTimer();
 
 
     unsigned int newIDX = buffer_size - 1; 
@@ -48,6 +50,7 @@ class bufferClass{
     int printIDX = oldIDX; //work from oldest to newest sets data
     int printRecordsIDX = 0; //track no of data sets
     int pRIDX = 0;
+    int lastFlushTime = 0;
     
     bool cardMount = 0;
     //semaphores

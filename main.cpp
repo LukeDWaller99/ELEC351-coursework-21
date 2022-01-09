@@ -25,6 +25,7 @@ UOP_MSB_TEST board;
 //Threads
 Thread print;
 
+
 /*
 SDRun updated - can test now with a thread for timing?
 writeSD updated - need to copy last time flush occured and use that to track, uses
@@ -50,7 +51,7 @@ int main() {
     //mySDCard.initSD();
     
     int i = 0;
-    while(i < 10){
+    while(i < 25){
     //mySDCard.initSD();
     i++;
     printf("%i\n", i);       
@@ -61,10 +62,11 @@ int main() {
     wait_us(1000000);
     }
     
-    mybuffer.printBufferContents();
-    mybuffer.initSD();
+    //mybuffer.printBufferContents();
+    //mybuffer.initSD();
     wait_us(1000);
-    mybuffer.flushBufferUpgrade();
+    //mybuffer.flushBufferUpgrade();
+    //mybuffer.flushBuffer();
     //mybuffer.write_sdtest();
     //board.test();
 
