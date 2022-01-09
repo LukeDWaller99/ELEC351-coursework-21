@@ -99,6 +99,7 @@ void bufferClass::printBufferContents(){
             bufferLock.unlock();
             for(pRIDX = 0; pRIDX < printRecordsIDX; pRIDX++){ //iterate through data
                 //printQueue.call(printf, "print all data now\n");
+                printf("Time: %s\n", ctime(&timestamp));
                 printf(" printRecords \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", printRecord[pRIDX].temp, printRecord[pRIDX].pressure, printRecord[pRIDX].LDR);
             }
         }
@@ -161,8 +162,7 @@ void bufferClass::flushBuffer(FILE &fp){
 
 void bufferClass::flushBufferUpgrade(){
     printf("Initialise and write to a file\n");
- int err;
-    // call the SDBlockDevice instance initialisation method.
+    int err;
     err=mysd.init();
     if ( 0 != err) {
         printf("Init failed %d\n",err);

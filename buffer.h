@@ -11,6 +11,8 @@
 #include "sampling.h"
 #include "SDBlockDevice.h"
 #include <cstdio>
+#include "NTPConnection.h"
+#include "HTTP_Server.h"
 
 #define buffer_size 800
 using namespace std;
@@ -23,6 +25,7 @@ class bufferClass{
     Mutex timeLock;
     Ticker bufferTick;
     sampler dataSampler;
+    HTTP_server webServer;
 
     public:
     void flushBuffer(FILE &fp);
@@ -60,11 +63,15 @@ class bufferClass{
 	float LDR;
 	float temp;
 	float pressure;
+
+    time_t realTime;
 };
 
 extern liveData dataRecord;
 extern liveData flushRecord;
 extern liveData printRecord[buffer_size];
+
+extern time_t timestamp;
 
 //liveData printToWebpage();
 #endif
