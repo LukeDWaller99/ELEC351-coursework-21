@@ -2,7 +2,8 @@
 
 //extern samples sampledData;
 
-sampler::sampler():LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
+sampler::sampler(ErrorHandler* OutputHandler):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
+    EH = OutputHandler;
     sampleThread.start(callback(this, &sampler::sample));
     matrixThread.start(callback(this, &sampler::matrixInterface));
     sampleTick.attach(callback(this, &sampler::sampleflag),10s);
@@ -10,7 +11,8 @@ sampler::sampler():LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
 }
 
 
-sampler::sampler(float limits[6]):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
+sampler::sampler(ErrorHandler* OutputHandler,float limits[6]):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
+    EH = OutputHandler;
     //set threshold values
     threshold.bind(limits);
     sampleThread.start(callback(this, &sampler::sample));
@@ -74,6 +76,7 @@ void sampler::matrixInterface(){
             }
         }
         quantise(currentSensor);
+        thresholdCheck();
         matrix.update(matrix_input.qsamples);
         ThisThread::flags_clear(3);
     }
@@ -116,6 +119,55 @@ void sampler::quantise(sensor_type selectedSensor){
         //printf("%d \t%d \n",i,quantVals[i]);
     }
 
+}
+
+void sampler::thresholdCheck(){
+    limits threshold_t = threshold;
+    float temp,pres,light;
+    int clear_flag = 0;
+    samples data = sampleData;
+    //check temperature
+    temp = sampleData.temp;
+    pres = sampleData.pressure;
+    light = sampleData.LDR;
+
+    //check temp
+    if (temp>threshold_t.t_upper){
+        EH->setErrorFlag(T_UPPER);
+    }
+    else if (temp<threshold_t.t_lower) {
+        EH->setErrorFlag(T_LOWER);
+    }
+    else{
+        clear_flag++;
+    }
+
+    //check pressure
+    if (pres>threshold_t.p_upper){
+        EH->setErrorFlag(P_UPPER);
+    }
+    else if (pres<threshold_t.p_lower) {
+        EH->setErrorFlag(P_LOWER);
+    }
+    else {
+        clear_flag++;
+    }
+    //check light
+    if (light>threshold_t.l_upper){
+        EH->setErrorFlag(L_UPPER);
+    }
+    else if (light<threshold_t.l_lower) {
+        EH->setErrorFlag(L_UPPER);
+    }
+    else {
+        clear_flag++;
+    }
+    if (clear_flag == 3){
+        EH->setErrorFlag(ALL_CLEAR);
+    }
+    else {
+    clear_flag = 0;
+    }
 }
 
 void sampler::displayLimits(){

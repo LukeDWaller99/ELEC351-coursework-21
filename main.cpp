@@ -2,12 +2,18 @@
 #include "mbed_wait_api.h"
 #include "rtos/ThisThread.h"
 #include <sampling.h>
+#include "ErrorHandler.h"
+
 
 using namespace uop_msb;
 using namespace std;
-sampler SampleModule;
+
 EventQueue printQueue;
 samples sampledData;
+EventQueue* printQueueP = &printQueue;
+ErrorHandler EH(printQueueP);
+ErrorHandler* EH_P = &EH;
+sampler SampleModule(EH_P);
 
 //threads
 Thread samplingThread(osPriorityRealtime);

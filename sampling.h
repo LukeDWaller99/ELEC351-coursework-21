@@ -4,6 +4,7 @@
 #include <Mutex.h>
 #include <uop_msb.h>
 #include "LEDMatrix.h"
+#include "ErrorHandler.h"
 //#include "buffer.h"
 
 
@@ -80,17 +81,18 @@ class sampler {
         PRESSURE,
         LIGHT,
     };
-    InterruptIn BT_A;                       ///Button for controlling the matrix output sensor
-    limits threshold;                       ///limits object to store the current alarm thresholds
-    //sensor_type currentSensor = LIGHT;      ///<Current sensor output, default is 'LIGHT'
+    InterruptIn BT_A;                           ///< Button for controlling the matrix output sensor
+    limits threshold;                           ///< limits object to store the current alarm thresholds
+    //sensor_type currentSensor = LIGHT;        ///< Current sensor output, default is 'LIGHT'
     //float limits[6];    
-    Mutex sampleLock;                       ///Mutex Lock to ensure thread safety on sample values
-    Ticker sampleTick;                      ///Ticker interrupt to trigger sampling at once per second
-    Thread sampleThread,matrixThread;       ///Thread declarations.
-    LEDMatrix matrix;                       ///LED Matrix display for outputting sample bar graphs.
+    Mutex sampleLock;                           ///< Mutex Lock to ensure thread safety on sample values
+    Ticker sampleTick;                          ///< Ticker interrupt to trigger sampling at once per second
+    Thread sampleThread,matrixThread;           ///< Thread declarations.
+    LEDMatrix matrix;                           ///< LED Matrix display for outputting sample bar graphs.
     //bufferClass sampleBuffer;
     uop_msb::EnvSensor sensor;        
     AnalogIn LDR;
+    ErrorHandler* EH;                           ///< Error Handler
 
     /**
     Main sampling function. This function contains the majority of the sampler's functionality. After being
@@ -124,15 +126,22 @@ class sampler {
     Matrix interface funtion.
     **/
     void matrixInterface();
+
+    /**
+    Function to check the incoming sample against the alarm threshold.
+
+    **/
+    void thresholdCheck();
+
     public:
-    quantised_samples matrix_input; ///Holds quantised values to be passed to the matrix display
-    samples internal_buffer[8];
+    quantised_samples matrix_input; ///<Holds quantised values to be passed to the matrix display
+    samples internal_buffer[8];     ///<Internal buffer to hold samples for the matrix.
     samples sampleData;
     /**
     Default constructor. This constructor will instantiate an instance of the sample module with the
     default alarm thresholds.
     **/
-    sampler();
+    sampler(ErrorHandler* OutputHandler);
     /**
     Alternative constructor that overrides default limits. This constructor can be used 
     if limit values other than the defaults are required.
@@ -141,7 +150,7 @@ class sampler {
                     Pressure in millibars.
                     Light value as a 0->1 float value.
     **/
-    sampler(float limits[6]);
+    sampler(ErrorHandler* OutputHandler, float limits[6]);
     void displayLimits();
     ~sampler();
     sensor_type currentSensor = LIGHT;      ///<Current sensor output, default is 'LIGHT'
