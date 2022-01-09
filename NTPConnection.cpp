@@ -1,28 +1,31 @@
 #include "NTPConnection.h"
-#include <cstdio>
 
-NTPConnection::NTPConnection() : BTN_C(PG_2) {
 
+NTPConnection::NTPConnection(EventQueue *printQueue) : BTN_C(PG_2) {
+
+  printQueue = printQueue;
   if (BTN_C == 1) {
 
-      printf("Starting NTP interface\n");
+    printQueue->call(printf, "Starting NTP interface\n");
     NTPInterface = NetworkInterface::get_default_instance();
 
     if (NTPInterface == nullptr) {
-      printf("No Network Interface found\n");
-      return;
+    printQueue->call(printf, "No Network Interface Found\n");
+   wait_us(100000);
+      NVIC_SystemReset();
     }
 
     // Connect to server
     int connect = NTPInterface->connect();
     if (connect != 0) {
 
-      printf("CONNECTION ERROR\n");
+    printQueue->call(printf, "CONNECTION ERROR\n");
+       wait_us(100000);
       NVIC_SystemReset();
     }
 
-    printf("Connection success, MAC: %s\n", NTPInterface->get_mac_address());
-    printf("Getting time from the NTP server\n");
+    printQueue->call(printf, "Connection success, MAC: %s\n", NTPInterface->get_mac_address());
+    printQueue->call(printf, "Getting time from the NTP server\n");
 
     NTPClient NTP(NTPInterface);
 
@@ -31,20 +34,22 @@ NTPConnection::NTPConnection() : BTN_C(PG_2) {
     timestamp = NTP.get_timestamp();
 
     if (timestamp < 0) {
-      // cout << "Failed to get the current time, error: " << timestamp << endl;
+      printQueue->call(printf, "Failed to get the current time, error: %s. \n Exception Raised\n", ctime(&timestamp));
       NTPInterface->disconnect();
+   wait_us(100000);
       NVIC_SystemReset();
     }
 
     set_time(timestamp);
 
-    printf("Time: %s\n", ctime(&timestamp));
+    printQueue->call(printf, "Time: %s\n", ctime(&timestamp));
 
     NTPInterface->disconnect();
-      NVIC_SystemReset(); 
+    wait_us(100000);
+    NVIC_SystemReset();
   } else {
-  delete [] &NTPInterface;
+    delete[] &NTPInterface;
   }
 };
 
-time_t NTPConnection::getTime() { return time(NULL); }
+time_t NTPConnection::getTime() { return time(NULL); } // deprecated function

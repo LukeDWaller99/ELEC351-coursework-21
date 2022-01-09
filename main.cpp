@@ -17,17 +17,15 @@
 using namespace uop_msb;
 EventQueue* queue = new EventQueue();
 ErrorHandler EH(queue);
-NTPConnection NTP;
+Thread t;
+NTPConnection NTP(queue);
 // SevenSegmentDisplay display;
 HTTP_server HTPP;
 // LEDMatrix matrix;
-// Thread t;
-
-
-time_t timestamp;
 
 
 int main() {
+    t.start(callback(queue, &EventQueue::dispatch_forever));
     // wait_us(5000000);
     // timestamp = NTP.getTime();
     // printf("%s\n", ctime(&timestamp));
@@ -64,7 +62,6 @@ int main() {
     // Err_thread.start(&EH.error_thread);
     // display.test();
     // matrix.test();
-    // t.start(callback(queue, &EventQueue::dispatch_forever));
     // matrix.clear();
     // wait_us(100000);
     // EH.setErrorFlag(T_UPPER);
