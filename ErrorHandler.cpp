@@ -21,7 +21,7 @@ void ErrorHandler::clear_all(){
 }
 
 
-ErrorHandler::ErrorHandler(EventQueue* outputQueue):override_button(USER_BUTTON){
+ErrorHandler::ErrorHandler(CustomQueue* outputQueue):override_button(USER_BUTTON){
     // ERROR_THREAD_NAME.set_priority(osPriorityRealtime);
     queue = outputQueue;
     ERROR_THREAD_NAME.start(callback(this, &ErrorHandler::error_thread));
@@ -151,7 +151,7 @@ void ErrorHandler::setErrorFlag(int errorCode){
 void ErrorHandler::alarm_override(){
     #if BUZZER_ENABLE == 0
     if (alarm_status == 1){
-    queue->call(printf,"ALARM DISABLED - OVERRIDE\n");
+    queue->queue.call(printf,"ALARM DISABLED - OVERRIDE\n");
     }
     #else
     if (alarm_status == 1){
