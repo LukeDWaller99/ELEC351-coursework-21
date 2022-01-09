@@ -67,6 +67,7 @@ void ErrorHandler::error_thread(void){
 
         case FATAL:                     //FATAL ERROR - Immediate hardware reset
         queue->custom.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
+        ThisThread::sleep_for(1s);
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong 
         break;
 
