@@ -5,6 +5,12 @@ This wrapper ensures that the queue's thread is initialised and that the queue i
 dispatched before being used by any of the other classes. Several of the classes
 have status prints within their constructors, so a pre-main initialisation is critical
 to capture all status messages.
+
+An example call is shown below:
+@code 
+CustomQueue* queue;
+queue->queue.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
+@endcode
 **/
 
 #ifndef __CUSTOM_QUEUE__
