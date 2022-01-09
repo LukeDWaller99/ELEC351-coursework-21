@@ -3,6 +3,6 @@
 #include <cstdio>
 
 CustomQueue::CustomQueue(){
-    QUEUE_THREAD.start(callback(&queue, &EventQueue::dispatch_forever));
-    queue.call(printf, "Queue Initialised\n");
+    QUEUE_THREAD.start(callback(&custom, &EventQueue::dispatch_forever));
+    custom.call(printf, "Queue Initialised\n");
 }
