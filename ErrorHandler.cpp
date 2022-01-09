@@ -22,10 +22,11 @@ void ErrorHandler::clear_all(){
 
 
 ErrorHandler::ErrorHandler(CustomQueue* outputQueue):override_button(USER_BUTTON){
-    // ERROR_THREAD_NAME.set_priority(osPriorityRealtime);
+    
     queue = outputQueue;
     ERROR_THREAD_NAME.start(callback(this, &ErrorHandler::error_thread));
     override_button.rise(callback(this, &ErrorHandler::alarm_override));
+    ERROR_THREAD_NAME.set_priority(osPriorityRealtime7);
 }
 
 
