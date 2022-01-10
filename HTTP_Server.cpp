@@ -1,10 +1,11 @@
 #include "HTTP_Server.h"
+#include <cstdio>
 
 
 HTTP_server::HTTP_server(CustomQueue* printQueue) {
     // HTTP_server::HTTP_server(){
 
-    // printQueue = printQueue;
+    printQueue = printQueue;
 
   printf("Basic HTTP server example\n");
 printQueue->custom.call(printf, "Opening HTTP Server\n");
