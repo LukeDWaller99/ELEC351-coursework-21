@@ -51,15 +51,15 @@ int main() {
     //mySDCard.initSD();
     
     int i = 0;
-    while(i < 25){
+    while(i < 60){
     //mySDCard.initSD();
     i++;
     printf("%i\n", i);       
     printf(" raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    wait_us(1000000);
-    mybuffer.writeBuffer();
+    wait_us(10000000);
+    //mybuffer.writeBuffer();
     printf(" stored \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", dataRecord.temp, dataRecord.pressure, dataRecord.LDR);
-    wait_us(1000000);
+    wait_us(10000000);
     }
     
     //mybuffer.printBufferContents();

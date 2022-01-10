@@ -25,12 +25,17 @@ class bufferClass{
     sampler dataSampler;
     //HTTP_server webServer;
     time_t timestamp;
+    Thread writeThread;
+    Thread flushThread;
 
     public:
     //void flushBuffer();
     int flushBufferUpgrade();
     void whenToFlush();
     void flashGreen();
+    void writeBufferAuto();
+    void writeFlag();
+    void flushFlag();
     //void sampleFunc();
     void writeBuffer();
     void bufferCount();

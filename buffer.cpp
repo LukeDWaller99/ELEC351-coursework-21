@@ -21,21 +21,72 @@ int bufferSampleCount;
 float currentTime;
 float hourPassed = 59*60;//59 minutes as we check every minute
 
-//FILE *fp; 
+FILE *fp; 
 SDBlockDevice mysd(PB_5, PB_4, PB_3, PF_3);
 DigitalIn SDDetect(PF_4);
 DigitalOut greenLED(PC_6);
 
 //constructor
 bufferClass::bufferClass(){
-    //bufferWriteTick.attach(callback(this, &bufferClass::writeBuffer),15s);
-    bufferFlushTick.attach(callback(this, &bufferClass::whenToFlush),30s);
+    t.start();
+    writeThread.start(callback(this, &bufferClass::writeBufferAuto));
+
+
+    bufferWriteTick.attach(callback(this, &bufferClass::writeFlag),5s);
+    //writeThread.start(callback(this, &bufferClass::writeBuffer),15s);
+    flushThread.start(callback(this, &bufferClass::whenToFlush));
+    bufferFlushTick.attach(callback(this, &bufferClass::flushFlag),15s);
 }
 
 void bufferClass::flashGreen(){
     greenLED = 0;
     ThisThread::sleep_for(100ms);
     greenLED = 1;
+}
+
+void bufferClass::writeFlag(){
+    bufferClass::writeThread.flags_set(1);
+}
+
+void bufferClass::flushFlag(){
+    bufferClass::flushThread.flags_set(1);
+}
+
+void bufferClass::writeBufferAuto(){
+    while(true){
+        ThisThread::flags_wait_any(1);
+
+        if(spaceInBuffer.try_acquire_for(1ms) == 0){ 
+            printQueue.call(bufferFull);
+            //fatal error
+        }else{
+            //PROTECT THE BUFFER
+            if(bufferLock.trylock_for(1ms) == 0){
+                printQueue.call(bufferLockTimeout);
+                //fatal error
+            } else{
+                //PROTECT THE TIME
+                if(timeLock.trylock_for(1ms) == 0){ //PROTECT THE DATA
+                    printQueue.call(timeLockTimeout);
+                } else{ 
+                    //************************************
+                    //adding time here
+                    //************************************
+                    //copy environmental data
+                    dataRecord.LDR = sampledData.LDR;
+                    dataRecord.temp = sampledData.temp;
+                    dataRecord.pressure = sampledData.pressure;
+                    timeLock.unlock(); 
+                }
+                //update the buffer
+                newIDX = (newIDX + 1) % buffer_size; //increment buffer size
+                buffer[newIDX] = dataRecord; //update the buffer
+            }
+        bufferLock.unlock();
+    }
+    samplesInBuffer.release(); //sample added signal
+}
+ThisThread::flags_clear(1);
 }
 
 
@@ -94,27 +145,34 @@ void bufferClass::bufferCount(){
 
 void bufferClass::whenToFlush(){
     //currentTime = t.read();
+    while(true){
+        ThisThread::flags_wait_any(1);
     currentTime = duration_cast<seconds>(t.elapsed_time()).count();
 
     if((currentTime > 60) && (oldIDX-(round(buffer_size*0.1)))){
             //flush buffer at 90% 
             //currently printing to serial
-            flashGreen();
+            //flashGreen();
+            greenLED = !greenLED;
             bufferClass::printBufferContents();
         }
     if( currentTime > hourPassed){
         //flush no matter what
-        flashGreen();
+        greenLED = !greenLED;
         bufferClass::printBufferContents();
     }
+    }
+    ThisThread::flags_clear(1);
 }
 
 void bufferClass::printBufferContents(){
-    if(samplesInBuffer.try_acquire_for(1ms) == 0){
-        printf("no data\n"); 
+    while(true){
+        ThisThread::flags_wait_any(1);
+      if(samplesInBuffer.try_acquire_for(1ms) == 0){
+        printQueue.call(printf, "no data\n"); 
     } else{
         if(bufferLock.trylock_for(1ms) == 0){
-            printf("could not unlock buffer\n");
+            printQueue.call(printf, "could not unlock buffer\n");
         } else{
             while(runPrint == 1){
                 if(printIDX == newIDX){ //all data from buffer has been copied
@@ -128,20 +186,16 @@ void bufferClass::printBufferContents(){
             }
             bufferLock.unlock();
             printQueue.call(printf, "Time: %s\n", ctime(&timestamp));
-            //printf("Time: %s\n", ctime(&timestamp));
             for(pRIDX = 0; pRIDX < printRecordsIDX; pRIDX++){ //iterate through data
-                //printQueue.call(printf, "print all data now\n");
-                //timestamp = time(NULL);
-                //printf("Time: %s\n", ctime(&timestamp));
-                //printQueue.call(printf(" printRecords \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", printRecord[pRIDX].temp, printRecord[pRIDX].pressure, printRecord[pRIDX].LDR));
-                //cant index through these
                 printf(" printRecords \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", printRecord[pRIDX].temp, printRecord[pRIDX].pressure, printRecord[pRIDX].LDR);
             }
-            //lastFlushTime = ctime(&timestamp);
             t.reset(); //reset flush timer
         }
     }
-    samplesInBuffer.release(); 
+    samplesInBuffer.release();
+    ThisThread::flags_clear(1);
+}
+
 }
 
 // //my way
