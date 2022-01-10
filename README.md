@@ -4,36 +4,99 @@ This project is an Environmental sensor with the capability of monitoring the te
 
 Should any of the defined sensor thresholds be crossed, an alarm will be raised and errors logged to the serial output. 
 
+# Dependancies
+The main.c file contains all the instantiations needed in the correct order. However, several of the modules of this project can be used as standalone classes. To ensure that these classes are instantiated correctly, the dependencies are listed below. Generally, a 'CustomQueue' will need to be instantiated before anything else, to provide an output logging method.
+
+**Error Handler**
+    - Custom Queue
+        - For error logging
+
+**Sampler**
+    - Error Handler
+        - To control error outputs
+
+# Usuage of the Environmental Sensor
+
+## Error Codes
+In the event of an error, the Error Handler will automatically perform actions based on the severity:
+
+Severity  | Actions
+------------- | -------------
+Warning  | Display error code, light yellow LED
+Critical  | Display error code, light red LED, alarm for 30s then reset
+Fatal | Immediate reset
+
+A list of error codes can be seen below:
+
+| Module    | Severity  | Code  | Description |
+| :----:    | :----:    | :---- | :----
+| Buffer    | Critical  | 10    | Buffer is full. This is indicative of a further problem, as the buffer cannot flush to the SD Card output.|
+| ^         | Critical  | 11    | Buffer Lock Timeout. |
+| ^         | Critical  | 12    | Timer Lock Timeout.|
+| ^         | Warning   | 13    | Empty Flush. The buffer has attempted to flush when empty. |
+| ^         | Critical  | 14    | Buffer Flush Timeout. The buffer has failed to acquire the lock in time. |
+| SD Card   | Critical  | 20    | No SD Card is mounted. | 
+| ^         | Critical  | 21    | No SD Card File. The SD Card may be full. |
+|^          | Critical  | 22    | SD Card slot is empty, and the buffer cannot flush. |
+|Networking |           |       |                               |
+|^          |           |       |                               |
+|^          |           |       |                               |
+|^          |           |       |                               |
+|^          |           |       |                               |
+| ErrorHandler | Fatal  | 99    | Flag clear error. The error handler is unresponsive. |
+
+The same output is used to display environmental warnings.
+Severity  | Actions
+------------- | -------------
+Environmental  | Display error code, Alarm for 3s
+
+A list of environmental errors can be seen below:
+| Sensor        | Code  | Description |
+| :----:        | :---- | :----
+| Temperature   | 30    | Lower temperature limit exceeded. |
+| ^             | 31    | Upper temperature limit exceeded. |
+| Pressure      | 33    | Lower pressure limit exceeded     |
+| ^             | 34    | Upper pressure limit exceeded     |
+| Light         | 35    | Lower light limit exceeded        |
+| ^             | 36    | Upper light limit exceeded        |
+
 
 
 # Contributions
 
 Jack Pendlebury
+
 **Authored**
-    - Sampler
+    - sampler
     - ErrorHandler
     - CustomQueue
+
 **Contributed**
     - Documentation
-    - 7 Segment Display
-    - Matrix
-    - Serial Capture
+    - SevenSegmentDisplay
+    - LEDMatrix
+    - SerialCapture
 
 Noah Harvey
+
 **Authored**
     - SD Card
     - Buffer
     - 
+
 **Contributed**
     - Stuff
 
 Luke Waller
+
 **Authored**
-    - 7 Segment Display
-    - Matrix Display
+    - SevenSegmentDisplay
+    - LEDMatrix
     - NTP Server
     - HTTP Server
     - Serial Capture
+
 **Contributed**
-    - Error Handler
-    - Custom Queue
+    - ErrorHandler
+    - CustomQueue
+
