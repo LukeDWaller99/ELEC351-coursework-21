@@ -8,6 +8,7 @@
 #include "Thread.h"
 #include "mbed.h"
 #include "uop_msb.h"
+#include "CustomQueue.h"
 using namespace uop_msb;
 using namespace std;
 
@@ -48,10 +49,12 @@ class HTTP_server{
     SocketAddress address;
     TCPSocket socket;
     TCPSocket* clt_socket;
+    // CustomQueue* printQueue;
     
 
     public:
-    HTTP_server();
+    HTTP_server(CustomQueue* printQueue);
+    // HTTP_server();
     Thread HTTP_thread;
     void HTTP_server_thread(void);
 };

@@ -4,6 +4,7 @@
 #include "CustomQueue.h"
 #include "DigitalIn.h"
 #include "EventQueue.h"
+#include "ErrorHandler.h"
 #include "NTPClient.h"
 #include <iostream>
 #include "PinNames.h"
@@ -11,7 +12,7 @@
 #include "ThisThread.h"
 #include <cstdio>
 #include <ctime>
-#include "CustomQueue"
+#include "CustomQueue.h"
 
 class NTPConnection{
 
@@ -19,6 +20,7 @@ class NTPConnection{
     NetworkInterface* NTPInterface;
     DigitalIn BTN_C;
     CustomQueue* printQueue;
+    ErrorHandler* errorHandler;
 
     public:
     time_t timestamp;
@@ -27,7 +29,7 @@ class NTPConnection{
 
     Connects to NTP server to get current date and time and stores this locally
     **/
-    NTPConnection(CustomQueue* printQueue);
+    NTPConnection(CustomQueue* printQueue, ErrorHandler* errorHandler);
     // /**
     // Get time the current local time
     // **/

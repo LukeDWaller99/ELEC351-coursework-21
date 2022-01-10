@@ -1,40 +1,46 @@
+#include "HTTP_Server.h"
 #include "mbed.h"
 #include "mbed_wait_api.h"
 #include "rtos/ThisThread.h"
 #include <sampling.h>
 #include "ErrorHandler.h"
+#include "NTPConnection.h"
 
 
 using namespace uop_msb;
 using namespace std;
 
 CustomQueue printQueue;
-samples sampledData;
+// samples sampledData;
+// EventQueue* queue = new EventQueue();
 ErrorHandler EH(&printQueue);
+HTTP_server HTTP(&printQueue);
+// HTTP_server HTTP;
+NTPConnection NTP(&printQueue, &EH);
 //ErrorHandler* EH_P = &EH;
-sampler SampleModule(&EH);
+// sampler SampleModule(&EH);
 
 //threads
-Thread samplingThread(osPriorityRealtime);
+// Thread samplingThread(osPriorityRealtime);
 //Thread SDThread;
-Thread print;
+// Thread print;
 
 
 int main() {
     //print.start(callback(&printQueue, &EventQueue::dispatch_forever));
-    SampleModule.displayLimits();
-    wait_us(1000000);
-    while(true){
-    //sampledData = SampleModule.sampleData;
-    int i;
-    for(i=0;i<8;i++){
-        sampledData = SampleModule.internal_buffer[i];
-        printQueue.queue.call(printf,"%d raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", i, sampledData.temp, sampledData.pressure, sampledData.LDR);
-    }
-    printQueue.queue.call(printf,"Sensorval %d\n",SampleModule.currentSensor);
-    //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    wait_us(10000000);
-    }
+    // SampleModule.displayLimits();
+    // wait_us(1000000);
+    // while(true){
+    // //sampledData = SampleModule.sampleData;
+    // int i;
+    // for(i=0;i<8;i++){
+    //     sampledData = SampleModule.internal_buffer[i];
+    //     printQueue.custom.call(printf,"%d raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", i, sampledData.temp, sampledData.pressure, sampledData.LDR);
+    // }
+    // printQueue.custom.call(printf,"Sensorval %d\n",SampleModule.currentSensor);
+    // //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
+    // wait_us(10000000);
+    // }
 }
 // #include "NTPClient.h"
 // #include <cstring>

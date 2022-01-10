@@ -1,19 +1,25 @@
 #include "HTTP_Server.h"
-#include <cstddef>
-#include <cstdio>
 
 
-HTTP_server::HTTP_server() {
+HTTP_server::HTTP_server(CustomQueue* printQueue) {
+    // HTTP_server::HTTP_server(){
+
+    // printQueue = printQueue;
 
   printf("Basic HTTP server example\n");
+printQueue->custom.call(printf, "Opening HTTP Server\n");
 
-  network.connect();
+    // Watchdog::get_instance().start(10000); //10 seconds to connect to the http server
+    network.connect();
+    // Watchdog::get_instance().stop();
 
   network.get_ip_address(&address);
 
-  // print the IP address of the network - if no IP output NONE
-  printf("IP address: %s\n",
-         address.get_ip_address() ? address.get_ip_address() : "None");
+//   print the IP address of the network - if no IP output NONE
+//   printf("IP address: %s\n", address.get_ip_address() ? address.get_ip_address() : "None");
+printQueue->custom.call(printf, "IP address; %s\n", address.get_ip_address() ? address.get_ip_address() : "None");
+
+// if no ip address set fatal error
 
   // open a TCP socket on the networking interface bnound to port 80
   socket.open(&network);
@@ -21,11 +27,13 @@ HTTP_server::HTTP_server() {
 
   int error = socket.listen(5);
   if (error == 0) {
-    printf("Listening OK\n\r");
+    // printf("Listening OK\n\r");
+    printQueue->custom.call(printf, "Listening OK\n\r");
   } else {
-    printf("Listen Error = %d\n\r", error);
+    // printf("Listen Error = %d\n\r", error);
+    printQueue->custom.call(printf, "Listener Error = %d\n\r", error);
     socket.close();
-    // ERROR
+    // fatal error
     return;
   }
 
@@ -36,13 +44,14 @@ void HTTP_server::HTTP_server_thread(void) {
 
     AnalogIn pot(PA_0);
 
-  printf("HTTP THREAD STARTED\n");
   while (true) {
 
-    printf("Waiting\n");
+    // printf("Waiting\n");
+    // printQueue->custom.call(printf, "Waiting...\n");
     clt_socket = socket.accept();
 
-    printf("Connected...\n");
+    // printf("Connected...\n");
+    // printQueue->custom.call(printf, "Connected\n");
 
     //constructing the webpage
     float potVal = pot;
@@ -94,7 +103,7 @@ void HTTP_server::HTTP_server_thread(void) {
     nsapi_size_or_error_t ret =
         clt_socket->send(html.c_str(), strlen(html.c_str()));
 
-    printf("Sent %d bytes\n", ret);
+    // printf("Sent %d bytes\n", ret);
 
     clt_socket->close();
 

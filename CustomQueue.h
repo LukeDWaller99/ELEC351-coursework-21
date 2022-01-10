@@ -38,6 +38,7 @@ class CustomQueue{
     CustomQueue();
     EventQueue custom;       ///<Event Queue Object. This class is a wrapper for this object.
     Thread QUEUE_THREAD;    ///<Thread Object. This thread is solely responsible for the queue.
+    void operator=(string output);
 };
 
 #endif
