@@ -13,7 +13,6 @@ DigitalOut clk(LED1);
 DigitalOut dat(LED2);
 DigitalOut enable(LED3);
 //DigitalOut bit(LED4);
-RawSerial serial_raw()
 #define BUFF_LEN    32
 #define MSG_LEN     64
 #define DATA_LEN    MSG_LEN - 2
