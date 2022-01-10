@@ -177,3 +177,8 @@ void sampler::displayLimits(){
     printf("Pressure \tUpper = %3.1f \tLower = %3.1f\n",threshold.p_upper,threshold.p_lower);
     printf("Light \t\tUpper = %1.2f \tLower = %1.2f\n",threshold.l_upper,threshold.l_lower);
 }
+
+sampler::sensor_type sampler::get_current_sensor(){
+    sensor_type temp = currentSensor;
+    return temp;
+}
