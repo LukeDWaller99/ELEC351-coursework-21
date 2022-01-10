@@ -1,6 +1,7 @@
 #include "mbed.h"
 #include "mbed_wait_api.h"
 #include "rtos/ThisThread.h"
+#include <cstdio>
 #include <sampling.h>
 #include "ErrorHandler.h"
 
@@ -8,62 +9,71 @@
 using namespace uop_msb;
 using namespace std;
 
-CustomQueue printQueue;
-samples sampledData;
-ErrorHandler EH(&printQueue);
-//ErrorHandler* EH_P = &EH;
-sampler SampleModule(&EH);
+DigitalOut clk(LED1);
+DigitalOut dat(LED2);
+DigitalOut enable(LED3);
+//DigitalOut bit(LED4);
+RawSerial serial_raw()
+#define BUFF_LEN    32
+#define MSG_LEN     64
+#define DATA_LEN    MSG_LEN - 2
 
-//threads
-Thread samplingThread(osPriorityRealtime);
-//Thread SDThread;
-Thread print;
+UnbufferedSerial           serial(USBTX, USBRX,115200);
+Thread              thread1;
+Thread              thread2;
+EventQueue          eventQueue;
+Mutex               mutex;
+ConditionVariable   cond(mutex);
+char                recvBuff[BUFF_LEN] = { 0 };
+size_t              recvLen;
+char                message[MSG_LEN] = { 0 };
 
+// The following variable is protected by locking the mutex
+char                data[DATA_LEN] = { 0 };
 
-int main() {
-    //print.start(callback(&printQueue, &EventQueue::dispatch_forever));
-    SampleModule.displayLimits();
-    wait_us(1000000);
-    while(true){
-    //sampledData = SampleModule.sampleData;
-    int i;
-    for(i=0;i<8;i++){
-        sampledData = SampleModule.internal_buffer[i];
-        printQueue.custom.call(printf,"%d raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", i, sampledData.temp, sampledData.pressure, sampledData.LDR);
-    }
-    printQueue.custom.call(printf,"Sensorval %d\n",SampleModule.currentSensor);
-    //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    wait_us(10000000);
+void taskPrintData()
+{
+    ThisThread::sleep_for(1s);
+    while (1) {
+
+        // Now it is safe to access data in this thread
+        printf("Data received: %s\r\n", data);
+        memset(data, 0, DATA_LEN);  // empty data to make space for new data
     }
 }
-// #include "NTPClient.h"
-// #include <cstring>
-// #include <string.h>
-// #include <LEDMatrix.h>
-// #include "SevenSegmentDisplay.h"
-// #include <ErrorHandler.h>
-// #include "CustomQueue.h"
-// using namespace uop_msb;
-// //EventQueue* queue = new EventQueue();
-// CustomQueue queue;
 
-// ErrorHandler EH(&queue);
-// LEDMatrix matrix;
-// Thread t;
+void onSerialReceived(void)
+{
+    while (serial.readable()) {
+        // Read serial
+        recvLen = serial.read(recvBuff, BUFF_LEN);
 
+        if (message[strlen(message) - 1] == '\n') {
+            // message complete
+            
+            // copy the chars from the message to the data storage
+            strcat(data, &message[1]);      // omit first char (which is 's')
+            memset(message, 0, MSG_LEN);
 
-// int main() {
-//     while(true)
-//     {
-//     wait_us(100000);
-//     EH.setErrorFlag(T_UPPER);
-//     wait_us(5000000);
-//     EH.setErrorFlag(ALL_CLEAR);
-//     wait_us(100000);
-//     EH.setErrorFlag(EMPTY_FLUSH);
-//     wait_us(5000000);
-//     EH.setErrorFlag(ALL_CLEAR);
-//     wait_us(5000000);
-//     EH.setErrorFlag(BUFFER_FULL);
-//     }
-// }
+            break;
+        }
+    }
+    memset(recvBuff, 0, BUFF_LEN);
+}
+
+void onSigio(void)
+{
+    eventQueue.call(onSerialReceived);
+}
+
+int main()
+{
+    printf("Starting..\r\n");
+    thread1.start(taskPrintData);
+    thread2.start(callback(&eventQueue, &EventQueue::dispatch_forever));
+    serial.sigio(callback(onSigio));
+
+    while (1) {
+        ThisThread::sleep_for(10ms);
+    }
+}
