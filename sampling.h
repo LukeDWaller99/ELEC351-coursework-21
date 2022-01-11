@@ -93,6 +93,8 @@ class sampler {
     uop_msb::EnvSensor sensor;        
     AnalogIn LDR;
     ErrorHandler* EH;                           ///< Error Handler
+    
+    int prevAlarmFlag = 1;
 
     /**
     Main sampling function. This function contains the majority of the sampler's functionality. After being

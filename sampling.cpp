@@ -134,9 +134,13 @@ void sampler::thresholdCheck(){
     //check temp
     if (temp>threshold_t.t_upper){
         EH->setErrorFlag(T_UPPER);
+        
+        prevAlarmFlag = 1;
     }
     else if (temp<threshold_t.t_lower) {
         EH->setErrorFlag(T_LOWER);
+        
+        prevAlarmFlag = 1;
     }
     else{
         clear_flag++;
@@ -145,9 +149,13 @@ void sampler::thresholdCheck(){
     //check pressure
     if (pres>threshold_t.p_upper){
         EH->setErrorFlag(P_UPPER);
+        
+        prevAlarmFlag = 1;
     }
     else if (pres<threshold_t.p_lower) {
         EH->setErrorFlag(P_LOWER);
+        
+        prevAlarmFlag = 1;
     }
     else {
         clear_flag++;
@@ -155,15 +163,22 @@ void sampler::thresholdCheck(){
     //check light
     if (light>threshold_t.l_upper){
         EH->setErrorFlag(L_LOWER);
+        
+        prevAlarmFlag = 1;
     }
     else if (light<threshold_t.l_lower) {
         EH->setErrorFlag(L_UPPER);
+        
+        prevAlarmFlag = 1;
     }
     else {
         clear_flag++;
     }
     if (clear_flag == 3){
+        if (
+        prevAlarmFlag == 1){
         EH->setErrorFlag(ALL_CLEAR);
+        }
     }
     else {
     clear_flag = 0;
