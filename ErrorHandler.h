@@ -72,6 +72,10 @@ using namespace uop_msb;
 
 /**
 Thread-safe error handler class.
+To send an error to the error handler, use the format:
+    @code
+    EH.setErrorFlag(T_UPPER);
+    @endcode
 **/
 class ErrorHandler {
     private:
@@ -86,14 +90,13 @@ class ErrorHandler {
     BUFF_FULL = 0x3,    ///< Legacy severity for testing buffer integration.
     ENV_ERR = 0x4,      ///< sounds a buzzer for three seconds.
     CLEAR = 0x9         ///< Clears all error outputs.
-    };
-    ///Function pointer for callbacks
-    typedef void(*funcPointer_t)(void);
+    };   
+    typedef void(*funcPointer_t)(void);     ///<Function pointer for callbacks
     DigitalOut yellowLED = TRAF_YEL1_PIN;
     DigitalOut redLED = TRAF_RED1_PIN;
-    InterruptIn override_button;
+    InterruptIn override_button;            ///<Interrupt attached to the User Button. Used for alarm override.
     #if BUZZER_ENABLE == 1
-    Buzzer buzz;
+    Buzzer buzz;                            ///<Buzzer instance. Only present if BUZZER_ENABLE == 1.
     char note = 'C';
     #endif
     ///Seven Segment Display used for displaying the active error code
@@ -103,6 +106,7 @@ class ErrorHandler {
     ///Pointer to the output error queue
     CustomQueue* queue;
     int alarm_status=0;
+    int prevAlarmFlag=0;
     /**Function for clearing the Error Handler's thread flags safely
     **/
     void clear_all();
@@ -114,7 +118,7 @@ class ErrorHandler {
     void alarm_override();
 
     public:
-    Thread ERROR_THREAD_NAME;
+    
     /**
     Construct an ErrorHandler object. This constructor must be given a pointer to an event queue in order
     to properly output error codes over serial. This class will not function without one, and no alternative
@@ -145,6 +149,8 @@ class ErrorHandler {
     **/
     void setErrorFlag(int errorCode);
 
+    
+    Thread ERROR_THREAD_NAME;
 };
 
 #endif

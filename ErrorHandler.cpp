@@ -19,10 +19,11 @@ void ErrorHandler::clear_all(){
 
 
 ErrorHandler::ErrorHandler(CustomQueue* outputQueue):override_button(USER_BUTTON){
-    // ERROR_THREAD_NAME.set_priority(osPriorityRealtime);
+    
     queue = outputQueue;
     ERROR_THREAD_NAME.start(callback(this, &ErrorHandler::error_thread));
     override_button.rise(callback(this, &ErrorHandler::alarm_override));
+    ERROR_THREAD_NAME.set_priority(osPriorityRealtime7);
 }
 
 
@@ -63,6 +64,7 @@ void ErrorHandler::error_thread(void){
 
         case FATAL:                     //FATAL ERROR - Immediate hardware reset
         queue->custom.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
+        ThisThread::sleep_for(1s);
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong 
         break;
 
