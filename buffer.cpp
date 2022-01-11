@@ -28,9 +28,9 @@ DigitalOut greenLED(PC_6);
 bufferClass::bufferClass() {
   t.start();
   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
-  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 12s);
+  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 5s);
   flushThread.start(callback(this, &bufferClass::whenToFlush));
-  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 60s);
+  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 5s);
 }
 
 void bufferClass::flashGreen() {
@@ -121,18 +121,22 @@ void bufferClass::whenToFlush() {
       // currently printing to serial
       // flashGreen();
       //printQueue.call(printf, "capacity flush\n");
-      timeLock.lock();
-      printQueue.call(printf, "Time recorded = %s\n", ctime(&timestamp));
-      timeLock.unlock();
+      //timeLock.lock();
+      //bufferLock.lock();
+      //__disable_irq();
+      //printQueue.call(printf, "Time recorded = %s\n", ctime(&timestamp));
       bufferClass::printBufferContents();
+     //timeLock.unlock();
+      //bufferLock.unlock(); 
+      //__enable_irq();
       dataInBuffer = 0;
     }
     if (currentTime > hourPassed) {
       // flush no matter what
       //flash green led
-      timeLock.lock();
-      printQueue.call(printf, "Time recorded = %s\n", ctime(&timestamp));
-      timeLock.unlock();
+      //timeLock.lock();
+      //printQueue.call(printf, "Time recorded = %s\n", ctime(&timestamp));
+      //timeLock.unlock();
       bufferClass::printBufferContents();
       //printQueue.call(printf, "timing flush\n");
       dataInBuffer = 0;

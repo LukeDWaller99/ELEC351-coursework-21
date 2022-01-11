@@ -9,7 +9,7 @@
 #include "sampling.h"
 #include "uop_msb.h"
 
-#define buffer_size 800
+#define buffer_size 20
 using namespace std;
 
 class bufferClass {
