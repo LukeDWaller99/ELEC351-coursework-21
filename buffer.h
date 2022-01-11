@@ -24,11 +24,14 @@ private:
   Ticker bufferWriteTick;
   Ticker bufferFlushTick;
   Timer t;
+
+    CustomQueue bufferPrintQueue;
     sampler* BF;
     ErrorHandler* BEH;
+
   //
   // HTTP_server webServer;
-  time_t timestamp;
+  
   Thread writeThread;
   Thread flushThread;
 
@@ -39,6 +42,7 @@ private:
   int printIDX = oldIDX;   // work from oldest to newest sets data
   int printRecordsIDX = 0; // track no of data sets
   int pRIDX = 0;
+    time_t timestamp;
 
 public:
 bufferClass(sampler* buffersampler);
@@ -55,7 +59,6 @@ bufferClass(ErrorHandler* bufferEH);
   void emptyBuffer();
   void printToWebpage(vector<int> & webpageData);
   void initSD();
-  void flushTimer();
 
   int dataInBuffer;
   int lastFlushTime = 0;
@@ -73,13 +76,12 @@ struct liveData {
   float LDR;
   float temp;
   float pressure;
-
   char realTime;
 };
 
-extern liveData dataRecord;
-extern liveData flushRecord;
-extern liveData printRecord[buffer_size];
+// extern liveData dataRecord;
+// extern liveData flushRecord;
+// extern liveData printRecord[buffer_size];
 // liveData printToWebpage();
 
 #endif

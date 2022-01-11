@@ -4,12 +4,10 @@ Semaphore spaceInBuffer(buffer_size); // space in buffer
 Semaphore samplesInBuffer(0);         // samples in buffer
 Semaphore signalSample(0);            // signal to get new sample
 
+samples sampledDataB;
 liveData buffer[buffer_size];
 liveData dataRecord; // for holding data in the buffer
 liveData printRecord[buffer_size];
-
-samples sampledDataB;
-CustomQueue bufferPrintQueue;
 
 FILE *fp;
 SDBlockDevice mysd(PB_5, PB_4, PB_3, PF_3);
@@ -54,8 +52,6 @@ void bufferClass::writeBufferAuto() {
         if (timeLock.trylock_for(10ms) == 0) { // PROTECT THE DATA
           //bufferPrintQueue.custom.call(printf, "timeLockTimeout\n");
         BEH -> setErrorFlag(TIMER_LOCK_TIMEOUT); //critical error
-        
-        //TIME LOCK ERROR
         } else {
           dataRecord.realTime = *ctime(&timestamp);
           timeLock.unlock();
@@ -87,23 +83,18 @@ void bufferClass::whenToFlush() {
     currentTime = duration_cast<seconds>(t.elapsed_time()).count();
 
     //if ((currentTime > 60) && (oldIDX - (buffer_size * 0.1))) {
-    if((currentTime > 60) && (oldIDX - 720)) {
-      // flush buffer at 90%
-      // currently printing to serial
-      // flashGreen();
+    if((currentTime > 60) && (newIDX == oldIDX - (buffer_size * 0.1))) {// flush buffer at 90%
       //printQueue.call(printf, "capacity flush\n");
-      bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
+      //bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
       bufferClass::printBufferContents();
-      dataInBuffer = 0; //reset the count as buffer has flushed
     }
     if (currentTime > hourPassed) { //must flush at least once an hour
       //flash green led
-      bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
-      //timeLock.unlock();
+      //bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
       bufferClass::printBufferContents();
       //printQueue.call(printf, "timing flush\n");
-      dataInBuffer = 0; //reset the count as buffer has flushed
     }
+    dataInBuffer = 0; //reset the count as buffer has flushed
   }
   ThisThread::flags_clear(1);
 }
@@ -117,27 +108,19 @@ void bufferClass::printBufferContents() {
         BEH -> setErrorFlag(EMPTY_FLUSH); //critical error
       bufferPrintQueue.custom.call(printf, "no data\n");
     } else {
-
-      // maybe need this?
       samplesInBuffer.release();
-
-      // there is data in the buffer
-      if (bufferLock.trylock_for(1ms) == 0) { // try to acquire buffer
+      if (bufferLock.trylock_for(1ms) == 0) { // try to acquire buffer data
         BEH -> setErrorFlag(BUFFER_LOCK_TIMEOUT); //critical error
         //bufferPrintQueue.custom.call(printf, "could not unlock buffer\n");
       } else {
-
         while (runPrint == 1) {   // remain in loop, iterating through data
           if (oldIDX == newIDX) { // all data from buffer has been copied
             runPrint = 0;         // terminate
-            // printQueue.call(printf, "all data printed\n");
           } else {
             samplesInBuffer.try_acquire_for(1ms);
             oldIDX = (oldIDX + 1) % buffer_size;
-
             liveData flushRecord = buffer[oldIDX];
             bufferPrintQueue.custom.call(printf, "Time recorded = %s\n\t", flushRecord.realTime);
-            
             bufferPrintQueue.custom.call(
                 printf,
                 "\tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",

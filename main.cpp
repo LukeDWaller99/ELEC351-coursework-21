@@ -5,7 +5,6 @@
 #include "ErrorHandler.h"
 #include "buffer.h"
 
-
 using namespace uop_msb;
 using namespace std;
 
@@ -14,12 +13,13 @@ samples sampledData;
 ErrorHandler EH(&printQueue);
 //ErrorHandler* EH_P = &EH;
 sampler SampleModule(&EH);
+bufferClass mainBuffer(&EH);
+bufferClass mainBufferSampler(&SampleModule);
 
 //threads
 Thread samplingThread(osPriorityRealtime);
 //Thread SDThread;
-bufferClass mainBuffer(&EH);
-bufferClass mainBufferSampl(&SampleModule);
+
 Thread print;
 
 
@@ -27,18 +27,19 @@ int main() {
     //print.start(callback(&printQueue, &EventQueue::dispatch_forever));
     // SampleModule.displayLimits();
     // wait_us(1000000);
-    // while(true){
+    while(true){
     //     int sensor = SampleModule.get_current_sensor();
-    // //sampledData = SampleModule.sampleData;
+    sampledData = SampleModule.sampleData;
     // int i;
     // for(i=0;i<8;i++){
     //     sampledData = SampleModule.internal_buffer[i];
     //     printQueue.custom.call(printf,"%d raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", i, sampledData.temp, sampledData.pressure, sampledData.LDR);
     // }
     // printQueue.custom.call(printf,"Sensorval %d\n",sensor);
-    // //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    // wait_us(10000000);
-    // }
+    //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
+    mainBuffer.bufferCount();
+    wait_us(10000000);
+    }
 }
 // #include "NTPClient.h"
 // #include <cstring>
