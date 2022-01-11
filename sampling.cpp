@@ -3,7 +3,7 @@
 
 sampler::sampler() : LDR(AN_LDR_PIN) {
   sampleThread.start(callback(this, &sampler::sample));
-  sampleTick.attach(callback(this, &sampler::sampleflag), 1s);
+  sampleTick.attach(callback(this, &sampler::sampleflag), 10s);
 }
 
 void sampler::sampleflag() { sampler::sampleThread.flags_set(1); }

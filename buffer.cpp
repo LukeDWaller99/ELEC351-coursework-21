@@ -16,7 +16,6 @@ Ticker bufferWriteTick;
 Ticker bufferFlushTick;
 Timer t;
 samples sampledData;
-int bufferSampleCount;
 float currentTime;
 float hourPassed = 59 * 60; // 59 minutes as we check every minute
 
@@ -29,9 +28,9 @@ DigitalOut greenLED(PC_6);
 bufferClass::bufferClass() {
   t.start();
   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
-  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 1s);
+  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 12s);
   flushThread.start(callback(this, &bufferClass::whenToFlush));
-  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 1s);
+  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 60s);
 }
 
 void bufferClass::flashGreen() {
@@ -57,9 +56,9 @@ void bufferClass::writeBufferAuto() {
         // fatal error
       } else {
         // PROTECT THE TIME
-        if (timeLock.trylock_for(1ms) == 0) { // PROTECT THE DATA
-          printQueue.call(timeLockTimeout);
-        } else {
+        // if (timeLock.trylock_for(1ms) == 0) { // PROTECT THE DATA
+        //   printQueue.call(timeLockTimeout);
+        // } else {
           //************************************
           // adding time here
           //************************************
@@ -67,9 +66,9 @@ void bufferClass::writeBufferAuto() {
           dataRecord.LDR = sampledData.LDR;
           dataRecord.temp = sampledData.temp;
           dataRecord.pressure = sampledData.pressure;
-          timeLock.unlock();
+          //timeLock.unlock();
           dataInBuffer++;
-        }
+        //}
         // update the buffer
         newIDX = (newIDX + 1) % buffer_size; // increment buffer size
         buffer[newIDX] = dataRecord;         // update the buffer
@@ -102,7 +101,6 @@ void bufferClass::writeBuffer() {
     bufferLock.unlock();
   }
   samplesInBuffer.release(); // sample added
-  dataInBuffer = dataInBuffer + 1;
 }
 
 void bufferClass::bufferCount() {
@@ -117,23 +115,30 @@ void bufferClass::whenToFlush() {
     ThisThread::flags_wait_any(1);
     currentTime = duration_cast<seconds>(t.elapsed_time()).count();
 
-    if ((currentTime > 60) && (oldIDX - (buffer_size * 0.5))) {
+    //if ((currentTime > 60) && (oldIDX - (buffer_size * 0.5))) {
+    if((currentTime > 60) && (oldIDX - 720)) {
       // flush buffer at 90%
       // currently printing to serial
       // flashGreen();
-      greenLED = !greenLED;
-      printQueue.call(printf, "capacity flush\n");
+      //printQueue.call(printf, "capacity flush\n");
+      timeLock.lock();
+      printQueue.call(printf, "Time recorded = %s\n", ctime(&timestamp));
+      timeLock.unlock();
       bufferClass::printBufferContents();
+      dataInBuffer = 0;
     }
     if (currentTime > hourPassed) {
       // flush no matter what
-      greenLED = !greenLED;
+      //flash green led
+      timeLock.lock();
+      printQueue.call(printf, "Time recorded = %s\n", ctime(&timestamp));
+      timeLock.unlock();
       bufferClass::printBufferContents();
-      printQueue.call(printf, "timing flush\n");
+      //printQueue.call(printf, "timing flush\n");
+      dataInBuffer = 0;
     }
   }
   ThisThread::flags_clear(1);
-  dataInBuffer = 0;
 }
 
 void bufferClass::printBufferContents() {
@@ -321,7 +326,9 @@ int bufferClass::flushBufferUpgrade() {
         samplesInBuffer.try_acquire_for(1ms);
         oldIDX = (oldIDX + 1);
         liveData flushRecord = buffer[oldIDX];
+        timeLock.lock();
         fprintf(fp, "Time recorded = %s\n", ctime(&timestamp));
+        timeLock.unlock();
         fprintf(
             fp,
             " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
@@ -342,4 +349,3 @@ int bufferClass::flushBufferUpgrade() {
   }
 }
 
-void bufferClass::flushTimer() {}
