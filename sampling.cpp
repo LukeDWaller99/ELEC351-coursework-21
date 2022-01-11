@@ -180,6 +180,7 @@ void sampler::thresholdCheck(){
         if (
         prevAlarmFlag == 1){
         EH->setErrorFlag(ALL_CLEAR);
+        prevAlarmFlag = 0;
         }
     }
     else {
