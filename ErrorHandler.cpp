@@ -101,6 +101,7 @@ void ErrorHandler::error_thread(void){
         #if BUZZER_ENABLE == 1
         buzz.rest();
         #endif
+        break;
     }
     clear_all();
     }
