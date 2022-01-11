@@ -15,7 +15,6 @@ liveData printRecord[buffer_size];
 Ticker bufferWriteTick;
 Ticker bufferFlushTick;
 Timer t;
-// sampler bufferSampler;
 samples sampledData;
 int bufferSampleCount;
 float currentTime;
@@ -69,6 +68,7 @@ void bufferClass::writeBufferAuto() {
           dataRecord.temp = sampledData.temp;
           dataRecord.pressure = sampledData.pressure;
           timeLock.unlock();
+          dataInBuffer++;
         }
         // update the buffer
         newIDX = (newIDX + 1) % buffer_size; // increment buffer size
@@ -81,16 +81,6 @@ void bufferClass::writeBufferAuto() {
   ThisThread::flags_clear(1);
 }
 
-// //signal the sampling function (ISR)
-// void bufferClass::sampleFunc(){
-//     signalSample.release();
-// }
-
-// void bufferClass::emptyBuffer(){
-//     samplesInBuffer.try_acquire();
-//     samplesInBuffer.release(); //reset the semaphore
-// }
-
 void bufferClass::writeBuffer() {
   if (spaceInBuffer.try_acquire_for(1ms) == 0) {
     printQueue.call(bufferFull);
@@ -101,26 +91,25 @@ void bufferClass::writeBuffer() {
       printQueue.call(bufferLockTimeout);
       // fatal error
     } else {
-        // copy environmental data
-        dataRecord.LDR = sampledData.LDR;
-        dataRecord.temp = sampledData.temp;
-        dataRecord.pressure = sampledData.pressure;
-      }
-      newIDX = (newIDX + 1) % buffer_size; // increment buffer size
-      buffer[newIDX] = dataRecord;         // update the buffer
-        bufferLock.unlock();
+      // copy environmental data
+      dataRecord.LDR = sampledData.LDR;
+      dataRecord.temp = sampledData.temp;
+      dataRecord.pressure = sampledData.pressure;
+      // dataInBuffer++;
+    }
+    newIDX = (newIDX + 1) % buffer_size; // increment buffer size
+    buffer[newIDX] = dataRecord;         // update the buffer
+    bufferLock.unlock();
   }
-  samplesInBuffer.release(); // sample added 
+  samplesInBuffer.release(); // sample added
+  dataInBuffer = dataInBuffer + 1;
 }
 
-void bufferClass::bufferCount() {}
-// void bufferClass::acquireData(){
-//     //bufferTick.attach(callback(this, &bufferClass::sampleFunc), 11s);
-//     while(1){
-//         signalSample.acquire();
-//         writeBuffer();
-//     }
-// }
+void bufferClass::bufferCount() {
+  printQueue.call(printf,
+                  "Number of environmental data sets in the buffer: %i\n",
+                  dataInBuffer);
+}
 
 void bufferClass::whenToFlush() {
   // currentTime = t.read();
@@ -128,7 +117,7 @@ void bufferClass::whenToFlush() {
     ThisThread::flags_wait_any(1);
     currentTime = duration_cast<seconds>(t.elapsed_time()).count();
 
-    if ((currentTime > 60) && (oldIDX - (buffer_size * 0.1))) {
+    if ((currentTime > 60) && (oldIDX - (buffer_size * 0.5))) {
       // flush buffer at 90%
       // currently printing to serial
       // flashGreen();
@@ -141,12 +130,11 @@ void bufferClass::whenToFlush() {
       greenLED = !greenLED;
       bufferClass::printBufferContents();
       printQueue.call(printf, "timing flush\n");
-
     }
   }
   ThisThread::flags_clear(1);
+  dataInBuffer = 0;
 }
-
 
 void bufferClass::printBufferContents() {
   while (true) {
@@ -157,43 +145,39 @@ void bufferClass::printBufferContents() {
       printQueue.call(printf, "no data\n");
     } else {
 
-        //maybe need this?
-        samplesInBuffer.release();
+      // maybe need this?
+      samplesInBuffer.release();
 
       // there is data in the buffer
       if (bufferLock.trylock_for(1ms) == 0) { // try to acquire buffer
         printQueue.call(printf, "could not unlock buffer\n");
       } else {
 
-
-
-        while (runPrint == 1) {     // remain in loop, iterating through data
+        while (runPrint == 1) {   // remain in loop, iterating through data
           if (oldIDX == newIDX) { // all data from buffer has been copied
-            runPrint = 0;           // terminate
+            runPrint = 0;         // terminate
             // printQueue.call(printf, "all data printed\n");
           } else {
-              samplesInBuffer.try_acquire_for(1ms);
-              oldIDX = (oldIDX + 1) % buffer_size;
+            samplesInBuffer.try_acquire_for(1ms);
+            oldIDX = (oldIDX + 1) % buffer_size;
 
-              liveData flushRecord = buffer[oldIDX];
-                printQueue.call(printf, " flushRecords \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+            liveData flushRecord = buffer[oldIDX];
+            printQueue.call(
+                printf,
+                "\tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
+                flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
 
-               spaceInBuffer.release(); //another space free
-               //samplesInBuffer.release();
-            
+            spaceInBuffer.release(); // another space free
+            // samplesInBuffer.release();
           }
-          
         }
         bufferLock.unlock();
         t.reset(); // reset flush timer
       }
     }
   }
-   ThisThread::flags_clear(1);
+  ThisThread::flags_clear(1);
 }
-
-
-
 
 // void bufferClass::printBufferContents() {
 //   while (true) {
@@ -204,33 +188,24 @@ void bufferClass::printBufferContents() {
 //       printQueue.call(printf, "no data\n");
 //     } else {
 
-
-
 //       // there is data in the buffer
 //       if (bufferLock.trylock_for(1ms) == 0) { // try to acquire buffer
 //         printQueue.call(printf, "could not unlock buffer\n");
 //       } else {
-
-
 
 //         while (runPrint == 1) {     // remain in loop, iterating through data
 //           if (printIDX == newIDX) { // all data from buffer has been copied
 //             runPrint = 0;           // terminate
 //             // printQueue.call(printf, "all data printed\n");
 //           } else {
-//             printIDX = (printIDX + 1) % buffer_size;         // update print idx
-//             printRecord[printRecordsIDX] = buffer[printIDX]; // copy the data
-//             printRecordsIDX++; // increment print idx
+//             printIDX = (printIDX + 1) % buffer_size;         // update print
+//             idx printRecord[printRecordsIDX] = buffer[printIDX]; // copy the
+//             data printRecordsIDX++; // increment print idx
 //           }
 //         }
 
-
-
 //         bufferLock.unlock();
 //       }
-
-
-
 
 //       printQueue.call(printf, "Time: %s\n", ctime(&timestamp));
 //       for (pRIDX = 0; pRIDX < printRecordsIDX;
@@ -240,7 +215,6 @@ void bufferClass::printBufferContents() {
 //                printRecord[pRIDX].temp, printRecord[pRIDX].pressure,
 //                printRecord[pRIDX].LDR);
 //       }
-
 
 //       t.reset(); // reset flush timer
 //       samplesInBuffer.release();

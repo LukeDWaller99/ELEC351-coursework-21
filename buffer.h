@@ -9,11 +9,7 @@
 #include "sampling.h"
 #include "uop_msb.h"
 
-//#include <cstdio>
-//#include "NTPConnection.h"
-//#include "HTTP_Server.h"
-//needs to be way bigger
-#define buffer_size 100
+#define buffer_size 800
 using namespace std;
 
 class bufferClass {
@@ -46,6 +42,7 @@ public:
   // void printToWebpage(vector<int> & webpageData);
   void initSD();
   void flushTimer();
+  int dataInBuffer;
 
   unsigned int newIDX = buffer_size - 1;
   unsigned int oldIDX = buffer_size - 1;
