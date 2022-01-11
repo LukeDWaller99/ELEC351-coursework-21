@@ -98,6 +98,7 @@ class ErrorHandler {
     ///Pointer to the output error queue
     CustomQueue* queue;
     int alarm_status=0;
+    int prevAlarmFlag=0;
     /**Function for clearing the Error Handler's thread flags safely
     **/
     void clear_all();
