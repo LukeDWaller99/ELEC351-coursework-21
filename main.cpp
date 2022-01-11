@@ -14,7 +14,7 @@ CustomQueue printQueue;
 // samples sampledData;
 // EventQueue* queue = new EventQueue();
 ErrorHandler EH(&printQueue);
-HTTP_server HTTP(&printQueue);
+HTTP_server HTTP(&printQueue, &EH);
 // HTTP_server HTTP;
 NTPConnection NTP(&printQueue, &EH);
 //ErrorHandler* EH_P = &EH;

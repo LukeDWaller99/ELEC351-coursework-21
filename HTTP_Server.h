@@ -3,12 +3,12 @@
 
 #include "EthernetInterface.h"
 #include "TCPSocket.h"
-#include <iostream>
 #include <string>
 #include "Thread.h"
 #include "mbed.h"
 #include "uop_msb.h"
 #include "CustomQueue.h"
+#include "ErrorHandler.h"
 using namespace uop_msb;
 using namespace std;
 
@@ -48,13 +48,10 @@ class HTTP_server{
     EthernetInterface network;
     SocketAddress address;
     TCPSocket socket;
-    TCPSocket* clt_socket;
-    // CustomQueue* printQueue;
+    TCPSocket* client_socket;
     
-
     public:
-    HTTP_server(CustomQueue* printQueue);
-    // HTTP_server();
+    HTTP_server(CustomQueue* printQueue, ErrorHandler* errorHandler);
     Thread HTTP_thread;
     void HTTP_server_thread(void);
 };

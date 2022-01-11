@@ -90,6 +90,14 @@ void ErrorHandler::error_thread(void){
         // sound buzzer
         break; 
 
+        case NET_ERROR:
+        queue->custom.call(printf, "NETWORK Error %d\n",(errorNumber & 255));
+        queue->custom.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
+        ThisThread::sleep_for(1s);
+        NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong 
+        break;
+
+
         case CLEAR:
         printf("ALL CLEAR - CODE %d\n",(errorNumber & 255));
         errorDisplay.clear();
@@ -137,6 +145,11 @@ void ErrorHandler::setErrorFlag(int errorCode){
 
         case ENV_ERR:
         currentErrorSeverity = ENV_ERR;
+        ERROR_THREAD_NAME.flags_set(errorVal);
+        break;
+
+        case NET_ERROR:
+        currentErrorSeverity = NET_ERROR;
         ERROR_THREAD_NAME.flags_set(errorVal);
         break;
 

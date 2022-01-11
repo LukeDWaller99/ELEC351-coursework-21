@@ -29,6 +29,7 @@ using namespace uop_msb;
 //  0x1 - CRITICAL
 //  0x2 - FATAL
 //  0x4 - ENV_ERROR
+//  0x5 - NET_ERROR
 //  0x9 - ALL CLEAR
 
 //error codes - 10s
@@ -56,12 +57,11 @@ using namespace uop_msb;
 #define L_UPPER 0x436 ///< Upper light threshold exceeded.
 
 //networking errors - 40s
-#define NO_NETWORK_INTERFACE    0x240   ///NO NETWORK INTERFACE CONNECTED/FOUND
-#define CONNECTION_ERROR        0x241   ///COULD NOT CONNECT TO NTP SERVER
-#define TIME_ERROR              0x242   ///FAILED TO GET TIME FROM NTP SERVER
-#define NO_IP_ADDRESS           0x243   ///COULD NOT GET IP ADDRESS
-#define LISTENER_ERROR          0x244   ///LISTENER ERROR
-
+#define NO_NETWORK_INTERFACE    0x540   ///< NO NETWORK INTERFACE CONNECTED/FOUND
+#define CONNECTION_ERROR        0x541   ///< COULD NOT CONNECT TO NTP SERVER
+#define TIME_ERROR              0x542   ///< FAILED TO GET TIME FROM NTP SERVER
+#define NO_IP_ADDRESS           0x543   ///< COULD NOT GET IP ADDRESS
+#define LISTENER_ERROR          0x544   ///< LISTENER ERROR
 
 //error handler errors
 ///Flag clear error, immediate reset.
@@ -89,6 +89,7 @@ class ErrorHandler {
     FATAL = 0x2,        ///< Immediate reset of the board.
     BUFF_FULL = 0x3,    ///< Legacy severity for testing buffer integration.
     ENV_ERR = 0x4,      ///< sounds a buzzer for three seconds.
+    NET_ERROR = 0x5,
     CLEAR = 0x9         ///< Clears all error outputs.
     };   
     typedef void(*funcPointer_t)(void);     ///<Function pointer for callbacks
