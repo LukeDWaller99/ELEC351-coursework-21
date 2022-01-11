@@ -19,6 +19,7 @@ sampler SampleModule(&EH);
 Thread samplingThread(osPriorityRealtime);
 //Thread SDThread;
 bufferClass mainBuffer(&EH);
+bufferClass mainBufferSampl(&SampleModule);
 Thread print;
 
 

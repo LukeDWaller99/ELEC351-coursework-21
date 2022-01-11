@@ -1,8 +1,4 @@
-// AUTHOR: NOAH HARVEY
-
 #include "buffer.h"
-// #include <Semaphore.h>
-// #include <ctime>
 
 Semaphore spaceInBuffer(buffer_size); // space in buffer
 Semaphore samplesInBuffer(0);         // samples in buffer
@@ -21,15 +17,14 @@ DigitalIn SDDetect(PF_4);
 DigitalOut greenLED(PC_6);
 
 // constructor
-// bufferClass::bufferClass(sampler* buffersampler, ErrorHandler* BEH) {
-//     BF = buffersampler;
-//     BEH = bufferEH;
-//   t.start();
-//   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
-//   bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 2s);
-//   flushThread.start(callback(this, &bufferClass::whenToFlush));
-//   bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 2s);
-// }
+bufferClass::bufferClass(sampler* buffersampler) {
+    BF = buffersampler;
+  t.start();
+  writeThread.start(callback(this, &bufferClass::writeBufferAuto));
+  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 2s);
+  flushThread.start(callback(this, &bufferClass::whenToFlush));
+  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 2s);
+}
 
 bufferClass::bufferClass(ErrorHandler* bufferEH) {
     BEH = bufferEH;
@@ -56,7 +51,7 @@ void bufferClass::writeBufferAuto() {
         //bufferPrintQueue.custom.call(printf, "buffer lock timeout\n");
         BEH -> setErrorFlag(BUFFER_LOCK_TIMEOUT); //critical error
       } else {
-        if (timeLock.trylock_for(1ms) == 0) { // PROTECT THE DATA
+        if (timeLock.trylock_for(10ms) == 0) { // PROTECT THE DATA
           //bufferPrintQueue.custom.call(printf, "timeLockTimeout\n");
         BEH -> setErrorFlag(TIMER_LOCK_TIMEOUT); //critical error
         
@@ -104,7 +99,7 @@ void bufferClass::whenToFlush() {
     if (currentTime > hourPassed) { //must flush at least once an hour
       //flash green led
       bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
-      timeLock.unlock();
+      //timeLock.unlock();
       bufferClass::printBufferContents();
       //printQueue.call(printf, "timing flush\n");
       dataInBuffer = 0; //reset the count as buffer has flushed

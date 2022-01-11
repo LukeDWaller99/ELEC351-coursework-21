@@ -5,14 +5,13 @@
 #include "Mutex.h"
 #include "SDBlockDevice.h"
 #include "mbed.h"
-//#include "printQueue.h"
 #include "sampling.h"
 #include "uop_msb.h"
 #include <ctime>
 #include <Semaphore.h>
 #include "CustomQueue.h"
 
-#define buffer_size 800
+#define buffer_size 80
 using namespace std;
 
 class bufferClass {
@@ -25,7 +24,7 @@ private:
   Ticker bufferWriteTick;
   Ticker bufferFlushTick;
   Timer t;
-    //sampler* BF;
+    sampler* BF;
     ErrorHandler* BEH;
   //
   // HTTP_server webServer;
@@ -42,7 +41,7 @@ private:
   int pRIDX = 0;
 
 public:
-//bufferClass(sampler* buffersampler);
+bufferClass(sampler* buffersampler);
 bufferClass(ErrorHandler* bufferEH);
   // void flushBuffer();
   int flushBufferUpgrade();
