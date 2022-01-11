@@ -21,13 +21,25 @@ DigitalIn SDDetect(PF_4);
 DigitalOut greenLED(PC_6);
 
 // constructor
-bufferClass::bufferClass() {
+// bufferClass::bufferClass(sampler* buffersampler, ErrorHandler* BEH) {
+//     BF = buffersampler;
+//     BEH = bufferEH;
+//   t.start();
+//   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
+//   bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 2s);
+//   flushThread.start(callback(this, &bufferClass::whenToFlush));
+//   bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 2s);
+// }
+
+bufferClass::bufferClass(ErrorHandler* bufferEH) {
+    BEH = bufferEH;
   t.start();
   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
-  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 12s);
+  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 2s);
   flushThread.start(callback(this, &bufferClass::whenToFlush));
-  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 60s);
+  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 2s);
 }
+
 
 void bufferClass::writeFlag() { bufferClass::writeThread.flags_set(1); }
 
@@ -37,17 +49,18 @@ void bufferClass::writeBufferAuto() {
   while (true) {
     ThisThread::flags_wait_any(1);
     if (spaceInBuffer.try_acquire_for(1ms) == 0) {
-      //printQueue.call(bufferFull);
-      // fatal error
+      //bufferPrintQueue.custom.call(printf, "buffer full\n");
+      BEH -> setErrorFlag(BUFFER_FULL); //critical error
     } else {
-      // PROTECT THE BUFFER
-      if (bufferLock.trylock_for(1ms) == 0) {
-        //printQueue.call(bufferLockTimeout);
-        // fatal error
+      if (bufferLock.trylock_for(1ms) == 0) {// PROTECT THE BUFFER
+        //bufferPrintQueue.custom.call(printf, "buffer lock timeout\n");
+        BEH -> setErrorFlag(BUFFER_LOCK_TIMEOUT); //critical error
       } else {
-        //PROTECT THE TIME
         if (timeLock.trylock_for(1ms) == 0) { // PROTECT THE DATA
-          //printQueue.call(timeLockTimeout);
+          //bufferPrintQueue.custom.call(printf, "timeLockTimeout\n");
+        BEH -> setErrorFlag(TIMER_LOCK_TIMEOUT); //critical error
+        
+        //TIME LOCK ERROR
         } else {
           dataRecord.realTime = *ctime(&timestamp);
           timeLock.unlock();
@@ -55,10 +68,8 @@ void bufferClass::writeBufferAuto() {
           dataRecord.LDR = sampledDataB.LDR;
           dataRecord.temp = sampledDataB.temp;
           dataRecord.pressure = sampledDataB.pressure;
-          
-          dataInBuffer++;
+          dataInBuffer++; //increment no of data sets
         }
-        // update the buffer
         newIDX = (newIDX + 1) % buffer_size; // increment buffer size
         buffer[newIDX] = dataRecord;         // update the buffer
       }
@@ -70,13 +81,12 @@ void bufferClass::writeBufferAuto() {
 }
 
 void bufferClass::bufferCount() {
-//   printQueue.call(printf,
-//                   "Number of environmental data sets in the buffer: %i\n",
-//                   dataInBuffer);
+  bufferPrintQueue.custom.call(printf,
+                  "Number of environmental data sets in the buffer: %i\n",
+                  dataInBuffer);
 }
 
 void bufferClass::whenToFlush() {
-  // currentTime = t.read();
   while (true) {
     ThisThread::flags_wait_any(1);
     currentTime = duration_cast<seconds>(t.elapsed_time()).count();
@@ -87,21 +97,17 @@ void bufferClass::whenToFlush() {
       // currently printing to serial
       // flashGreen();
       //printQueue.call(printf, "capacity flush\n");
-      timeLock.lock();
       bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
-      timeLock.unlock();
       bufferClass::printBufferContents();
-      dataInBuffer = 0;
+      dataInBuffer = 0; //reset the count as buffer has flushed
     }
-    if (currentTime > hourPassed) {
-      // flush no matter what
+    if (currentTime > hourPassed) { //must flush at least once an hour
       //flash green led
-      timeLock.lock();
       bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
       timeLock.unlock();
       bufferClass::printBufferContents();
       //printQueue.call(printf, "timing flush\n");
-      dataInBuffer = 0;
+      dataInBuffer = 0; //reset the count as buffer has flushed
     }
   }
   ThisThread::flags_clear(1);
@@ -113,6 +119,7 @@ void bufferClass::printBufferContents() {
 
     if (samplesInBuffer.try_acquire_for(1ms) ==
         0) { // check for samples in the buffer
+        BEH -> setErrorFlag(EMPTY_FLUSH); //critical error
       bufferPrintQueue.custom.call(printf, "no data\n");
     } else {
 
@@ -121,7 +128,8 @@ void bufferClass::printBufferContents() {
 
       // there is data in the buffer
       if (bufferLock.trylock_for(1ms) == 0) { // try to acquire buffer
-        bufferPrintQueue.custom.call(printf, "could not unlock buffer\n");
+        BEH -> setErrorFlag(BUFFER_LOCK_TIMEOUT); //critical error
+        //bufferPrintQueue.custom.call(printf, "could not unlock buffer\n");
       } else {
 
         while (runPrint == 1) {   // remain in loop, iterating through data
@@ -133,6 +141,8 @@ void bufferClass::printBufferContents() {
             oldIDX = (oldIDX + 1) % buffer_size;
 
             liveData flushRecord = buffer[oldIDX];
+            bufferPrintQueue.custom.call(printf, "Time recorded = %s\n\t", flushRecord.realTime);
+            
             bufferPrintQueue.custom.call(
                 printf,
                 "\tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
@@ -196,8 +206,11 @@ void bufferClass::printBufferContents() {
 void bufferClass::printToWebpage(vector<int> & webpageData){
     if(samplesInBuffer.try_acquire_for(1ms) == 0){
         //printQueue.call(printf, "no data to put on webpage\n");
+        //new warning error? empty flush to webpage?
     } else{
         if(bufferLock.trylock_for(1ms) == 0){
+            BEH -> setErrorFlag(BUFFER_LOCK_TIMEOUT); //critical error
+
             // printQueue.call(printf, "buffer not locked to put data on
             // webpage\n");
         } else{
@@ -223,54 +236,54 @@ void bufferClass::initSD() {
 }
 
 // nicks way
-int bufferClass::flushBufferUpgrade() {
-  printf("Initialise and write to a file\n");
-  int err1;
-  err1 = mysd.init();
-  if (0 != err1) {
-    printf("Init failed %d\n", err1);
-    return -1;
-  }
+// int bufferClass::flushBufferUpgrade() {
+//   printf("Initialise and write to a file\n");
+//   int err1;
+//   err1 = mysd.init();
+//   if (0 != err1) {
+//     printf("Init failed %d\n", err1);
+//     return -1;
+//   }
 
-  FATFileSystem fs("sd", &mysd);
-  FILE *fp = fopen("/sd/test.txt", "w");
+//   FATFileSystem fs("sd", &mysd);
+//   FILE *fp = fopen("/sd/test.txt", "w");
 
-  if (fp == NULL) {
-    error("Could not open file for write\n");
-    mysd.deinit();
-    return -1;
-  } else {
-    //***********************
-    while (runFlush == 1) {
-      if (oldIDX == newIDX) {
-        runFlush = 0; // everything is out
-        break;
-        // return;
-      } else {
-        // greenLED =!greenLED;
-        samplesInBuffer.try_acquire_for(1ms);
-        oldIDX = (oldIDX + 1);
-        liveData flushRecord = buffer[oldIDX];
-        timeLock.lock();
-        fprintf(fp, "Time recorded = %s\n", ctime(&timestamp));
-        timeLock.unlock();
-        fprintf(
-            fp,
-            " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
-            flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+//   if (fp == NULL) {
+//     error("Could not open file for write\n");
+//     mysd.deinit();
+//     return -1;
+//   } else {
+//     //***********************
+//     while (runFlush == 1) {
+//       if (oldIDX == newIDX) {
+//         runFlush = 0; // everything is out
+//         break;
+//         // return;
+//       } else {
+//         // greenLED =!greenLED;
+//         samplesInBuffer.try_acquire_for(1ms);
+//         oldIDX = (oldIDX + 1);
+//         liveData flushRecord = buffer[oldIDX];
+//         //changed this, no longer require timelock as its all saved time
+//         fprintf(fp, "Time recorded = %s\n", ctime(&timestamp));
+    
+//         fprintf(
+//             fp,
+//             " \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
+//             flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
 
-        // printf("printing things\n");
-        // spaceInBuffer.release();//space in buffer signal
-      }
-    } // end while
-    samplesInBuffer.release();
-    bufferPrintQueue.custom.call(printf, "flushed buffer\n");
+//         // printf("printing things\n");
+//         // spaceInBuffer.release();//space in buffer signal
+//       }
+//     } // end while
+//     samplesInBuffer.release();
+//     bufferPrintQueue.custom.call(printf, "flushed buffer\n");
 
-    //***********************
-    fclose(fp);
-    printf("SD Write done...\n");
-    mysd.deinit();
-    return 0;
-  }
-}
+//     //***********************
+//     fclose(fp);
+//     printf("SD Write done...\n");
+//     mysd.deinit();
+//     return 0;
+//   }
+// }
 

@@ -18,14 +18,16 @@ using namespace std;
 class bufferClass {
 
 private:
+    typedef void(*funcPointer_t)(void);
   // mutex locks, tickers, timers, semaphores, threads
   Mutex bufferLock;
   Mutex timeLock;
   Ticker bufferWriteTick;
   Ticker bufferFlushTick;
   Timer t;
-
-  // sampler dataSampler;
+    //sampler* BF;
+    ErrorHandler* BEH;
+  //
   // HTTP_server webServer;
   time_t timestamp;
   Thread writeThread;
@@ -40,6 +42,8 @@ private:
   int pRIDX = 0;
 
 public:
+//bufferClass(sampler* buffersampler);
+bufferClass(ErrorHandler* bufferEH);
   // void flushBuffer();
   int flushBufferUpgrade();
   void whenToFlush();
