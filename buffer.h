@@ -12,7 +12,7 @@
 #include <ctime>
 
 
-#define buffer_size 800
+#define buffer_size 20
 using namespace std;
 
 class bufferClass {
@@ -57,6 +57,18 @@ public:
   bufferClass(sampler *buffersampler);
   bufferClass(ErrorHandler *bufferEH);
 
+struct liveData {
+  float LDR;
+  float temp;
+  float pressure;
+  time_t realTime;
+};
+
+samples sampleData; //sampled values, every 10s
+liveData buffer[buffer_size];
+liveData dataRecord; // for holding data in the buffer
+liveData printRecord[buffer_size];
+
   // old
   // void flushBuffer();
   // void writeBuffer();
@@ -80,12 +92,12 @@ public:
 };
 
 // real time data
-struct liveData {
-  float LDR;
-  float temp;
-  float pressure;
-  time_t realTime;
-};
+// struct liveData {
+//   float LDR;
+//   float temp;
+//   float pressure;
+//   time_t realTime;
+// };
 
 
 #endif
