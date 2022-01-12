@@ -69,9 +69,8 @@ liveData buffer[buffer_size];
 liveData dataRecord; // for holding data in the buffer
 liveData printRecord[buffer_size];
 
-  // old
-  // void flushBuffer();
-  // void writeBuffer();
+  
+  void flushBuffer();
   
   void bufferCount();
 
@@ -79,15 +78,10 @@ liveData printRecord[buffer_size];
 
   void emptyBuffer();
 
-  void printToWebpage(vector<int> &webpageData);
-  //potentially just take samples from sampler?
-
   void initSD();
-  bool cardMount = 0;
+  bool SDMount = 0;
 
-  int flushBufferUpgrade();
-  // constructor and destructor
-  //bufferClass(sampler* buffersampler, ErrorHandler* bufferEH, CustomQueue* bufferPQ);
+  //destructor
   ~bufferClass();
 };
 

@@ -10,8 +10,8 @@ CustomQueue printQueue;
 ErrorHandler EH(&printQueue);
 sampler SampleModule(&EH);
 bufferClass mainBuffer(&SampleModule, &EH, &printQueue);
-HTTP_server HTTP(&printQueue, &EH, &SampleModule);
-NTPConnection NTP(&printQueue, &EH);
+//HTTP_server HTTP(&printQueue, &EH, &SampleModule);
+//NTPConnection NTP(&printQueue, &EH);
 
 int main() { 
     while(true){sleep();}
