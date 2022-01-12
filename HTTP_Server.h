@@ -46,9 +46,9 @@ class HTTP_server{
 
     private:
     EthernetInterface network;
-    SocketAddress address;
     TCPSocket socket;
     TCPSocket* client_socket;
+    SocketAddress address;
     
     public:
     HTTP_server(CustomQueue* printQueue, ErrorHandler* errorHandler);

@@ -13,8 +13,13 @@ HTTP_server::HTTP_server(CustomQueue* printQueue, ErrorHandler* errorHandler) {
     network.connect();
     }
 
+
     // get the network IP address 
     network.get_ip_address(&address);
+    // if network interface failed to connect - IP will still be NULL so throw connection error
+    if (address == "") {
+        errorHandler->setErrorFlag(CONNECTION_ERROR);
+    }
 
     //   print the IP address of the network - if no IP output NONE
     printQueue->custom.call(printf, "IP address: %s\n", address.get_ip_address() ? address.get_ip_address() : "None");

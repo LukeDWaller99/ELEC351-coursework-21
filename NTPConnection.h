@@ -13,14 +13,20 @@
 #include <cstdio>
 #include <ctime>
 #include "CustomQueue.h"
+#include "HTTP_Server.h"
+
+/// Macro to control the HTTP Server usage
+/// Set Macro to 0 if HTTP Server not being used, otherwise set to 1
+/// Pre-processer directives will eiother try to connect the NTP server or use existing connection
+#define HTTP_SERVER_USED 0
 
 class NTPConnection{
 
     private:
     NetworkInterface* NTPInterface;
-    DigitalIn BTN_C;
     CustomQueue* printQueue;
     ErrorHandler* errorHandler;
+
 
     public:
     time_t timestamp;
@@ -30,9 +36,9 @@ class NTPConnection{
     Connects to NTP server to get current date and time and stores this locally
     **/
     NTPConnection(CustomQueue* printQueue, ErrorHandler* errorHandler);
-    // /**
-    // Get time the current local time
-    // **/
+    /**
+        Get time the current local time
+    **/
     time_t getTime();
 
 };

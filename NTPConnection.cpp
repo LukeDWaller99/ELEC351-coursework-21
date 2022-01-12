@@ -1,34 +1,33 @@
 #include "NTPConnection.h"
+#include <cstdio>
 
 
-NTPConnection::NTPConnection(CustomQueue* printQueue, ErrorHandler* errorHandler) : BTN_C(PG_2) {
+NTPConnection::NTPConnection(CustomQueue* printQueue, ErrorHandler* errorHandler) {
 
-  printQueue = printQueue;
-    errorHandler = errorHandler;
-
-//   if (BTN_C == 1) {
-
-      //setup a watch dog timer
     printQueue->custom.call(printf, "Starting NTP interface\n");
-    NTPInterface = NetworkInterface::get_default_instance();
+    NetworkInterface *NTPInterface = NetworkInterface::get_default_instance();
 
-    if (NTPInterface == nullptr) {
-    printQueue->custom.call(printf, "No Network Interface Found\n");
-   wait_us(100000);
-      errorHandler->setErrorFlag(NO_NETWORK_INTERFACE);
+    if (!NTPInterface) {
+        printQueue->custom.call(printf, "No Network Interface Found\n");
+        wait_us(100000);
+        errorHandler->setErrorFlag(NO_NETWORK_INTERFACE);
     }
 
-
     // Connect to server
-    // int connect = NTPInterface->connect();
-    // if (connect != 0) {
+    // use an external macro or something to check if there is going to be an ethernet connection then test this, if true skip the connection, if not connect. 
+    
+    #if HTTP_SERVER_USED == 0
+        int connect = NTPInterface->connect();
+        if (connect != 0) {
 
-    // printQueue->custom.call(printf, "CONNECTION ERROR\n");
-    //    wait_us(100000);
-    //   errorHandler->setErrorFlag(CONNECTION_ERROR);
-    // }
+        printQueue->custom.call(printf, "CONNECTION ERROR\n");
+        wait_us(100000);
+        errorHandler->setErrorFlag(CONNECTION_ERROR);
+        }
+    #else
+        printQueue->custom.call(printf, "Ethernet Server already running\n");
+    #endif
 
-    printQueue->custom.call(printf, "Connection success, MAC: %s\n", NTPInterface->get_mac_address());
     printQueue->custom.call(printf, "Getting time from the NTP server\n");
 
     NTPClient NTP(NTPInterface);
@@ -50,11 +49,8 @@ NTPConnection::NTPConnection(CustomQueue* printQueue, ErrorHandler* errorHandler
 
     NTPInterface->disconnect();
     wait_us(100000);
-    // NVIC_SystemReset();
-//   } else {
-    //   printQueue->custom.call(printf, "NTP Aborted!\n");
-    // delete[] &NTPInterface;
-//   }
 };
 
-time_t NTPConnection::getTime() { return time(NULL); } // deprecated function
+// deprecated function - can use time(NULL) instead
+time_t NTPConnection::getTime() { return time(NULL); } 
+ 
