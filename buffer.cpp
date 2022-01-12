@@ -4,7 +4,8 @@ Semaphore spaceInBuffer(buffer_size); // space in buffer
 Semaphore samplesInBuffer(0);         // samples in buffer
 Semaphore signalSample(0);            // signal to get new sample
 
-samples sampledDataB;
+samples BsampledData;
+//sampler buffersampler;
 liveData buffer[buffer_size];
 liveData dataRecord; // for holding data in the buffer
 liveData printRecord[buffer_size];
@@ -19,18 +20,18 @@ bufferClass::bufferClass(sampler* buffersampler) {
     BF = buffersampler;
   t.start();
   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
-  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 2s);
+  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 10s);
   flushThread.start(callback(this, &bufferClass::whenToFlush));
-  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 2s);
+  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 60s);
 }
 
 bufferClass::bufferClass(ErrorHandler* bufferEH) {
-    BEH = bufferEH;
-  t.start();
-  writeThread.start(callback(this, &bufferClass::writeBufferAuto));
-  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 2s);
-  flushThread.start(callback(this, &bufferClass::whenToFlush));
-  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 2s);
+//     BEH = bufferEH;
+//   t.start();
+//   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
+//   bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 2s);
+//   flushThread.start(callback(this, &bufferClass::whenToFlush));
+//   bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 2s);
 }
 
 
@@ -49,16 +50,19 @@ void bufferClass::writeBufferAuto() {
         //bufferPrintQueue.custom.call(printf, "buffer lock timeout\n");
         BEH -> setErrorFlag(BUFFER_LOCK_TIMEOUT); //critical error
       } else {
-        if (timeLock.trylock_for(10ms) == 0) { // PROTECT THE DATA
+        if (timeLock.trylock_for(1ms) == 0) { // PROTECT THE DATA
           //bufferPrintQueue.custom.call(printf, "timeLockTimeout\n");
         BEH -> setErrorFlag(TIMER_LOCK_TIMEOUT); //critical error
         } else {
+
           dataRecord.realTime = *ctime(&timestamp);
           timeLock.unlock();
           // copy environmental data
-          dataRecord.LDR = sampledDataB.LDR;
-          dataRecord.temp = sampledDataB.temp;
-          dataRecord.pressure = sampledDataB.pressure;
+          dataRecord.LDR = BsampledData.LDR;
+          dataRecord.temp = BsampledData.temp;
+          dataRecord.pressure = BsampledData.pressure;
+          //*******************************************
+          //dataRecord = bufferSampler.sampledData;
           dataInBuffer++; //increment no of data sets
         }
         newIDX = (newIDX + 1) % buffer_size; // increment buffer size
