@@ -30,6 +30,22 @@ void sampler::sensorflag(){
     sampler::matrixThread.flags_set(2);
 }
 
+void sampler::sensorChange(char in){
+    switch (in){
+        case ('T') :                            //Temperature
+        sampler::matrixThread.flags_set(4);
+        break;
+        case ('P') :                            //Pressure
+        sampler::matrixThread.flags_set(8);
+        break;
+        case ('L') :                            //Light
+        sampler::matrixThread.flags_set(16);
+        break;
+        default:                                //Default - toggle to next sensor instead
+        sampler::matrixThread.flags_set(2);
+    }
+}
+
 void sampler::sample(){
     while(true){
     ThisThread::flags_wait_any(1);
@@ -76,6 +92,15 @@ void sampler::matrixInterface(){
             default:
                 currentSensor = TEMP;
             }
+        }
+        else if (flags == 4) {
+        currentSensor = TEMP;
+        }
+        else if (flags == 8) {
+        currentSensor = PRESSURE;
+        }
+        else if (flags == 16) {
+            currentSensor = LIGHT;
         }
         quantise(currentSensor);
         thresholdCheck();
