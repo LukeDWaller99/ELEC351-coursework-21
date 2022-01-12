@@ -22,15 +22,7 @@ void LEDMatrix::clear() {
 }
 
 void LEDMatrix::writeMatrix(int RHC, int LHC, int ROW)
-/*
-    Writes the speicifc bytes to the LED Matrix LED
-    Args:
-        RHC (int) : value between 0 - 255 to control the leds on RHC
-        LHC (int) : value between 0 - 255 to control the leds on LHC
-        ROW (int) : value between 0 - 7 to control the leds on ROWS
-    Returns:
-        Null
-*/
+
 {
   matrix_spi_cs = 0;     // chip select low to write
   matrix_spi.write(LHC); // LHS COL
