@@ -4,6 +4,24 @@ This project is an Environmental sensor with the capability of monitoring the te
 
 Should any of the defined sensor thresholds be crossed, an alarm will be raised and errors logged to the serial output. 
 
+# Requirement
+The specification outlines multiple requirments needed for the environmental sensor to be consider fit for purpose. The table belows contains this list of requirements, as well as where they have been fulfilled in the design.
+
+|Requirement    | Fullfilled                                        | Where     |
+ :----          | :----                                             | :----     |
+|1              | Yes                                               | sampler.h |
+|2              | Yes                                               | buffer.h  |
+|3              | Yes                                               | buffer.h  |
+|4              | Yes - buzzer can be enabled via macro             | sampler.h |
+|5              | Yes                                               |throughout |
+|6              | Yes - no spin locks or busy/waits                 |throughout |
+|7              | Partial - serial capture only                     |SerialIn.h |
+|8              | Partial - internal webpage                        |HTTP_Server.h|
+|9              | Yes - error handler will respond to time outs     |throughout|
+|10             | Yes                                               |ErrorHandler.h|
+|11             | Yes                                               |LEDMatrix.h|
+|12             | Yes                                               |throughout |
+
 # Dependancies
 The main.c file contains all the instantiations needed in the correct order. However, several of the modules of this project can be used as standalone classes. To ensure that these classes are instantiated correctly, the dependencies are listed below. Generally, a 'CustomQueue' will need to be instantiated before anything else, to provide an output logging method.
 
@@ -60,43 +78,52 @@ A list of environmental errors can be seen below:
 | Light         | 35    | Lower light limit exceeded        |
 | ^             | 36    | Upper light limit exceeded        |
 
-
+## Sending Commands
+The Environmental Sensor includes the ability to send commands via a serial interface. Upon initialising, a help screen will be displayed on the connected serial monitor. This list of commands is also available below:
+| Command        | Syntax  | Description |
+| :----:        | :---- | :----
+| latest   | latest    | Fetch the latest date/time and data sample and display it over serial |
+| buffered             | buffered    |  |
+| Pressure      | 33    | Lower pressure limit exceeded     |
+| ^             | 34    | Upper pressure limit exceeded     |
+| Light         | 35    | Lower light limit exceeded        |
+| ^             | 36    | Upper light limit exceeded        |
 
 # Contributions
 
-Jack Pendlebury
+**Jack Pendlebury**
 
-**Authored**
+*Authored*
     - sampler
     - ErrorHandler
     - CustomQueue
 
-**Contributed**
+*Contributed*
     - Documentation
     - SevenSegmentDisplay
     - LEDMatrix
     - SerialCapture
 
-Noah Harvey
+**Noah Harvey**
 
-**Authored**
+*Authored*
     - SD Card
     - Buffer
     - 
 
-**Contributed**
+*Contributed*
     - Stuff
 
-Luke Waller
+**Luke Waller**
 
-**Authored**
+*Authored*
     - SevenSegmentDisplay
     - LEDMatrix
-    - NTP Server
-    - HTTP Server
+    - NTPConnection
+    - HTTP_Server
     - Serial Capture
 
-**Contributed**
+*Contributed*
     - ErrorHandler
     - CustomQueue
 
