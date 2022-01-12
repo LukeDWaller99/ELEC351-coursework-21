@@ -129,7 +129,6 @@ class sampler {
         LIGHT,
     };
     InterruptIn BT_A;                           ///< Button for controlling the matrix output sensor
-    limits threshold;                           ///< limits object to store the current alarm thresholds
     sensor_type currentSensor = LIGHT;          ///< Current sensor output, default is 'LIGHT'
     //float limits[6];    
     Mutex sampleLock;                           ///< Mutex Lock to ensure thread safety on sample values
@@ -206,6 +205,7 @@ class sampler {
     quantised_samples matrix_input; ///<Holds quantised values to be passed to the matrix display
     samples internal_buffer[8];     ///<Internal buffer to hold samples for the matrix.
     samples sampleData;             ///<Single sample data to hold the latest sample
+    limits threshold;                           ///< limits object to store the current alarm thresholds
 
 
     /**
