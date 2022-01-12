@@ -26,7 +26,7 @@ private:
   Thread flushThread;
 
 public:
-  // void flushBuffer();
+  void flushBuffer();
   int flushBufferUpgrade();
   void whenToFlush();
   void flashGreen();
