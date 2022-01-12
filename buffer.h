@@ -2,18 +2,37 @@
 #define __FIFO_BUFFER__
 
 #include "CustomQueue.h"
-#include "FATFileSystem.h"
-#include "Mutex.h"
-#include "SDBlockDevice.h"
-#include "mbed.h"
+#include <FATFileSystem.h>
+#include <Mutex.h>
+#include <SDBlockDevice.h>
+#include <mbed.h>
 #include "sampling.h"
-#include "uop_msb.h"
+#include <uop_msb.h>
 #include <Semaphore.h>
 #include <ctime>
+#include <InterruptIn.h>
 
 
 #define buffer_size 20
+#define SDDetect PF_4
 using namespace std;
+
+// class SDClass {
+//     SDClass();
+
+//     private:
+//     InterruptIn SDDetector;
+
+//     SDClass(PinName SDDetect) : SDDetector(SDDetect){
+//         SDDetector.rise(callback(this, &SDClass::initSD));
+//     }
+
+//     public:
+
+//     void initSD();
+    
+//     ~SDClass();
+// };
 
 class bufferClass {
 
@@ -26,6 +45,7 @@ private:
   Ticker bufferFlushTick;
   Timer t;
 
+  //InterruptIn SDDetector(SDDetect);
   //CustomQueue bufferPrintQueue;
   sampler* BF;
   ErrorHandler* BEH;
@@ -68,8 +88,9 @@ samples sampleData; //sampled values, every 10s
 liveData buffer[buffer_size];
 liveData dataRecord; // for holding data in the buffer
 liveData printRecord[buffer_size];
-
   
+  void fetchLatestRecord();
+
   void flushBuffer();
   
   void bufferCount();
@@ -80,6 +101,8 @@ liveData printRecord[buffer_size];
 
   void initSD();
   bool SDMount = 0;
+
+  void flashGreen();
 
   //destructor
   ~bufferClass();
