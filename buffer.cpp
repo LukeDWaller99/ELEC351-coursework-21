@@ -4,11 +4,7 @@ Semaphore spaceInBuffer(buffer_size); // space in buffer
 Semaphore samplesInBuffer(0);         // samples in buffer
 Semaphore signalSample(0);            // signal to get new sample
 
-samples BsampledData;
-//sampler buffersampler;
-liveData buffer[buffer_size];
-liveData dataRecord; // for holding data in the buffer
-liveData printRecord[buffer_size];
+samples sampledData;
 
 FILE *fp;
 SDBlockDevice mysd(PB_5, PB_4, PB_3, PF_3);
@@ -26,14 +22,8 @@ bufferClass::bufferClass(sampler* buffersampler) {
 }
 
 bufferClass::bufferClass(ErrorHandler* bufferEH) {
-//     BEH = bufferEH;
-//   t.start();
-//   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
-//   bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 2s);
-//   flushThread.start(callback(this, &bufferClass::whenToFlush));
-//   bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 2s);
+    BEH = bufferEH;
 }
-
 
 void bufferClass::writeFlag() { bufferClass::writeThread.flags_set(1); }
 
@@ -58,11 +48,9 @@ void bufferClass::writeBufferAuto() {
           dataRecord.realTime = *ctime(&timestamp);
           timeLock.unlock();
           // copy environmental data
-          dataRecord.LDR = BsampledData.LDR;
-          dataRecord.temp = BsampledData.temp;
-          dataRecord.pressure = BsampledData.pressure;
-          //*******************************************
-          //dataRecord = bufferSampler.sampledData;
+          dataRecord.LDR = sampledData.LDR;
+          dataRecord.temp = sampledData.temp;
+          dataRecord.pressure = sampledData.pressure;
           dataInBuffer++; //increment no of data sets
         }
         newIDX = (newIDX + 1) % buffer_size; // increment buffer size
