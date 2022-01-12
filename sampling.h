@@ -1,3 +1,8 @@
+/**
+@file sampling.h
+Sampler class header file.
+Author - Jack Pendlebury
+**/
 #ifndef H_SAMPLING
 #define H_SAMPLING
 #include <mbed.h>
@@ -139,7 +144,7 @@ class sampler {
     int prevAlarmFlag = 1;
 
     /**
-    Main sampling function. This function contains the majority of the sampler's functionality. After being
+    Main sampling method. This method contains the majority of the sampler's methodality. After being
     awoken by the ticker, it reads the sensor values in a thread safe manner, checking the values against the 
     set thresholds. If any of these thresholds are broken, the appropriate error flag is raised. The sample data is 
     quantised and then sent to the matrix.
@@ -158,10 +163,10 @@ class sampler {
     void sensorflag();
 
     /**
-    Quantise the internal buffer to sixteen levels and send to the matrix. This function quantises the 
+    Quantise the internal buffer to sixteen levels and send to the matrix. This method quantises the 
     internal buffer to sixteen levels, before sending the selected measurement (Temp, Pressure, Light), to the
     matrix display to be displayed graphically.
-    @param selectedSensor   Stores what measurement is to be output onto the matrix display. The function
+    @param selectedSensor   Stores what measurement is to be output onto the matrix display. The method
                             only quantises the desired measurement values.
      **/
     void quantise(sensor_type selectedSensor);
@@ -172,7 +177,7 @@ class sampler {
     void matrixInterface();
 
     /**
-    Function to check the incoming sample against the alarm threshold.
+    method to check the incoming sample against the alarm threshold.
 
     **/
     void thresholdCheck();
@@ -201,11 +206,20 @@ class sampler {
     quantised_samples matrix_input; ///<Holds quantised values to be passed to the matrix display
     samples internal_buffer[8];     ///<Internal buffer to hold samples for the matrix.
     samples sampleData;             ///<Single sample data to hold the latest sample
+
+
+    /**
+    Method to change the sensor to a specific selection. Called by the serial input, this method raises 
+    flags in the matrix thread in order to signal a sensor change is desired. If the input is unrecognised, it
+    instead toggles the sensor to the next selection, the same as when Button A is pressed.
+    @param in char input, either T/P/L for temperature, pressure, or light respectively. 
+    **/
+    void sensorChange(char in);
     
     /**
-    Debug function to display the currently set alarm thresholds. This function is intended to be used
+    Debug method to display the currently set alarm thresholds. This method is intended to be used
     for debugging purposes primarily. 
-    @note   This function is not thread safe! It makes use of slow 'printf' calls and should not be called in any
+    @note   This method is not thread safe! It makes use of slow 'printf' calls and should not be called in any
             timing dependant contexts.
     **/
     void displayLimits();
