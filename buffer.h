@@ -26,9 +26,10 @@ private:
   Ticker bufferFlushTick;
   Timer t;
 
-  CustomQueue bufferPrintQueue;
-  sampler *BF;
-  ErrorHandler *BEH;
+  //CustomQueue bufferPrintQueue;
+  sampler* BF;
+  ErrorHandler* BEH;
+  CustomQueue* PQ;
 
   void writeFlag();
   void flushFlag();
@@ -54,14 +55,13 @@ private:
   time_t timestamp;
 
 public:
-  bufferClass(sampler *buffersampler);
-  bufferClass(ErrorHandler *bufferEH);
+  bufferClass(sampler* buffersampler, ErrorHandler* bufferEH, CustomQueue* bufferPQ);
 
 struct liveData {
   float LDR;
   float temp;
   float pressure;
-  time_t realTime;
+  char* realTime;
 };
 
 samples sampleData; //sampled values, every 10s
@@ -87,7 +87,7 @@ liveData printRecord[buffer_size];
 
   int flushBufferUpgrade();
   // constructor and destructor
-  bufferClass();
+  //bufferClass(sampler* buffersampler, ErrorHandler* bufferEH, CustomQueue* bufferPQ);
   ~bufferClass();
 };
 

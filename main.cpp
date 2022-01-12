@@ -9,14 +9,14 @@ using namespace uop_msb;
 using namespace std;
 
 CustomQueue printQueue;
-samples sampledDataMain;
+//samples sampledDataMain;
 ErrorHandler EH(&printQueue);
 //ErrorHandler* EH_P = &EH;
 sampler SampleModule(&EH);
-bufferClass mainBuffer(&EH);
-bufferClass mainBufferSampler(&SampleModule);
+bufferClass mainBuffer(&SampleModule, &EH, &printQueue);
+//bufferClass mainBufferSampler(&SampleModule);
 
-bufferClass::liveData flushRecord;
+//bufferClass::liveData flushRecord;
 
 //threads
 Thread samplingThread(osPriorityRealtime);
@@ -29,22 +29,23 @@ int main() {
     //print.start(callback(&printQueue, &EventQueue::dispatch_forever));
     // SampleModule.displayLimits();
     // wait_us(1000000);
-    while(true){
-        int sensor = SampleModule.get_current_sensor();
-    sampledDataMain = SampleModule.sampleData;
-    int i;
-    for(i=0;i<8;i++){
-        sampledDataMain = SampleModule.internal_buffer[i];
-        printQueue.custom.call(printf,"%d raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", i, sampledDataMain.temp, sampledDataMain.pressure, sampledDataMain.LDR);
-    }
-    printQueue.custom.call(printf,"Sensorval %d\n",sensor);
-    //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
-    //mainBuffer.bufferCount();
-    printQueue.custom.call(
-                printf,
-                "\tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
-                flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
-    wait_us(10000000);
+     while(true){
+    //     //wait_us(100000000);
+    // //     int sensor = SampleModule.get_current_sensor();
+    // // sampledDataMain = SampleModule.sampleData;
+    // // int i;
+    // // for(i=0;i<8;i++){
+    // //     sampledDataMain = SampleModule.internal_buffer[i];
+    // //     printQueue.custom.call(printf,"%d raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", i, sampledDataMain.temp, sampledDataMain.pressure, sampledDataMain.LDR);
+    // // }
+    // // printQueue.custom.call(printf,"Sensorval %d\n",sensor);
+    // // //printQueue.call(printf," raw \tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r", sampledData.temp, sampledData.pressure, sampledData.LDR);
+     mainBuffer.bufferCount();
+    // // printQueue.custom.call(
+    // //             printf,
+    // //             "\tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
+    // //             flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
+     wait_us(10000000);
     }
 }
 // #include "NTPClient.h"

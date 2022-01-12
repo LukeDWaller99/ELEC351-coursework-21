@@ -4,6 +4,7 @@ Semaphore spaceInBuffer(buffer_size); // space in buffer
 Semaphore samplesInBuffer(0);         // samples in buffer
 Semaphore signalSample(0);            // signal to get new sample
 
+//sampler buffersampler;
 samples sampledData;
 
 FILE *fp;
@@ -12,18 +13,18 @@ DigitalIn SDDetect(PF_4);
 DigitalOut greenLED(PC_6);
 
 // constructor
-bufferClass::bufferClass(sampler* buffersampler) {
+bufferClass::bufferClass(sampler* buffersampler, ErrorHandler* bufferEH, CustomQueue* bufferPQ) {
     BF = buffersampler;
+    BEH = bufferEH;
+    PQ = bufferPQ;
   t.start();
   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
-  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 10s);
+  bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 12s);
   flushThread.start(callback(this, &bufferClass::whenToFlush));
-  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 60s);
+  bufferFlushTick.attach(callback(this, &bufferClass::flushFlag), 10s);
 }
 
-bufferClass::bufferClass(ErrorHandler* bufferEH) {
-    BEH = bufferEH;
-}
+
 
 void bufferClass::writeFlag() { bufferClass::writeThread.flags_set(1); }
 
@@ -33,19 +34,19 @@ void bufferClass::writeBufferAuto() {
   while (true) {
     ThisThread::flags_wait_any(1);
     if (spaceInBuffer.try_acquire_for(1ms) == 0) {
-      //bufferPrintQueue.custom.call(printf, "buffer full\n");
+      PQ->custom.call(printf, "buffer full\n");
       BEH -> setErrorFlag(BUFFER_FULL); //critical error
     } else {
       if (bufferLock.trylock_for(1ms) == 0) {// PROTECT THE BUFFER
-        //bufferPrintQueue.custom.call(printf, "buffer lock timeout\n");
+        PQ->custom.call(printf, "buffer lock timeout\n");
         BEH -> setErrorFlag(BUFFER_LOCK_TIMEOUT); //critical error
       } else {
         if (timeLock.trylock_for(1ms) == 0) { // PROTECT THE DATA
-          //bufferPrintQueue.custom.call(printf, "timeLockTimeout\n");
+          PQ->custom.call(printf, "timeLockTimeout\n");
         BEH -> setErrorFlag(TIMER_LOCK_TIMEOUT); //critical error
         } else {
-
-          dataRecord.realTime = *ctime(&timestamp);
+      sampledData =  BF->sampleData;
+          dataRecord.realTime = ctime(&timestamp);
           timeLock.unlock();
           // copy environmental data
           dataRecord.LDR = sampledData.LDR;
@@ -64,9 +65,12 @@ void bufferClass::writeBufferAuto() {
 }
 
 void bufferClass::bufferCount() {
-  bufferPrintQueue.custom.call(printf,
+//   PQ->custom.call(printf,
+//                   "Number of environmental data sets in the buffer: %i\n",
+//                   dataInBuffer);
+                  PQ->custom.call(printf,
                   "Number of environmental data sets in the buffer: %i\n",
-                  dataInBuffer);
+                  newIDX);
 }
 
 void bufferClass::whenToFlush() {
@@ -77,13 +81,22 @@ void bufferClass::whenToFlush() {
     //if ((currentTime > 60) && (oldIDX - (buffer_size * 0.1))) {
     if((currentTime > 60) && (newIDX == oldIDX - (buffer_size * 0.1))) {// flush buffer at 90%
       //printQueue.call(printf, "capacity flush\n");
-      //bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
+      PQ->custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
       bufferClass::printBufferContents();
+      dataInBuffer = 0;
     }
-    if (currentTime > hourPassed) { //must flush at least once an hour
+    // //in the case of not catching 90%, for whatever reason
+    // if((currentTime > 60) && (newIDX == (oldIDX - buffer_size))) {// flush buffer at 90%
+    //   //printQueue.call(printf, "capacity flush\n");
+    //   bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
+    //   bufferClass::printBufferContents();
+    //   dataInBuffer = 0;
+    // }
+    if (currentTime == hourPassed){ //must flush at least once an hour
       //flash green led
-      //bufferPrintQueue.custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
+      PQ->custom.call(printf, "Time recorded = %s\n", ctime(&timestamp));
       bufferClass::printBufferContents();
+      dataInBuffer = 0;
       //printQueue.call(printf, "timing flush\n");
     }
     dataInBuffer = 0; //reset the count as buffer has flushed
@@ -98,7 +111,7 @@ void bufferClass::printBufferContents() {
     if (samplesInBuffer.try_acquire_for(1ms) ==
         0) { // check for samples in the buffer
         BEH -> setErrorFlag(EMPTY_FLUSH); //critical error
-      bufferPrintQueue.custom.call(printf, "no data\n");
+     PQ->custom.call(printf, "no data\n");
     } else {
       samplesInBuffer.release();
       if (bufferLock.trylock_for(1ms) == 0) { // try to acquire buffer data
@@ -112,8 +125,8 @@ void bufferClass::printBufferContents() {
             samplesInBuffer.try_acquire_for(1ms);
             oldIDX = (oldIDX + 1) % buffer_size;
             liveData flushRecord = buffer[oldIDX];
-            bufferPrintQueue.custom.call(printf, "Time recorded = %s\n\t", flushRecord.realTime);
-            bufferPrintQueue.custom.call(
+            PQ->custom.call(printf, "Time recorded = %s\n\t", flushRecord.realTime);
+            PQ->custom.call(
                 printf,
                 "\tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
                 flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
@@ -195,13 +208,13 @@ void bufferClass::printToWebpage(vector<int> & webpageData){
 void bufferClass::initSD() {
   // if(mysd.init() != 0){
   if (SDDetect == 1) {
-    bufferPrintQueue.custom.call(printf, "sd card not mounted\n");
+    PQ->custom.call(printf, "sd card not mounted\n");
     greenLED = 0;
     cardMount = 0;
   } else {
     cardMount = 1;
     greenLED = 1;
-    bufferPrintQueue.custom.call(printf, "sd card is moutned\n");
+    PQ->custom.call(printf, "sd card is moutned\n");
   }
 }
 
