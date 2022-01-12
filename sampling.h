@@ -1,3 +1,8 @@
+/**
+@file sampling.h
+Sampler class header file.
+Author - Jack Pendlebury
+**/
 #ifndef H_SAMPLING
 #define H_SAMPLING
 #include <mbed.h>
