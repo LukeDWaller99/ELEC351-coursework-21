@@ -27,6 +27,7 @@ ErrorHandler::ErrorHandler(CustomQueue* outputQueue):override_button(USER_BUTTON
     ERROR_THREAD_NAME.start(callback(this, &ErrorHandler::error_thread));
     override_button.rise(callback(this, &ErrorHandler::alarm_override));
     ERROR_THREAD_NAME.set_priority(osPriorityRealtime7);
+    queue->custom.call(printf, "Error Handler Initialised\n");
 }
 
 
