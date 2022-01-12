@@ -14,10 +14,12 @@ CustomQueue printQueue;
 // samples sampledData;
 // EventQueue* queue = new EventQueue();
 ErrorHandler EH(&printQueue);
-// HTTP_server HTTP(&printQueue, &EH);
+sampler SampleModule(&EH);
+
+HTTP_server HTTP(&printQueue, &EH, &SampleModule);
 NTPConnection NTP(&printQueue, &EH);
 //ErrorHandler* EH_P = &EH;
-// sampler SampleModule(&EH);
+
 
 //threads
 // Thread samplingThread(osPriorityRealtime);

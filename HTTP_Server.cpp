@@ -1,9 +1,12 @@
 #include "HTTP_Server.h"
+#include "sampling.h"
 
+samples webData;
 
-HTTP_server::HTTP_server(CustomQueue* printQueue, ErrorHandler* errorHandler) {
+HTTP_server::HTTP_server(CustomQueue* printQueue, ErrorHandler* errorHandler, sampler* webSampler) {
 
     printQueue = printQueue;
+    webDataSampler = webSampler;
 
     printQueue->custom.call(printf, "Opening HTTP Server\n");
 
@@ -57,26 +60,27 @@ void HTTP_server::HTTP_server_thread(void) {
         client_socket = socket.accept();
 
         //constructing the webpage
+        webData = webDataSampler->sampleData;
         float potVal = pot;
-        // float LDRVal = samplein;
-        // float pressureVal = samplein;
-        // float temperatureVal = samplein;
+        float LDRVal = webData.LDR;
+        float pressureVal = webData.pressure;
+        float temperatureVal = webData.temp;
 
         // get the timestamp 
         time_t timestamp;
 
         timestamp = time(NULL);
 
-        char potBuff[6];
-        char LDRBuff[6];
-        char pressureBuff[6];
-        char temperatureBuff[6];
+        char potBuff[10];
+        char LDRBuff[10];
+        char pressureBuff[10];
+        char temperatureBuff[10];
         
         // get the values and store them as strings
-        sprintf(potBuff, "%5.3f", potVal);
-        // sprintf(LDRBuff, "%5.3f", LDRVal);
-        // sprintf(pressureBuff, "%5.3f", pressureVal);
-        // sprintf(temperatureBuff, "%5.3f", temperatureVal);
+        sprintf(potBuff, "%1.3f", potVal);
+        sprintf(LDRBuff, "%1.3f", LDRVal);
+        sprintf(pressureBuff, "%1.1f", pressureVal);
+        sprintf(temperatureBuff, "%1.3f", temperatureVal);
 
         string html = string(HTTP_TEMPLATE);
 
@@ -94,17 +98,17 @@ void HTTP_server::HTTP_server_thread(void) {
 
         size_t LDRIndex = html.find("{{3}}"); //find the placeholder {{3}}
         if (LDRIndex){
-            html.replace(LDRIndex, 5, potBuff);
+            html.replace(LDRIndex, 5, LDRBuff);
         }
 
         size_t pressureIndex = html.find("{{4}}"); //find the placeholder {{4}}
         if (pressureIndex){
-            html.replace(pressureIndex, 5, potBuff);
+            html.replace(pressureIndex, 5, pressureBuff);
         }
 
         size_t temperatureIndex = html.find("{{5}}"); //find the placeholder {{5}}
         if (temperatureIndex){
-            html.replace(temperatureIndex, 5, potBuff);
+            html.replace(temperatureIndex, 5, temperatureBuff);
         }
 
         // send the HTML to the web browser 
