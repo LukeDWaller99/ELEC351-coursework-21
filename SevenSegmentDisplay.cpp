@@ -43,13 +43,6 @@ void SevenSegmentDisplay::clear(int number) {
 }
 
 void SevenSegmentDisplay::setDigit(int digit, int number) {
-  /*
-  Set the number of a given seven segment display
-
-  Args:
-      digit (int) : sets which seven segment displayto write to
-      number (int) : sets the number to output in the 7 segmenet to display
-  */
   int output = 0;
   switch (number) {
   case 1:

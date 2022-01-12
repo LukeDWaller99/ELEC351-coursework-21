@@ -15,6 +15,7 @@ to capture all status messages.
 #include "mbed.h"
 #include "uop_msb.h"
 #include "string.h"
+#include <string>
 
 
 /**

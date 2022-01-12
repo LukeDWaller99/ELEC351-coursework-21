@@ -136,9 +136,13 @@ void sampler::thresholdCheck(){
     //check temp
     if (temp>threshold_t.t_upper){
         EH->setErrorFlag(T_UPPER);
+        
+        prevAlarmFlag = 1;
     }
     else if (temp<threshold_t.t_lower) {
         EH->setErrorFlag(T_LOWER);
+        
+        prevAlarmFlag = 1;
     }
     else{
         clear_flag++;
@@ -147,9 +151,13 @@ void sampler::thresholdCheck(){
     //check pressure
     if (pres>threshold_t.p_upper){
         EH->setErrorFlag(P_UPPER);
+        
+        prevAlarmFlag = 1;
     }
     else if (pres<threshold_t.p_lower) {
         EH->setErrorFlag(P_LOWER);
+        
+        prevAlarmFlag = 1;
     }
     else {
         clear_flag++;
@@ -157,15 +165,23 @@ void sampler::thresholdCheck(){
     //check light
     if (light>threshold_t.l_upper){
         EH->setErrorFlag(L_LOWER);
+        
+        prevAlarmFlag = 1;
     }
     else if (light<threshold_t.l_lower) {
         EH->setErrorFlag(L_UPPER);
+        
+        prevAlarmFlag = 1;
     }
     else {
         clear_flag++;
     }
     if (clear_flag == 3){
+        if (
+        prevAlarmFlag == 1){
         EH->setErrorFlag(ALL_CLEAR);
+        prevAlarmFlag = 0;
+        }
     }
     else {
     clear_flag = 0;
@@ -176,4 +192,9 @@ void sampler::displayLimits(){
     printf("Temperature \tUpper = %2.1f \tLower = %2.1f\n",threshold.t_upper,threshold.t_lower);
     printf("Pressure \tUpper = %3.1f \tLower = %3.1f\n",threshold.p_upper,threshold.p_lower);
     printf("Light \t\tUpper = %1.2f \tLower = %1.2f\n",threshold.l_upper,threshold.l_lower);
+}
+
+sampler::sensor_type sampler::get_current_sensor(){
+    sensor_type temp = currentSensor;
+    return temp;
 }
