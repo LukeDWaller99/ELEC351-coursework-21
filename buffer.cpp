@@ -46,6 +46,7 @@ void bufferClass::writeBufferAuto() {
         BEH -> setErrorFlag(TIMER_LOCK_TIMEOUT); //critical error
         } else {
       sampledData =  BF->sampleData;
+      timestamp = time(NULL);
           dataRecord.realTime = ctime(&timestamp);
           timeLock.unlock();
           // copy environmental data
@@ -128,7 +129,7 @@ void bufferClass::printBufferContents() {
             PQ->custom.call(printf, "Time recorded = %s\n\t", flushRecord.realTime);
             PQ->custom.call(
                 printf,
-                "\tTemperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
+                "Temperature = %2.1f, \tPressure = %3.1f, \tLDR = %1.2f;\n\r",
                 flushRecord.temp, flushRecord.pressure, flushRecord.LDR);
 
             spaceInBuffer.release(); // another space free
