@@ -152,6 +152,11 @@ public:
   void initSD();
   bool SDMount;
 
+/**
+when the interrupt pin for the sd card falls, check the sd card is mounted
+**/
+  void SDRemoved();
+
   /**
   upon flushing of the buffer to the sd card, the green led shall flash
   **/

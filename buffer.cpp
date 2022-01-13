@@ -17,7 +17,7 @@ bufferClass::bufferClass(sampler* buffersampler, ErrorHandler* bufferEH,
   PQ = bufferPQ;
   t.start();
   bufferClass::initSD();
-  SDDetector.rise(callback(this, &bufferClass::initSD));
+  SDDetector.fall(callback(this, &bufferClass::initSD));
   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
   bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 15s);
   flushThread.start(callback(this, &bufferClass::whenToFlush));
@@ -205,4 +205,11 @@ void bufferClass::initSD() {
     greenLED = 1;
     PQ->custom.call(printf, "sd card is mounted\n");
   }
+}
+
+void bufferClass::SDRemoved(){
+    greenLED = 0;
+    SDMount = 0;
+    PQ->custom.call(printf, "sd card not mounted\n");
+
 }
