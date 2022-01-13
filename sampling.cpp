@@ -2,50 +2,7 @@
 
 //extern samples sampledData;
 
-sampler::sampler(ErrorHandler* OutputHandler):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
-    EH = OutputHandler;
-    sampleThread.start(callback(this, &sampler::sample));
-    matrixThread.start(callback(this, &sampler::matrixInterface));
-    sampleTick.attach(callback(this, &sampler::sampleflag),SAMPLE_INTERVAL);
-    BT_A.rise(callback(this, &sampler::sensorflag));
-    sampleThread.set_priority(osPriorityRealtime6);
-}
-
-
-sampler::sampler(ErrorHandler* OutputHandler,float limits[6]):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
-    EH = OutputHandler;
-    //set threshold values
-    threshold.bind(limits);
-    sampleThread.start(callback(this, &sampler::sample));
-    matrixThread.start(callback(this, &sampler::matrixInterface));
-    sampleTick.attach(callback(this, &sampler::sampleflag),SAMPLE_INTERVAL);
-    sampleThread.set_priority(osPriorityRealtime6);
-}
-
-void sampler::sampleflag(){
-    sampler::sampleThread.flags_set(1);
-}
-
-void sampler::sensorflag(){
-    sampler::matrixThread.flags_set(2);
-}
-
-void sampler::sensorChange(char in){
-    switch (in){
-        case ('T') :                            //Temperature
-        sampler::matrixThread.flags_set(4);
-        break;
-        case ('P') :                            //Pressure
-        sampler::matrixThread.flags_set(8);
-        break;
-        case ('L') :                            //Light
-        sampler::matrixThread.flags_set(16);
-        break;
-        default:                                //Default - toggle to next sensor instead
-        sampler::matrixThread.flags_set(2);
-    }
-}
-
+//Private methods
 void sampler::sample(){
     while(true){
     ThisThread::flags_wait_any(1);
@@ -54,8 +11,6 @@ void sampler::sample(){
         sampleData.temp = sensor.getTemperature();
         sampleData.pressure = sensor.getPressure();
         sampleData.LDR = LDR.read();
-        
-        //samples[0] = LDR.read_u16(); //read the LDR
         sampleLock.unlock();        //hand back the lock
         //shift internal buffer left
         int i;
@@ -73,40 +28,12 @@ void sampler::sample(){
     }
 }
 
-void sampler::matrixInterface(){
-    int flags;
-    while(true){
-        ThisThread::flags_wait_any(1); //wait for wake-up call
-        flags = ThisThread::flags_get(); //check if sensor needs to be cycled
-        if (flags == 2) {
-        switch (currentSensor) {
-            case TEMP :
-                currentSensor = PRESSURE;
-            break;
-            case PRESSURE:
-                currentSensor = LIGHT;
-            break;
-            case LIGHT :
-                currentSensor = TEMP;
-            break;
-            default:
-                currentSensor = TEMP;
-            }
-        }
-        else if (flags == 4) {
-        currentSensor = TEMP;
-        }
-        else if (flags == 8) {
-        currentSensor = PRESSURE;
-        }
-        else if (flags == 16) {
-            currentSensor = LIGHT;
-        }
-        quantise(currentSensor);
-        thresholdCheck();
-        matrix.update(matrix_input.qsamples);
-        ThisThread::flags_clear(255);
-    }
+void sampler::sampleflag(){
+    sampler::sampleThread.flags_set(1);
+}
+
+void sampler::sensorflag(){
+    sampler::matrixThread.flags_set(2);
 }
 
 void sampler::quantise(sensor_type selectedSensor){
@@ -143,9 +70,44 @@ void sampler::quantise(sensor_type selectedSensor){
             quantVals[i] = 0;
         }
         matrix_input.qsamples[i] = quantVals[i];
-        //printf("%d \t%d \n",i,quantVals[i]);
     }
 
+}
+
+void sampler::matrixInterface(){
+    int flags;
+    while(true){
+        ThisThread::flags_wait_any(1); //wait for wake-up call
+        flags = ThisThread::flags_get(); //check if sensor needs to be cycled
+        if (flags == 2) {
+        switch (currentSensor) {
+            case TEMP :
+                currentSensor = PRESSURE;
+            break;
+            case PRESSURE:
+                currentSensor = LIGHT;
+            break;
+            case LIGHT :
+                currentSensor = TEMP;
+            break;
+            default:
+                currentSensor = TEMP;
+            }
+        }
+        else if (flags == 4) {
+        currentSensor = TEMP;
+        }
+        else if (flags == 8) {
+        currentSensor = PRESSURE;
+        }
+        else if (flags == 16) {
+            currentSensor = LIGHT;
+        }
+        quantise(currentSensor);
+        thresholdCheck();
+        matrix.update(matrix_input.qsamples);
+        ThisThread::flags_clear(255);
+    }
 }
 
 void sampler::thresholdCheck(){
@@ -210,6 +172,44 @@ void sampler::thresholdCheck(){
     }
     else {
     clear_flag = 0;
+    }
+}
+
+//Public Methids
+
+sampler::sampler(ErrorHandler* OutputHandler):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
+    EH = OutputHandler;
+    sampleThread.start(callback(this, &sampler::sample));
+    matrixThread.start(callback(this, &sampler::matrixInterface));
+    sampleTick.attach(callback(this, &sampler::sampleflag),SAMPLE_INTERVAL);
+    BT_A.rise(callback(this, &sampler::sensorflag));
+    sampleThread.set_priority(osPriorityRealtime6);
+}
+
+
+sampler::sampler(ErrorHandler* OutputHandler,float limits[6]):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
+    EH = OutputHandler;
+    //set threshold values
+    threshold.bind(limits);
+    sampleThread.start(callback(this, &sampler::sample));
+    matrixThread.start(callback(this, &sampler::matrixInterface));
+    sampleTick.attach(callback(this, &sampler::sampleflag),SAMPLE_INTERVAL);
+    sampleThread.set_priority(osPriorityRealtime6);
+}
+
+void sampler::sensorChange(char in){
+    switch (in){
+        case ('T') :                            //Temperature
+        sampler::matrixThread.flags_set(4);
+        break;
+        case ('P') :                            //Pressure
+        sampler::matrixThread.flags_set(8);
+        break;
+        case ('L') :                            //Light
+        sampler::matrixThread.flags_set(16);
+        break;
+        default:                                //Default - toggle to next sensor instead
+        sampler::matrixThread.flags_set(2);
     }
 }
 
