@@ -1,10 +1,13 @@
 # Environmental Monitor
+# Link to GitHub Repository
+
+[LINK TO GIT REPO](https://github.com/LukeDWaller99/ELEC351-coursework-21.git)
 
 This project is an Environmental Monitor with the capability of monitoring the temperature, pressure, and light level of a space. The software make use of multithreading in order to sample at a deterministic rate. This data is then submitted onto a webpage to be monitored, as well as saved onto an SD card in a human-readable format for latter viewing and processing.
 
 Should any of the defined sensor thresholds be crossed, an alarm will be raised and errors logged to the serial output. 
 
-# Requirement
+# Requirements
 The specification outlines multiple requirments needed for the environmental sensor to be consider fit for purpose. The table belows contains this list of requirements, as well as where they have been fulfilled in the design.
 
 |Requirement    | Fullfilled                                        | Where     |
