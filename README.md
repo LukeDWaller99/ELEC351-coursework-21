@@ -112,8 +112,8 @@ The Environmental Sensor includes the ability to send commands via a serial inte
 | latest   | latest    | Fetch the latest date/time and data sample and display it over serial. |
 | buffered             | buffered    | Read the number of samples in the buffer and return it. |
 | flush      | flush    | Write all the samples in the buffer to the SD. Sends acknowledgement after.   |
-| set low             | setlow (at prompt) - type each limit   | Changes lower alarm threshold     |
-| set high         | sethigh (at prompt) - type each limit    | Changes upper alarm threshold        |
+| set low             | set_low (at prompt) - type each limit   | Changes lower alarm threshold     |
+| set high         | set_high (at prompt) - type each limit    | Changes upper alarm threshold        |
 | plot             | plot - (at prompt) char (T/P/L)    | Change the matrix display to plot a different sensors data.        |
 
 ## Changing the Matrix Display
