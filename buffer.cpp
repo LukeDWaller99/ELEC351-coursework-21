@@ -17,7 +17,9 @@ bufferClass::bufferClass(sampler* buffersampler, ErrorHandler* bufferEH,
   PQ = bufferPQ;
   t.start();
   bufferClass::initSD();
+  SDDetector.rise(callback(this, &bufferClass::SDRemoved));
   SDDetector.fall(callback(this, &bufferClass::initSD));
+  //sd detctor fall?
   writeThread.start(callback(this, &bufferClass::writeBufferAuto));
   bufferWriteTick.attach(callback(this, &bufferClass::writeFlag), 15s);
   flushThread.start(callback(this, &bufferClass::whenToFlush));
@@ -195,7 +197,7 @@ void bufferClass::fetchLatestRecord() {
 }
 
 void bufferClass::initSD() {
-  if (SDDetect == 1) { //-ve logic, sd card is not mounted
+  if (SDDetector == 1) { //-ve logic, sd card is not mounted
     PQ->custom.call(printf, "sd card not mounted\n");
     BEH->setErrorFlag(MOUNT_ERROR);
     greenLED = 0;
@@ -211,5 +213,5 @@ void bufferClass::SDRemoved(){
     greenLED = 0;
     SDMount = 0;
     PQ->custom.call(printf, "sd card not mounted\n");
-
+    BEH->setErrorFlag(MOUNT_ERROR);
 }

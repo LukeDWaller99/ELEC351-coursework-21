@@ -129,6 +129,7 @@ fetchLatestRecord : return the latest data set being held in but to be output wh
 
 *Contributed*
     - SerialIn
+    - ErrorHandler
 
 **Luke Waller**
 
