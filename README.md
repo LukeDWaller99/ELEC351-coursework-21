@@ -90,6 +90,10 @@ The Environmental Sensor includes the ability to send commands via a serial inte
 | set high         | sethigh (at prompt) - type each limit    | Changes upper alarm threshold        |
 | plot             | plot - (at prompt) char (T/P/L)    | Change the matrix display to plot a different sensors data.        |
 
+## Changing the Matrix Display
+To change the sensor data that the matrix is displaying, two methods are provided. Either send the serial command 'plot' alongside either T/P/L for
+the desired sensor. Alternatively, button A can be pressed to toggle to the next sensor. This will take effect on the next sample interval.
+
 ## Buffer Details
 The buffer class contains the SD card functionality, writing to the SD card in a format that is human readblae and easy to edit. The environmental data samples obtained every 10s are buffered in internal memory, and after a minute, 
 when the buffer has reached 90% capacity the samples (tracked by semaphores), along with the time and date they were obtained, are written to the SD card. The thread safe buffer has been encapsulated in one class, using semaphores to track the sample count and space available.
