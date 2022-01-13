@@ -6,7 +6,7 @@ dispatched before being used by any of the other classes. Several of the classes
 have status prints within their constructors, so a pre-main initialisation is critical
 to capture all status messages.
 
-
+Author - Jack Pendlebury
 **/
 
 #ifndef __CUSTOM_QUEUE__

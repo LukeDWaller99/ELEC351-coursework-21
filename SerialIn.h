@@ -1,6 +1,8 @@
 /**
 @file SerialIn.h
 Serial Input class header file.
+
+Author - Luke Waller
 **/
 
 #ifndef __SERIAL_IN__

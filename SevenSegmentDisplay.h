@@ -1,6 +1,8 @@
 /**
 @file SevenSegmentDisplay.h
 Seven Segment Display class header file.
+
+Author - Luke Waller
 **/
 #ifndef __Seven_Segment_Display__
 #define __Seven_Segment_Display__

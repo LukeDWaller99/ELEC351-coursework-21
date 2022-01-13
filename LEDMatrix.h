@@ -1,6 +1,8 @@
 /**
 @file LEDMatrix.h
  class header file.
+
+ Author - Luke Waller
 **/
 
 #ifndef __LED_MATRIX__

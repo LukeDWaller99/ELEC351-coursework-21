@@ -1,6 +1,8 @@
 /**
 @file HTTP_Server.h
 HTTP Server class header file.
+
+Author - Luke Waller
 **/
 
 #ifndef __HTTP_SERVER__

@@ -1,6 +1,8 @@
 /**
 @file NTPConnection.h
 NTP Connection class header file.
+
+Author - Luke Waller
 **/
 
 #ifndef __NTP_CLIENT__
