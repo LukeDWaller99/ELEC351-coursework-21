@@ -13,26 +13,9 @@
 #include <InterruptIn.h>
 
 
-#define buffer_size 20
+#define buffer_size 100
 #define SDDetect PF_4
 using namespace std;
-
-// class SDClass {
-//     SDClass();
-
-//     private:
-//     InterruptIn SDDetector;
-
-//     SDClass(PinName SDDetect) : SDDetector(SDDetect){
-//         SDDetector.rise(callback(this, &SDClass::initSD));
-//     }
-
-//     public:
-
-//     void initSD();
-    
-//     ~SDClass();
-// };
 
 class bufferClass {
 
@@ -44,16 +27,16 @@ private:
   Ticker bufferWriteTick;
   Ticker bufferFlushTick;
   Timer t;
-
-  //InterruptIn SDDetector(SDDetect);
-  //CustomQueue bufferPrintQueue;
-  sampler* BF;
+    time_t timestamp;
+  InterruptIn SDDetector;
+  sampler* bSamp;
   ErrorHandler* BEH;
   CustomQueue* PQ;
 
   void writeFlag();
-  void flushFlag();
   Thread writeThread;
+
+  void flushFlag();
   Thread flushThread;
 
   void writeBufferAuto();
@@ -61,18 +44,12 @@ private:
   unsigned int oldIDX = buffer_size - 1;
 
   void whenToFlush();
-  int dataInBuffer;
-  int lastFlushTime = 0;
-  float currentTime;
-  float hourPassed = 59 * 60; // 59 minutes as we check every minute
+  float flushTiming;    //current time of timer used to track last fush
+  float hourPassed = 59*60; // 59 minutes as we check every minute
 
-//everything required to printing and flushing buffer contents
-  int runFlush = 1;
-  int runPrint = 1;
-  int printIDX = oldIDX;   // work from oldest to newest sets data
-  int printRecordsIDX = 0; // track no of data sets
-  int pRIDX = 0;
-  time_t timestamp;
+
+  
+  
 
 public:
   bufferClass(sampler* buffersampler, ErrorHandler* bufferEH, CustomQueue* bufferPQ);
@@ -92,29 +69,22 @@ liveData printRecord[buffer_size];
   void fetchLatestRecord();
 
   void flushBuffer();
-  
+  int runFlush = 1;
+
   void bufferCount();
 
   void printBufferContents();
+    int runPrint = 1;
 
-  void emptyBuffer();
 
   void initSD();
-  bool SDMount = 0;
+  bool SDMount;
 
-  void flashGreen();
+  void flashGreen(); //for showing that the sd card is being flushed
 
   //destructor
   ~bufferClass();
 };
-
-// real time data
-// struct liveData {
-//   float LDR;
-//   float temp;
-//   float pressure;
-//   time_t realTime;
-// };
 
 
 #endif

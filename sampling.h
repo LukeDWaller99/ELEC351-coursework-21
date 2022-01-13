@@ -99,8 +99,8 @@ struct limits{
     **/
     void bind_upper(float limits[3]){
         t_upper = limits[0];
-        p_upper = limits[2];
-        l_upper = limits[4];
+        p_upper = limits[1];
+        l_upper = limits[3];
     }
 
     /**
@@ -115,8 +115,8 @@ struct limits{
     **/
     void bind_lower(float limits[3]){
         t_lower = limits[0];
-        p_lower = limits[2];
-        l_lower = limits[4];
+        p_lower = limits[1];
+        l_lower = limits[3];
     }
 };
 
