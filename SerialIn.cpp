@@ -1,6 +1,5 @@
 
 #include "SerialIn.h"
-#include <cstdio>
 
 SerialIn::SerialIn(CustomQueue* printQueue, sampler* serialSamples, bufferClass* serialBuffer) {
   pQ = printQueue;
@@ -12,7 +11,6 @@ SerialIn::SerialIn(CustomQueue* printQueue, sampler* serialSamples, bufferClass*
 }
 
 void SerialIn::SerialListener() {
-
 
   while (true) {
         char input[20];
