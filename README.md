@@ -84,7 +84,7 @@ The Environmental Sensor includes the ability to send commands via a serial inte
 | Command        | Syntax  | Description |
 | :----:        | :---- | :----
 | latest   | latest    | Fetch the latest date/time and data sample and display it over serial |
-| buffered             | buffered    |  |
+| buffered |            | buffered    |  |
 | Pressure      | 33    | Lower pressure limit exceeded     |
 | ^             | 34    | Upper pressure limit exceeded     |
 | Light         | 35    | Lower light limit exceeded        |
@@ -110,10 +110,9 @@ The Environmental Sensor includes the ability to send commands via a serial inte
 *Authored*
     - SD Card
     - Buffer
-    - 
 
 *Contributed*
-    - Stuff
+    - Serial Capture
 
 **Luke Waller**
 
@@ -127,4 +126,5 @@ The Environmental Sensor includes the ability to send commands via a serial inte
 *Contributed*
     - ErrorHandler
     - CustomQueue
+    - Buffer
 
