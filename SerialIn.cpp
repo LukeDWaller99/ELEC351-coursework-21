@@ -2,12 +2,12 @@
 #include "SerialIn.h"
 
 SerialIn::SerialIn(CustomQueue* printQueue, sampler* serialSamples, bufferClass* serialBuffer) {
-    // SerialIn::SerialIn(CustomQueue* printQueue, sampler* serialSamples){
   pQ = printQueue;
   serialSampler = serialSamples;
   serialBuff = serialBuffer;
   SerialInstructions();
   SerialWatcher.start(callback(this, &SerialIn::SerialListener));
+
 }
 
 void SerialIn::SerialListener() {
@@ -23,6 +23,8 @@ void SerialIn::SerialListener() {
         float lowerArray[3];
 
         scanf("%s", input);
+
+        serialTicker.attach(callback(this, &SerialIn::SerialTickerUp), 20s);
 
         // swtich case here for all the different chars that are incoming
         switch (input[0]) {
@@ -100,6 +102,7 @@ void SerialIn::SerialListener() {
         pQ->custom.call(printf, "INVALID INPUT\n");
         break;
         }
+    serialTicker.detach();
     }
 }
 
@@ -113,4 +116,14 @@ void SerialIn::SerialInstructions() {
                                    "\tplot\n"       \
                                    "\thelp\n"
                                    "Enter function to continue...\n" );
+}
+
+void SerialTickerUp(){
+}
+
+void SerialIn::SerialTest(){
+    pQ->custom.call(printf, "Testing Serial in...\n Type something:\n");
+    char test[20];
+    scanf("%s", test);
+    pQ->custom.call(printf, "Echo: %s", test);
 }

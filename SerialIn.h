@@ -14,12 +14,15 @@ class SerialIn{
     sampler* serialSampler;
     bufferClass* serialBuff;
     Thread SerialWatcher;
+    Ticker serialTicker;
     
 
     public:
     SerialIn(CustomQueue* printQueue, sampler* serialSamples, bufferClass* serialBuffer);
     void SerialListener();
     void SerialInstructions();
+    void SerialTest();
+    void SerialTickerUp();
 };
 
 
