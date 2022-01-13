@@ -8,7 +8,7 @@ Should any of the defined sensor thresholds be crossed, an alarm will be raised 
 The specification outlines multiple requirments needed for the environmental sensor to be consider fit for purpose. The table belows contains this list of requirements, as well as where they have been fulfilled in the design.
 
 |Requirement    | Fullfilled                                        | Where     |
- :----          | :----                                             | :----     |
+| :----         | :----                                             | :----     |
 |1              | Yes                                               | sampler.h |
 |2              | Yes                                               | buffer.h  |
 |3              | Yes                                               | buffer.h  |
@@ -47,7 +47,7 @@ Fatal | Immediate reset
 A list of error codes can be seen below:
 
 | Module    | Severity  | Code  | Description |
-| :----:    | :----:    | :---- | :----
+| :----:    | :----:    | :---- | :---- |
 | Buffer    | Critical  | 10    | Buffer is full. This is indicative of a further problem, as the buffer cannot flush to the SD Card output.|
 | ^         | Critical  | 11    | Buffer Lock Timeout. |
 | ^         | Critical  | 12    | Timer Lock Timeout.|
@@ -57,10 +57,11 @@ A list of error codes can be seen below:
 | ^         | Critical  | 21    | No SD Card File. The SD Card may be full. |
 |^          | Critical  | 22    | SD Card slot is empty, and the buffer cannot flush. |
 |Networking |           |       |                               |
-|^          |           |       |                               |
-|^          |           |       |                               |
-|^          |           |       |                               |
-|^          |           |       |                               |
+|^          | Fatal     | 40    | No network interface found    |
+|^          | Fatal     | 41    | Could not connect to server   |
+|^          | Fatal     | 42    | Failed to get time from NTP server|
+|^          | Fatal     | 43    | Could not get IP address|
+|^          | Fatal     | 44    | Listener Error |
 | ErrorHandler | Fatal  | 99    | Flag clear error. The error handler is unresponsive. |
 
 The same output is used to display environmental warnings.

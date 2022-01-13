@@ -10,13 +10,14 @@ using namespace uop_msb;
 
 class SerialIn{
     private:
+    CustomQueue* pQ;
+    sampler* serialSampler;
+    bufferClass* serialBuff;
     Thread SerialWatcher;
-    CustomQueue* printQueue;
-    sampler* sample;
-    bufferClass* buffer;
+    
 
     public:
-    SerialIn(CustomQueue* printQueue, sampler* sample, bufferClass* buffer);
+    SerialIn(CustomQueue* printQueue, sampler* serialSamples, bufferClass* serialBuffer);
     void SerialListener();
     void SerialInstructions();
 };
