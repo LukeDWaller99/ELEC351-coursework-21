@@ -83,12 +83,12 @@ A list of environmental errors can be seen below:
 The Environmental Sensor includes the ability to send commands via a serial interface. Upon initialising, a help screen will be displayed on the connected serial monitor. This list of commands is also available below:
 | Command        | Syntax  | Description |
 | :----:        | :---- | :----
-| latest   | latest    | Fetch the latest date/time and data sample and display it over serial |
-| buffered |            | buffered    |  |
-| Pressure      | 33    | Lower pressure limit exceeded     |
-| ^             | 34    | Upper pressure limit exceeded     |
-| Light         | 35    | Lower light limit exceeded        |
-| ^             | 36    | Upper light limit exceeded        |
+| latest   | latest    | Fetch the latest date/time and data sample and display it over serial. |
+| buffered             | buffered    | Read the number of samples in the buffer and return it. |
+| flush      | flush    | Write all the samples in the buffer to the SD. Sends acknowledgement after.   |
+| set low             | setlow (at prompt) - type each limit   | Changes lower alarm threshold     |
+| set high         | sethigh (at prompt) - type each limit    | Changes upper alarm threshold        |
+| plot             | plot - (at prompt) char (T/P/L)    | Change the matrix display to plot a different sensors data.        |
 
 # Contributions
 
