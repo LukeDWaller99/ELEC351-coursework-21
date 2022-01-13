@@ -24,7 +24,9 @@ NTP Connection class header file.
 
 /**
 NTP Connection class. 
-While this class is not thread safe. The way it is called ensures that is will not interrupt any other processes
+While this class is not thread safe. The way it is called ensures that is will not interrupt any other processes.
+This class is primarily used during the Monitor's initialisation stage, and so will not interfere with any of the 
+real-time operations.
 **/
 class NTPConnection{
 

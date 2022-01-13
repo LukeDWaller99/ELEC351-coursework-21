@@ -171,12 +171,15 @@ class sampler {
     void quantise(sensor_type selectedSensor);
 
     /**
-    Matrix interface funtion.
+    Matrix interface method.This methods handles interfacing with the matrix, including quantising samples and storing them in
+    an internal buffer, as well as making the appropriate calls to the matrix class to update it's internal buffer too.
     **/
     void matrixInterface();
 
     /**
-    method to check the incoming sample against the alarm threshold.
+    Method to check the incoming sample against the alarm threshold. This method compares the latest sample to 
+    the tresholds held in the thresholds struct. Should any of these thresholds be crossed, the appropriate error is 
+    sent to the error handler.
 
     **/
     void thresholdCheck();

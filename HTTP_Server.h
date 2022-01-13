@@ -54,10 +54,10 @@ using namespace std;
 class HTTP_server{
 
     private:
-    EthernetInterface network;  ///< 
-    TCPSocket socket;           ///< 
-    TCPSocket* client_socket;   ///< 
-    SocketAddress address;      ///<
+    EthernetInterface network;  ///< Create an ethernet interface to communicate with the network
+    TCPSocket socket;           ///< Create a TCP socket to wait for an incoming connection.
+    TCPSocket* client_socket;   ///< Pointer to the socket.
+    SocketAddress address;      ///< IP of the connection to the socket. 
 
     sampler* webDataSampler; 
 
@@ -80,8 +80,8 @@ class HTTP_server{
     HTTP_server(CustomQueue* printQueue, ErrorHandler* errorHandler, sampler* webSampler);
     /**
         HTTP Server thread. Waits for a request to be sent to the HTTP interface. 
-        Accepts the Client Socket
-        Constructs the webpage HTML and returns this along with a 200 OK Message
+        Accepts the Client Socket.
+        Constructs the webpage HTML and returns this along with a 200 OK Message.
         Once completed it closes the Client Socket and waits for another request.
     **/
     void HTTP_server_thread(void);
