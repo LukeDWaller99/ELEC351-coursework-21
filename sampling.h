@@ -99,8 +99,8 @@ struct limits{
     **/
     void bind_upper(float limits[3]){
         t_upper = limits[0];
-        p_upper = limits[2];
-        l_upper = limits[4];
+        p_upper = limits[1];
+        l_upper = limits[3];
     }
 
     /**
@@ -115,8 +115,8 @@ struct limits{
     **/
     void bind_lower(float limits[3]){
         t_lower = limits[0];
-        p_lower = limits[2];
-        l_lower = limits[4];
+        p_lower = limits[1];
+        l_lower = limits[3];
     }
 };
 
@@ -129,7 +129,6 @@ class sampler {
         LIGHT,
     };
     InterruptIn BT_A;                           ///< Button for controlling the matrix output sensor
-    limits threshold;                           ///< limits object to store the current alarm thresholds
     sensor_type currentSensor = LIGHT;          ///< Current sensor output, default is 'LIGHT'
     //float limits[6];    
     Mutex sampleLock;                           ///< Mutex Lock to ensure thread safety on sample values
@@ -206,6 +205,7 @@ class sampler {
     quantised_samples matrix_input; ///<Holds quantised values to be passed to the matrix display
     samples internal_buffer[8];     ///<Internal buffer to hold samples for the matrix.
     samples sampleData;             ///<Single sample data to hold the latest sample
+    limits threshold;                           ///< limits object to store the current alarm thresholds
 
 
     /**
