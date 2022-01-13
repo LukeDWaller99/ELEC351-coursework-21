@@ -15,9 +15,8 @@ HTTP Server class header file.
 #include "uop_msb.h"
 #include "CustomQueue.h"
 #include "ErrorHandler.h"
-#include "sampling.h"
 using namespace uop_msb;
-using namespace std;
+
 
 #define HTTP_STATUS_LINE "HTTP/1.0 200 OK" ///< shows that the responce to the broswer was successful - must return a payload
 #define HTTP_HEADER_FIELDS "Content-Type: text/html; charset=utf-8" ///< Provides required imformation about te responce

@@ -7,15 +7,9 @@ NTP Connection class header file.
 #define __NTP_CLIENT__
 
 #include "CustomQueue.h"
-#include "EventQueue.h"
 #include "ErrorHandler.h"
 #include "NTPClient.h"
-#include "PinNames.h"
-#include "EventQueue.h"
-#include "Thread.h"
 #include <ctime>
-#include "CustomQueue.h"
-#include "HTTP_Server.h"
 
 /// Macro to control the HTTP Server usage
 /// Set Macro to 0 if HTTP Server not being used, otherwise set to 1

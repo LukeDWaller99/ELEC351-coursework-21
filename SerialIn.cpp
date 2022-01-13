@@ -1,4 +1,3 @@
-
 #include "SerialIn.h"
 
 SerialIn::SerialIn(CustomQueue* printQueue, sampler* serialSamples, bufferClass* serialBuffer) {

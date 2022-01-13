@@ -9,9 +9,7 @@ Serial Input class header file.
 #include "CustomQueue.h"
 #include "mbed.h"
 #include "sampling.h"
-#include "uop_msb.h"
 #include "buffer.h"
-using namespace uop_msb;
 
 /**
 Thread-safe Serial Input class.
