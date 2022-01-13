@@ -7,15 +7,9 @@ NTP Connection class header file.
 #define __NTP_CLIENT__
 
 #include "CustomQueue.h"
-#include "EventQueue.h"
 #include "ErrorHandler.h"
 #include "NTPClient.h"
-#include "PinNames.h"
-#include "EventQueue.h"
-#include "Thread.h"
 #include <ctime>
-#include "CustomQueue.h"
-#include "HTTP_Server.h"
 
 /// Macro to control the HTTP Server usage
 /// Set Macro to 0 if HTTP Server not being used, otherwise set to 1
@@ -31,7 +25,7 @@ real-time operations.
 class NTPConnection{
 
     private:
-    /// pointer to the 
+    /// pointer to the Network Interface 
     NetworkInterface* NTPInterface;
     /// pointer to the output error queue
     CustomQueue* printQueue;
@@ -44,7 +38,7 @@ class NTPConnection{
     /**
     Construct the Network Connecion obejct. This constructor must be given a pointer to an event queue and
     the Error Handler. This allows it report errors and output the current state of the connection.
-    This class will not function without this two arguments and no other constructor is provided.
+    This class will not function without these two arguments and no other constructor is provided.
     @code
     CustomQueue* printQueue = new CustomQueue();
     ErrorHandler EH(&printQueue);
