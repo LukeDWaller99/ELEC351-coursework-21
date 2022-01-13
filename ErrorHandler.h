@@ -95,7 +95,7 @@ class ErrorHandler {
     typedef void(*funcPointer_t)(void);     ///<Function pointer for callbacks
     DigitalOut yellowLED = TRAF_YEL1_PIN;
     DigitalOut redLED = TRAF_RED1_PIN;
-    InterruptIn override_button;            ///<Interrupt attached to the User Button. Used for alarm override.
+    
     #if BUZZER_ENABLE == 1
     Buzzer buzz;                            ///<Buzzer instance. Only present if BUZZER_ENABLE == 1.
     char note = 'C';
