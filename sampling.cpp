@@ -105,7 +105,7 @@ void sampler::matrixInterface(){
         quantise(currentSensor);
         thresholdCheck();
         matrix.update(matrix_input.qsamples);
-        ThisThread::flags_clear(3);
+        ThisThread::flags_clear(255);
     }
 }
 
