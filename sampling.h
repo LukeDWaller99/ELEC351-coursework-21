@@ -129,6 +129,7 @@ class sampler {
         LIGHT,
     };
     InterruptIn BT_A;                           ///< Button for controlling the matrix output sensor.
+    InterruptIn override_button;            ///<Interrupt attached to the User Button. Used for alarm override.
     sensor_type currentSensor = LIGHT;          ///< Current sensor output, default is 'LIGHT'.
     //float limits[6];    
     Mutex sampleLock;                           ///< Mutex Lock to ensure thread safety on sample values.
@@ -139,8 +140,8 @@ class sampler {
     uop_msb::EnvSensor sensor;        
     AnalogIn LDR;
     ErrorHandler* EH;                           ///< Error Handler
-    
-    int prevAlarmFlag = 1;
+    int alarmSuppressFlag = 0;                  ///< Flag to store when alarm suppression is active
+    int prevAlarmFlag = 0;                      ///< Flag to store if an alarm has gone off, and if an all clear should be sent.
 
     /**
     Main sampling method. This method contains the majority of the sampler's methodality. After being
@@ -180,6 +181,13 @@ class sampler {
 
     **/
     void thresholdCheck();
+
+
+    /**
+    Callback mehtod to enable the alarm override for 1 minute. Triggers on user button push, supresses 
+    any environmental errors.
+    **/
+    void overrideEnable();
 
     /**
     Callback method to disable the alarm override after 1 minute.

@@ -2,23 +2,25 @@
 
 //extern samples sampledData;
 
-sampler::sampler(ErrorHandler* OutputHandler):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
+sampler::sampler(ErrorHandler* OutputHandler):LDR(AN_LDR_PIN),BT_A(BTN1_PIN),override_button(USER_BUTTON) {
     EH = OutputHandler;
     sampleThread.start(callback(this, &sampler::sample));
     matrixThread.start(callback(this, &sampler::matrixInterface));
     sampleTick.attach(callback(this, &sampler::sampleflag),SAMPLE_INTERVAL);
     BT_A.rise(callback(this, &sampler::sensorflag));
+    override_button.rise(callback(this, &sampler::overrideEnable));
     sampleThread.set_priority(osPriorityRealtime6);
 }
 
 
-sampler::sampler(ErrorHandler* OutputHandler,float limits[6]):LDR(AN_LDR_PIN),BT_A(BTN1_PIN) {
+sampler::sampler(ErrorHandler* OutputHandler,float limits[6]):LDR(AN_LDR_PIN),BT_A(BTN1_PIN),override_button(USER_BUTTON) {
     EH = OutputHandler;
     //set threshold values
     threshold.bind(limits);
     sampleThread.start(callback(this, &sampler::sample));
     matrixThread.start(callback(this, &sampler::matrixInterface));
     sampleTick.attach(callback(this, &sampler::sampleflag),SAMPLE_INTERVAL);
+    override_button.rise(callback(this, &sampler::overrideEnable));
     sampleThread.set_priority(osPriorityRealtime6);
 }
 
@@ -103,7 +105,10 @@ void sampler::matrixInterface(){
             currentSensor = LIGHT;
         }
         quantise(currentSensor);
+        if (alarmSuppressFlag == 0) //if alarm is not suppressed, perform the threshold check.
+        {
         thresholdCheck();
+        }
         matrix.update(matrix_input.qsamples);
         ThisThread::flags_clear(3);
     }
@@ -221,4 +226,14 @@ void sampler::displayLimits(){
 sampler::sensor_type sampler::get_current_sensor(){
     sensor_type temp = currentSensor;
     return temp;
+}
+
+void sampler::overrideEnable(){
+    alarmSuppressFlag = 1;
+    overrideTick.attach(callback(this, &sampler::overrideDisable),60s);
+}
+
+void sampler::overrideDisable(){
+    overrideTick.detach();
+    alarmSuppressFlag = 0;
 }
