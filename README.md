@@ -91,8 +91,7 @@ The Environmental Sensor includes the ability to send commands via a serial inte
 | plot             | plot - (at prompt) char (T/P/L)    | Change the matrix display to plot a different sensors data.        |
 
 ## Changing the Matrix Display
-To change the sensor data that the matrix is displaying, two methods are provided. Either send the serial command 'plot' alongside either T/P/L for
-the desired sensor. Alternatively, button A can be pressed to toggle to the next sensor. This will take effect on the next sample interval.
+To change the sensor data that the matrix is displaying, two methods are provided. Either send the serial command 'plot' alongside either T/P/L for the desired sensor. Alternatively, button A can be pressed to toggle to the next sensor. This will take effect on the next sample interval.
 
 ## Buffer Details
 The buffer class contains the SD card functionality, writing to the SD card in a format that is human readblae and easy to edit. The environmental data samples obtained every 10s are buffered in internal memory, and after a minute, 
@@ -108,6 +107,13 @@ or time out will return errors and flash a red led and serial buzzer message is 
 flushBuffer : Samples, time and data flushed to text file. An empty flush produces a warning.
 bufferCount : return number of data sets being held in buffer to be output when requested by SerialIn.
 fetchLatestRecord : return the latest data set being held in but to be output when requested by SerialIn.
+
+## LEDMatrix
+Contains a thread-safe LED Matrix class, allowing for the use of the MSB's LED matrix display. The class contains a method for plotting a bar display of the 8 most recent sets of environmental values from the sampler.
+There are methods for clearing the display, writingMatrix writes the specific bytes to the LED matrix.
+The plot method plots the internal values as a bar graph. There is an additional test method to check ths is done correctly.
+The internal method update function uses the updatedSamples to control all of the lights.
+The matrixThread is the callback method for the MatrixThread thread object, it will run the plot to mimic a hold functionality.
 
 # Contributions
 
