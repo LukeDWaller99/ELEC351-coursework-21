@@ -1,6 +1,8 @@
 /**
 @file ErrorHandler.h
 Error Handler class header file.
+
+Author - Jack Pendlebury
 **/
 
 #ifndef H_ERROR_HANDLER
@@ -100,12 +102,14 @@ class ErrorHandler {
     Buzzer buzz;                            ///<Buzzer instance. Only present if BUZZER_ENABLE == 1.
     char note = 'C';
     #endif
-    ///Seven Segment Display used for displaying the active error code
-    SevenSegmentDisplay errorDisplay;
-    ///Error flag clearing lock.
-    Mutex flagLock;
-    ///Pointer to the output error queue
-    CustomQueue* queue;
+    
+    SevenSegmentDisplay errorDisplay; ///<Seven Segment Display used for displaying the active error code
+    
+    Mutex flagLock; ///<Error flag clearing lock.
+    CustomQueue* queue; ///<Pointer to the output error queue
+    
+    int flag_value = 0;
+    int currentErrorSeverity = 0;
     int alarm_status=0;
     int prevAlarmFlag=0;
     /**Function for clearing the Error Handler's thread flags safely
