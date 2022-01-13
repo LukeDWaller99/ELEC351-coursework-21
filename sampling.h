@@ -140,8 +140,11 @@ class sampler {
     AnalogIn LDR;
     ErrorHandler* EH;                           ///< Error Handler
 <<<<<<< HEAD
+<<<<<<< HEAD
     
     int prevAlarmFlag = 1;
+=======
+>>>>>>> parent of 057257c (initial button func)
 =======
 >>>>>>> parent of 057257c (initial button func)
 
