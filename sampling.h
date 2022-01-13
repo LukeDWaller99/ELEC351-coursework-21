@@ -128,17 +128,18 @@ class sampler {
         PRESSURE,
         LIGHT,
     };
-    InterruptIn BT_A;                           ///< Button for controlling the matrix output sensor
-    sensor_type currentSensor = LIGHT;          ///< Current sensor output, default is 'LIGHT'
+    InterruptIn BT_A;                           ///< Button for controlling the matrix output sensor.
+    sensor_type currentSensor = LIGHT;          ///< Current sensor output, default is 'LIGHT'.
     //float limits[6];    
-    Mutex sampleLock;                           ///< Mutex Lock to ensure thread safety on sample values
-    Ticker sampleTick;                          ///< Ticker interrupt to trigger sampling at once per second
+    Mutex sampleLock;                           ///< Mutex Lock to ensure thread safety on sample values.
+    Ticker sampleTick;                          ///< Ticker interrupt to trigger sampling at once per second.
+    Ticker overrideTick;                        ///< Ticker to disable the override after 1 minute.
     Thread sampleThread,matrixThread;           ///< Thread declarations.
     LEDMatrix matrix;                           ///< LED Matrix display for outputting sample bar graphs.
-    //bufferClass sampleBuffer;
     uop_msb::EnvSensor sensor;        
     AnalogIn LDR;
-    ErrorHandler* EH;                           ///< Error Handler
+    ErrorHandler* EH;                           ///< Error Handler pointer.
+    int errorOverrideFlag;                      ///< flag signals when error override is active - disables enviromental errors.
 
     /**
     Main sampling method. This method contains the majority of the sampler's methodality. After being
@@ -178,6 +179,11 @@ class sampler {
 
     **/
     void thresholdCheck();
+
+    /**
+    Callback method to disable the alarm override after 1 minute.
+    **/
+    void overrideDisable();
 
     public:
     /**
