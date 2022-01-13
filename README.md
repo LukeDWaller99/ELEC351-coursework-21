@@ -23,7 +23,7 @@ The specification outlines multiple requirments needed for the environmental sen
 |12             | Yes                                               |throughout |
 
 # Dependancies
-The main.c file contains all the instantiations needed in the correct order. However, several of the modules of this project can be used as standalone classes. To ensure that these classes are instantiated correctly, the dependencies are listed below. Generally, a 'CustomQueue' will need to be instantiated before anything else, to provide an output logging method.
+The main.cpp file contains all the instantiations needed in the correct order. However, several of the modules of this project can be used as standalone classes. To ensure that these classes are instantiated correctly, the dependencies are listed below. Generally, a 'CustomQueue' will need to be instantiated before anything else, to provide an output logging method.
 
 **Error Handler**
     - Custom Queue
@@ -32,6 +32,32 @@ The main.c file contains all the instantiations needed in the correct order. How
 **Sampler**
     - Error Handler
         - To control error outputs
+
+**NTPConnection**
+    - Network Interface
+        - For creating a network interface
+    - Custom Queue
+        - For connection logging
+    - Error Handler
+        - To control error outpus
+
+**HTTP_Server**
+    - Custom Queue
+        - For connection logging
+    - Error Handler
+        - To control error outpus
+    - Sampler 
+        - To get the samples to output on the webpage
+    - TCP Socket
+        - To allow network connection
+
+**SerialIn**
+    - Custom Queue
+        - For connection logging
+    - Sampler
+        - To allow the threshold limits to be changed
+    - Buffer
+        - To allow the communication between buffer and serial in to evaluate the data points.
 
 # Usuage of the Environmental Sensor
 
