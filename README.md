@@ -8,7 +8,7 @@ Should any of the defined sensor thresholds be crossed, an alarm will be raised 
 The specification outlines multiple requirments needed for the environmental sensor to be consider fit for purpose. The table belows contains this list of requirements, as well as where they have been fulfilled in the design.
 
 |Requirement    | Fullfilled                                        | Where     |
- :----          | :----                                             | :----     |
+| :----         | :----                                             | :----     |
 |1              | Yes                                               | sampler.h |
 |2              | Yes                                               | buffer.h  |
 |3              | Yes                                               | buffer.h  |
@@ -47,7 +47,7 @@ Fatal | Immediate reset
 A list of error codes can be seen below:
 
 | Module    | Severity  | Code  | Description |
-| :----:    | :----:    | :---- | :----
+| :----:    | :----:    | :---- | :---- |
 | Buffer    | Critical  | 10    | Buffer is full. This is indicative of a further problem, as the buffer cannot flush to the SD Card output.|
 | ^         | Critical  | 11    | Buffer Lock Timeout. |
 | ^         | Critical  | 12    | Timer Lock Timeout.|
@@ -57,10 +57,11 @@ A list of error codes can be seen below:
 | ^         | Critical  | 21    | No SD Card File. The SD Card may be full. |
 |^          | Critical  | 22    | SD Card slot is empty, and the buffer cannot flush. |
 |Networking |           |       |                               |
-|^          |           |       |                               |
-|^          |           |       |                               |
-|^          |           |       |                               |
-|^          |           |       |                               |
+|^          | Fatal     | 40    | No network interface found    |
+|^          | Fatal     | 41    | Could not connect to server   |
+|^          | Fatal     | 42    | Failed to get time from NTP server|
+|^          | Fatal     | 43    | Could not get IP address|
+|^          | Fatal     | 44    | Listener Error |
 | ErrorHandler | Fatal  | 99    | Flag clear error. The error handler is unresponsive. |
 
 The same output is used to display environmental warnings.
@@ -101,8 +102,8 @@ initSD : Using the sd card detectors interrupt capable pin to check the sd card 
 writeBufferAuto : Obtain every data set along with the data and time stamp for when it was taken (aquired from network time server). Writing to the buffer while full, mutex locks that are not acquried 
 or time out will return errors and flash a red led and serial buzzer message is output for 30s. Buffer and time data is protected by mutex locks.
 flushBuffer : Samples, time and data flushed to text file. An empty flush produces a warning.
-bufferCount : return number of data sets being held in buffer to be output when requested by SerialCapture.
-fetchLatestRecord : return the latest data set being held in but to be output when requested by SerialCapture.
+bufferCount : return number of data sets being held in buffer to be output when requested by SerialIn.
+fetchLatestRecord : return the latest data set being held in but to be output when requested by SerialIn.
 
 # Contributions
 
@@ -117,7 +118,7 @@ fetchLatestRecord : return the latest data set being held in but to be output wh
     - Documentation
     - SevenSegmentDisplay
     - LEDMatrix
-    - SerialCapture
+    - SerialIn
 
 **Noah Harvey**
 
@@ -127,7 +128,7 @@ fetchLatestRecord : return the latest data set being held in but to be output wh
     
 
 *Contributed*
-    - SerialCapture
+    - SerialIn
 
 **Luke Waller**
 
@@ -136,9 +137,10 @@ fetchLatestRecord : return the latest data set being held in but to be output wh
     - LEDMatrix
     - NTPConnection
     - HTTP_Server
-    - SerialCapture
+    - SerialIn
 
 *Contributed*
     - ErrorHandler
     - CustomQueue
+    - Buffer
 
