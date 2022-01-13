@@ -1,10 +1,7 @@
 //AUTHOR - JACK PENDLEBURY
 #include <ErrorHandler.h>
 
-
-int flag_value = 0;
-int currentErrorSeverity = 0;
-
+//Private methods
 void ErrorHandler::clear_all(){
     if (flagLock.trylock_for(10ms) == true){
         ThisThread::flags_clear(0x7fffffff);
@@ -16,6 +13,22 @@ void ErrorHandler::clear_all(){
         NVIC_SystemReset(); // resets system - this is called if the error handler cannot clear flags 
     }
 }
+
+
+void ErrorHandler::alarm_override(){
+    #if BUZZER_ENABLE == 0
+    if (alarm_status == 1){
+    queue->custom.call(printf,"ALARM DISABLED - OVERRIDE\n");
+    }
+    #else
+    if (alarm_status == 1){
+    buzz.rest();
+    }
+    #endif
+    alarm_status = 0; //disable alarm
+}
+
+//Public Methods
 
 
 ErrorHandler::ErrorHandler(CustomQueue* outputQueue):override_button(USER_BUTTON){
@@ -162,15 +175,3 @@ void ErrorHandler::setErrorFlag(int errorCode){
 
 }
 
-void ErrorHandler::alarm_override(){
-    #if BUZZER_ENABLE == 0
-    if (alarm_status == 1){
-    queue->custom.call(printf,"ALARM DISABLED - OVERRIDE\n");
-    }
-    #else
-    if (alarm_status == 1){
-    buzz.rest();
-    }
-    #endif
-    alarm_status = 0; //disable alarm
-}
