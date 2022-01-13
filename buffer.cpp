@@ -167,7 +167,7 @@ void bufferClass::flushBuffer() {
             spaceInBuffer.release(); // space in buffer signal
           }
         }
-        PQ->custom.call(printf, "buffer flushed\n");
+        PQ->custom.call(printf, "Buffer Flushed\n");
         bufferLock.unlock();
       }
     }

@@ -1,5 +1,6 @@
 
 #include "SerialIn.h"
+#include <cstdio>
 
 SerialIn::SerialIn(CustomQueue* printQueue, sampler* serialSamples, bufferClass* serialBuffer) {
   pQ = printQueue;
@@ -15,41 +16,39 @@ void SerialIn::SerialListener() {
 
   while (true) {
         char input[20];
+        char matrix[20];
         float tempThres;
         float pressThres;
         float lightThres;
-        char matrix[20];
         float upperArry[3];
         float lowerArray[3];
 
         scanf("%s", input);
 
-        serialTicker.attach(callback(this, &SerialIn::SerialTickerUp), 20s);
-
         // swtich case here for all the different chars that are incoming
         switch (input[0]) {
         case 'l': // latest value
-            pQ->custom.call(printf, "Fetching Latest Values...\n");
-            serialBuff->printBufferContents();
+            pQ->custom.call(printf, "\nFetching Latest Values...\n");
+            serialBuff->fetchLatestRecord();
             // fetch latest data
         break;
         case 'b': // buffered
-            pQ->custom.call(printf, "Fetching Current Number of Samples In Buffer...\n");
+            pQ->custom.call(printf, "\nFetching Current Number of Samples In Buffer...\n");
             serialBuff->bufferCount();
             // read number of samples currently in buffer
         break;
         case 'f': // flush
-            pQ->custom.call(printf, "Flushing Buffer...\n");
+            pQ->custom.call(printf, "\nFlushing Buffer...\n");
             serialBuff->flushBuffer();
             // write all samples to buffer and flush sd card
         break;
         case 's': // set_high or low
-            pQ->custom.call(printf, "Select Limits:\n");
-            pQ->custom.call(printf, "Temperature\n");
+            pQ->custom.call(printf, "\nSelect Limits:\n");
+            pQ->custom.call(printf, "\nTemperature\n");
             scanf("%f", &tempThres);
-            pQ->custom.call(printf, "Pressure\n");
+            pQ->custom.call(printf, "\nPressure\n");
             scanf("%f", &pressThres);
-            pQ->custom.call(printf, "Light\n");
+            pQ->custom.call(printf, "\nLight\n");
             scanf("%f", &lightThres);
             switch (input[4]) {
                 case 'h':
@@ -57,57 +56,63 @@ void SerialIn::SerialListener() {
                     upperArry[0] = tempThres;
                     upperArry[1] = pressThres;
                     upperArry[2] = lightThres;
-                    pQ->custom.call(printf, "Updating Upper Limits...\n");
+                    pQ->custom.call(printf, "\nUpdating Upper Limits...\n");
                     serialSampler->threshold.bind_upper(upperArry);
-                return;;
+                    pQ->custom.call(printf, "\nUpdatied Upper Limits...\n");
+                break;
                 case 'l':
                     // set the lower limits
                     lowerArray[0] = tempThres;
                     lowerArray[1] = pressThres;
                     lowerArray[2] = lightThres;
-                    pQ->custom.call(printf, "Updating Lower Limits...\n");
+                    pQ->custom.call(printf, "\nUpdating Lower Limits...\n");
                     serialSampler->threshold.bind_lower(lowerArray);   
-                return;
+                    pQ->custom.call(printf, "\nUpdatedLower Limits...\n");
+                break;
                 default:
-                    pQ->custom.call(printf, "INVALID INPUT\n");
-                return;
+                    pQ->custom.call(printf, "\nINVALID INPUT\n");
+                break;
             }
             break;
         case 'p': // plot
                 // plot the desired feature onto matrix
-        pQ->custom.call(printf, "T, P, L ?\n");
+        pQ->custom.call(printf, "\nT, P, L ?\n");
         scanf("%s", matrix);
         switch (matrix[0]) {
         case 'T':
             // change to temperature
-            pQ->custom.call(printf, "Changing Matrix to Temperature\n");
+            pQ->custom.call(printf, "\nChanging Matrix to Temperature\n");
             serialSampler->sensorChange(matrix[0]);
             break;
         case 'P':
             // change to pressure
-            pQ->custom.call(printf, "Changing Matrix to Pressure\n");
+            pQ->custom.call(printf, "\nChanging Matrix to Pressure\n");
             serialSampler->sensorChange(matrix[0]);
             break;
         case 'L':
             // change to light
-            pQ->custom.call(printf, "Chaning Matrix to Light\n");
+            pQ->custom.call(printf, "\nChanging Matrix to Light...\n");
             serialSampler->sensorChange(matrix[0]);
-            return;
+            break;
+        default:
+            pQ->custom.call(printf, "\nINVALID\n");
+            break;
         }
         break;
         case 'h': // help
-            SerialInstructions();
+            Help();
         break;
         default:
-        pQ->custom.call(printf, "INVALID INPUT\n");
+        pQ->custom.call(printf, "\nINVALID INPUT\n");
         break;
         }
-    serialTicker.detach();
+    SerialInstructions();
     }
 }
 
+// prints out the instruction list
 void SerialIn::SerialInstructions() {
-  pQ->custom.call(printf, "Remote Function Calls:\n");
+  pQ->custom.call(printf, "\nRemote Function Calls:\n");
   pQ->custom.call(printf, "\tlatest\n"      \
                                    "\tbuffered\n"   \
                                    "\tflush\n"      \
@@ -118,9 +123,21 @@ void SerialIn::SerialInstructions() {
                                    "Enter function to continue...\n" );
 }
 
-void SerialTickerUp(){
+// prints out the help 'menu'
+void SerialIn::Help(){
+  pQ->custom.call(printf, "\tlatest - gets the latest value stored in the buffer\n"      \
+                                   "\tbuffered - output the current number of samples stored in the buffer\n"   \
+                                   "\tflush - flushes the buffer and wrties the outputs to the SD card\n"      \
+                                   "\tset_low - sets the lower thresholds for Temperature, Pressure, and Light Level.\n"    \
+                                   "\t\t Type in function name. Hit enter. Then the parameters one by one\n"\
+                                   "\tset_high - sets the upper thresholds for Temperature, Pressure, and Light Level\n"   \
+                                   "\t\t Type in function name. Hit enter. Then the parameters one by one\n"\
+                                   "\tplot - changes the currnet output on the LED Matrix\n"       \
+                                    "\t\t Type in function name. Hit enter. Then type 'T', 'P', or 'L'\n"\
+                                   "\thelp - brings up the help menu\n");  
 }
 
+// test code for the serial in
 void SerialIn::SerialTest(){
     pQ->custom.call(printf, "Testing Serial in...\n Type something:\n");
     char test[20];

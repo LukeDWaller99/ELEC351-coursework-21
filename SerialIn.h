@@ -14,7 +14,6 @@ class SerialIn{
     sampler* serialSampler;
     bufferClass* serialBuff;
     Thread SerialWatcher;
-    Ticker serialTicker;
     
 
     public:
@@ -22,8 +21,7 @@ class SerialIn{
     void SerialListener();
     void SerialInstructions();
     void SerialTest();
-    void SerialTickerUp();
+    void Help();
 };
-
 
 #endif
