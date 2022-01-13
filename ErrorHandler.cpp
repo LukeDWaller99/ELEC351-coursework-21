@@ -27,6 +27,7 @@ ErrorHandler::ErrorHandler(CustomQueue* outputQueue):override_button(USER_BUTTON
     ERROR_THREAD_NAME.start(callback(this, &ErrorHandler::error_thread));
     override_button.rise(callback(this, &ErrorHandler::alarm_override));
     ERROR_THREAD_NAME.set_priority(osPriorityRealtime7);
+    queue->custom.call(printf, "Error Handler Initialised\n");
 }
 
 
@@ -41,12 +42,12 @@ void ErrorHandler::error_thread(void){
     switch(currentErrorSeverity) 
     {
         case WARNING:
-        queue->custom.call(printf, "WARNING Error Code - %d\n", (errorNumber & 255));
+        queue->custom.call(printf, "WARNING Error Code - %x\n", (errorNumber & 255));
         yellowLED = 1;
         break;
 
         case CRITICAL:
-        queue->custom.call(printf, "CRITICAL Error Code - %d\n", (errorNumber & 255));
+        queue->custom.call(printf, "CRITICAL Error Code - %x\n", (errorNumber & 255));
         // turn on red led
         redLED = 1;
         alarm_status = 1;
@@ -66,7 +67,7 @@ void ErrorHandler::error_thread(void){
         break;
 
         case FATAL:                     //FATAL ERROR - Immediate hardware reset
-        queue->custom.call(printf, "FATAL Error Code - %d\n", (errorNumber & 255));
+        queue->custom.call(printf, "FATAL Error Code - %x\n", (errorNumber & 255));
         ThisThread::sleep_for(1s);
         NVIC_SystemReset(); //reset the system - this should only be called if something goes VERY wrong 
         break;
@@ -79,7 +80,7 @@ void ErrorHandler::error_thread(void){
 
         case ENV_ERR:
         //printf("ENV Error %d\n",(errorNumber & 255));
-        queue->custom.call(printf, "ENV Error %d\n",(errorNumber & 255));
+        queue->custom.call(printf, "ENV Error %x\n",(errorNumber & 255));
         #if BUZZER_ENABLE == 1
             buzz.playTone(&note);
             ThisThread::sleep_for(3s);
@@ -94,7 +95,7 @@ void ErrorHandler::error_thread(void){
         break; 
 
         case CLEAR:
-        printf("ALL CLEAR - CODE %d\n",(errorNumber & 255));
+        printf("ALL CLEAR - CODE %x\n",(errorNumber & 255));
         errorDisplay.clear();
         yellowLED = 0;
         redLED = 0;

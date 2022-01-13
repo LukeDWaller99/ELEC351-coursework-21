@@ -138,8 +138,9 @@ class sampler {
     LEDMatrix matrix;                           ///< LED Matrix display for outputting sample bar graphs.
     uop_msb::EnvSensor sensor;        
     AnalogIn LDR;
-    ErrorHandler* EH;                           ///< Error Handler pointer.
-    int errorOverrideFlag;                      ///< flag signals when error override is active - disables enviromental errors.
+    ErrorHandler* EH;                           ///< Error Handler
+    
+    int prevAlarmFlag = 1;
 
     /**
     Main sampling method. This method contains the majority of the sampler's methodality. After being
