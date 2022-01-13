@@ -15,7 +15,7 @@ Author - Jack Pendlebury
 #define SAMPLE_INTERVAL 10s
 
 /**
-Structure for holding the sample data. The samples struct holds three values, one from each sensor, taken at 1 
+Structure for holding the sample data. The samples struct holds three values, one from each sensor, taken at 10 
 second intervals.
     @param temp     Float value to hold a temperature reading.
     @param pressure Float value to hold a pressure reading.
