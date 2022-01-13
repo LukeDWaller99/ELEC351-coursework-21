@@ -55,7 +55,7 @@ void SerialIn::SerialListener() {
                     upperArry[0] = tempThres;
                     upperArry[1] = pressThres;
                     upperArry[2] = lightThres;
-                    pQ->custom.call(printf, "Light...\n");
+                    pQ->custom.call(printf, "Updating Upper Limits...\n");
                     serialSampler->threshold.bind_upper(upperArry);
                 return;;
                 case 'l':
@@ -63,9 +63,8 @@ void SerialIn::SerialListener() {
                     lowerArray[0] = tempThres;
                     lowerArray[1] = pressThres;
                     lowerArray[2] = lightThres;
-                    pQ->custom.call(printf, "Light...\n");
-                    serialSampler->threshold.bind_lower(lowerArray);
-                    
+                    pQ->custom.call(printf, "Updating Lower Limits...\n");
+                    serialSampler->threshold.bind_lower(lowerArray);   
                 return;
                 default:
                     pQ->custom.call(printf, "INVALID INPUT\n");
@@ -113,5 +112,5 @@ void SerialIn::SerialInstructions() {
                                    "\tset_high\n"   \
                                    "\tplot\n"       \
                                    "\thelp\n"
-                                   "Enter function to cotinue...\r\n" );
+                                   "Enter function to continue...\n" );
 }
