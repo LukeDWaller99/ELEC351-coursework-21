@@ -89,6 +89,21 @@ The Environmental Sensor includes the ability to send commands via a serial inte
 | set high         | sethigh (at prompt) - type each limit    | Changes upper alarm threshold        |
 | plot             | plot - (at prompt) char (T/P/L)    | Change the matrix display to plot a different sensors data.        |
 
+## Buffer Details
+The buffer class contains the SD card functionality, writing to the SD card in a format that is human readblae and easy to edit. The environmental data samples obtained every 10s are buffered in internal memory, and after a minute, 
+when the buffer has reached 90% capacity the samples (tracked by semaphores), along with the time and date they were obtained, are written to the SD card. The thread safe buffer has been encapsulated in one class, using semaphores to track the sample count and space available.
+Writing to the buffer when full returns an error and lights a red LED. You are warned when attempting to flush an empty buffer.
+Two threads are use to raise flags for writing to the buffer and flushing.
+Appropriate mitigation of deadlocks and thread starvation by using timeouts. Timeouts are logged as critical erros in the serial.
+The ErrorHandler object is referenced by pointer to output the error codes. The CustomQueue is an event queue used to output additional information to the serial.
+
+initSD : Using the sd card detectors interrupt capable pin to check the sd card is mounted. It is also initiated in the bufferClass constructor. green LED lights when mounted, upon removal it turns off.
+writeBufferAuto : Obtain every data set along with the data and time stamp for when it was taken (aquired from network time server). Writing to the buffer while full, mutex locks that are not acquried 
+or time out will return errors and flash a red led and serial buzzer message is output for 30s. Buffer and time data is protected by mutex locks.
+flushBuffer : Samples, time and data flushed to text file. An empty flush produces a warning.
+bufferCount : return number of data sets being held in buffer to be output when requested by SerialCapture.
+fetchLatestRecord : return the latest data set being held in but to be output when requested by SerialCapture.
+
 # Contributions
 
 **Jack Pendlebury**
@@ -109,10 +124,10 @@ The Environmental Sensor includes the ability to send commands via a serial inte
 *Authored*
     - SD Card
     - Buffer
-    - 
+    
 
 *Contributed*
-    - Stuff
+    - SerialCapture
 
 **Luke Waller**
 
@@ -121,7 +136,7 @@ The Environmental Sensor includes the ability to send commands via a serial inte
     - LEDMatrix
     - NTPConnection
     - HTTP_Server
-    - Serial Capture
+    - SerialCapture
 
 *Contributed*
     - ErrorHandler

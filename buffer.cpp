@@ -2,7 +2,6 @@
 
 Semaphore spaceInBuffer(buffer_size); // space in buffer
 Semaphore samplesInBuffer(0);         // samples in buffer
-Semaphore signalSample(0);            // signal to get new sample
 
 samples sampledData;
 FILE *fp;
